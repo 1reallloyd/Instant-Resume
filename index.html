@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#FFFFFF">
+<title>CVCraft — Build a resume that gets read</title>
+<meta name="description" content="CVCraft is a free resume builder with a live A4 preview, one-click PDF and print. Fill in your details and download a print-ready CV.">
+<meta property="og:title" content="CVCraft — Build a resume that gets read">
+<meta property="og:description" content="Free resume builder with a live A4 preview, one-click PDF and print.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23141D26'/%3E%3Ctext x='32' y='46' font-size='40' text-anchor='middle' fill='%23D2A17C' font-family='Georgia,serif' font-weight='700'%3EC%3C/text%3E%3C/svg%3E">
+
+<!-- Marks the page as script-enabled BEFORE first paint, so scroll reveals only
+     hide content when the script that reveals it is actually running. -->
+<script>document.documentElement.className += ' js';</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --ink:        #141D26;
+  --navy:       #1F2E3B;
+  --copper:     #A06B45;
+  --copper-dk:  #855634;
+  --copper-lt:  #D2A17C;   /* copper for text on dark backgrounds */
+  --paper:      #FFFFFF;
+  --wash:       #F5F3F0;
+  --rule:       #E2DCD5;
+  --muted:      #6C6459;
+
+  --measure: 62ch;
+  --page: 1180px;
+  --gutter: clamp(1.25rem, 5vw, 4rem);
+  /* Side padding that also respects notches in landscape */
+  --gl: max(var(--gutter), env(safe-area-inset-left, 0px));
+  --gr: max(var(--gutter), env(safe-area-inset-right, 0px));
+
+  --nav-h: 4.1rem;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --paper-shadow: 0 1px 1px rgba(20,29,38,0.04), 0 18px 40px -18px rgba(20,29,38,0.28);
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  /* Anchor jumps land below the sticky navbar instead of underneath it */
+  scroll-padding-top: calc(var(--nav-h) + env(safe-area-inset-top, 0px) + 0.5rem);
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 1.65;
+  font-size: 1rem;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+h1, h2, h3, .display {
+  font-family: 'Fraunces', Georgia, 'Times New Roman', serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+}
+
+p { max-width: var(--measure); }
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+ul { list-style: none; }
+
+:focus-visible { outline: 2px solid var(--copper); outline-offset: 3px; border-radius: 3px; }
+.templates :focus-visible, .closing :focus-visible, footer :focus-visible { outline-color: var(--copper-lt); }
+::selection { background: #EADFD3; color: var(--ink); }
+
+.skip-link {
+  position: fixed; left: 1rem; top: -4rem; z-index: 2000;
+  background: var(--ink); color: #fff; padding: 0.6rem 1rem; border-radius: 4px;
+  transition: top 0.2s ease;
+}
+.skip-link:focus { top: calc(0.75rem + env(safe-area-inset-top, 0px)); }
+
+.wrap {
+  width: 100%;
+  max-width: var(--page);
+  margin: 0 auto;
+  padding-left: var(--gl);
+  padding-right: var(--gr);
+}
+
+/* ===== Buttons ===================================================== */
+.btn {
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.2;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  padding: 0.78rem 1.35rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s var(--ease);
+  white-space: nowrap;
+}
+.btn-solid { background: var(--ink); color: #fff; }
+.btn-solid:hover { background: var(--copper-dk); }
+.btn-line { background: transparent; color: var(--ink); border-color: var(--rule); }
+.btn-line:hover { border-color: var(--ink); }
+.btn-paper { background: #fff; color: var(--ink); }
+.btn-paper:hover { background: #F0EBE5; }
+.btn:active { transform: translateY(1px); }
+.btn-lg { padding: 0.95rem 1.7rem; font-size: 1rem; }
+
+/* ===== Navigation ================================================== */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 900;
+  padding-top: env(safe-area-inset-top, 0px);
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: saturate(180%) blur(12px);
+  -webkit-backdrop-filter: saturate(180%) blur(12px);
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.25s ease;
+}
+.navbar.scrolled, .navbar.menu-open { border-bottom-color: var(--rule); }
+.nav-inner {
+  max-width: var(--page);
+  height: var(--nav-h);
+  margin: 0 auto;
+  padding-left: var(--gl);
+  padding-right: var(--gr);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.logo {
+  font-family: 'Fraunces', serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.1rem;
+}
+.logo .dot { color: var(--copper); }
+.nav-links { display: flex; align-items: center; gap: 1.9rem; }
+/* :not(.btn) on purpose: the CTA button lives inside .nav-links and must keep
+   its own .btn colours instead of inheriting the text-link style. */
+.nav-links > a:not(.btn) {
+  font-size: 0.92rem;
+  color: var(--muted);
+  padding: 0.2rem 0;
+  border-bottom: 1px solid transparent;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+.nav-links > a:not(.btn):hover, .nav-links > a.active { color: var(--ink); border-bottom-color: var(--copper); }
+.nav-links .btn { margin-left: 0.4rem; }
+
+.hamburger {
+  display: none;
+  background: none;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  width: 44px; height: 44px;
+  padding: 0;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 4px;
+}
+.hamburger span {
+  display: block;
+  width: 18px;
+  height: 1.5px;
+  background: var(--ink);
+  transition: transform 0.25s var(--ease), opacity 0.2s ease;
+}
+.hamburger.is-open span:nth-child(1) { transform: translateY(5.5px) rotate(45deg); }
+.hamburger.is-open span:nth-child(2) { opacity: 0; }
+.hamburger.is-open span:nth-child(3) { transform: translateY(-5.5px) rotate(-45deg); }
+
+.mobile-menu { display: none; }
+
+/* ===== Hero ======================================================== */
+.hero {
+  max-width: var(--page);
+  margin: 0 auto;
+  padding: clamp(3rem, 8vw, 6.5rem) var(--gr) clamp(3rem, 7vw, 5.5rem) var(--gl);
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: clamp(2rem, 6vw, 5rem);
+  align-items: center;
+}
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  padding: 0.35rem 0.85rem;
+  margin-bottom: 1.6rem;
+}
+.hero-eyebrow i { color: #2F9E6B; font-size: 0.6rem; }
+.hero h1 {
+  font-size: clamp(2.3rem, 6vw, 4.4rem);
+  margin-bottom: 0.9rem;
+}
+.hero h1 em { font-style: italic; font-weight: 500; }
+.hero-role {
+  font-size: 0.86rem;
+  color: var(--muted);
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 1.5rem;
+}
+.hero-lede { font-size: 1.06rem; color: var(--muted); margin-bottom: 2rem; max-width: 46ch; }
+.hero-btns { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-bottom: 2.6rem; }
+
+.hero-stats {
+  display: flex;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  border-top: 1px solid var(--rule);
+  padding-top: 1.4rem;
+}
+.stat .num {
+  font-family: 'Fraunces', serif;
+  font-size: 1.75rem;
+  font-weight: 600;
+  line-height: 1.1;
+}
+.stat .lbl { font-size: 0.8rem; color: var(--muted); }
+
+.hero-visual { position: relative; justify-self: center; width: 100%; max-width: 420px; }
+.sheet {
+  aspect-ratio: 1 / 1.414;
+  background: #fff;
+  border: 1px solid var(--rule);
+  box-shadow: var(--paper-shadow);
+  padding: 9% 8%;
+  position: relative;
+}
+.sheet-name { height: 11px; width: 52%; background: var(--ink); margin-bottom: 7px; }
+.sheet-role { height: 5px; width: 30%; background: var(--copper); }
+.sheet-rule { height: 1px; background: var(--rule); margin: 13px 0 15px; }
+.sheet-cols { display: grid; grid-template-columns: 32% 1fr; gap: 14px; }
+.sheet-block + .sheet-block { margin-top: 0; }
+.sheet-h { height: 5px; width: 60%; background: #A9A19A; margin-bottom: 8px; }
+.sheet-line { height: 4px; background: #E7E3DE; margin-bottom: 6px; width: 100%; }
+.sheet-line.w80 { width: 80%; }
+.sheet-line.w60 { width: 60%; }
+.sheet-line.w45 { width: 45%; }
+.sheet-photo { width: 34px; height: 34px; border-radius: 50%; background: #EDE8E2; margin-bottom: 10px; }
+
+.sheet-line, .sheet-h, .sheet-name, .sheet-role {
+  transform-origin: left center;
+  animation: fillIn 0.5s var(--ease) both;
+}
+@keyframes fillIn { from { transform: scaleX(0); opacity: 0.4; } to { transform: scaleX(1); opacity: 1; } }
+.sheet-name { animation-delay: 0.20s; }
+.sheet-role { animation-delay: 0.34s; }
+.sheet-block > :nth-child(1) { animation-delay: 0.50s; }
+.sheet-block > :nth-child(2) { animation-delay: 0.58s; }
+.sheet-block > :nth-child(3) { animation-delay: 0.66s; }
+.sheet-block > :nth-child(4) { animation-delay: 0.74s; }
+.sheet-block > :nth-child(5) { animation-delay: 0.82s; }
+.sheet-block > :nth-child(6) { animation-delay: 0.90s; }
+.sheet-photo { animation: fillIn 0.5s var(--ease) 0.46s both; transform-origin: center; }
+
+.sheet-caret {
+  position: absolute;
+  right: 8%;
+  bottom: 9%;
+  width: 1.5px;
+  height: 14px;
+  background: var(--copper);
+  animation: blink 1.1s steps(1, end) 1.2s infinite;
+}
+@keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
+
+.sheet-tag {
+  position: absolute;
+  background: #fff;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 0.4rem 0.7rem;
+  font-size: 0.76rem;
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  box-shadow: 0 8px 22px -12px rgba(20,29,38,0.35);
+  z-index: 2;
+}
+.sheet-tag.live { top: 7%; left: -9%; }
+.sheet-tag.pdf { bottom: 8%; right: -7%; }
+.live-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: #2F9E6B;
+  box-shadow: 0 0 0 0 rgba(47,158,107,0.5);
+  animation: pulse 2s ease-out infinite;
+}
+@keyframes pulse {
+  70% { box-shadow: 0 0 0 7px rgba(47,158,107,0); }
+  100% { box-shadow: 0 0 0 0 rgba(47,158,107,0); }
+}
+
+/* ===== Facts strip (replaces the old logo marquee) ================= */
+.facts {
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  background: var(--wash);
+}
+.facts ul {
+  max-width: var(--page);
+  margin: 0 auto;
+  padding: 1.25rem var(--gr) 1.25rem var(--gl);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.9rem 2rem;
+}
+.facts li { display: inline-flex; align-items: center; gap: 0.6rem; font-size: 0.9rem; color: var(--muted); }
+.facts i { color: var(--copper); font-size: 0.85rem; width: 1rem; text-align: center; }
+
+/* ===== Section furniture =========================================== */
+.section { padding: clamp(4rem, 9vw, 7rem) 0; }
+.section-head { margin-bottom: clamp(2.5rem, 5vw, 3.5rem); max-width: 34rem; }
+.section-head h2 { font-size: clamp(1.9rem, 3.6vw, 2.8rem); margin-bottom: 0.9rem; }
+.section-head p { color: var(--muted); }
+.section-head.center { margin-inline: auto; text-align: center; }
+.section-head.center p { margin-inline: auto; }
+
+/* ===== How it works ================================================ */
+.steps { border-top: 1px solid var(--rule); }
+.step {
+  display: grid;
+  grid-template-columns: 3.5rem minmax(0, 20rem) minmax(0, 1fr);
+  gap: clamp(1rem, 4vw, 3rem);
+  align-items: baseline;
+  padding: 1.9rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+.step-num { font-family: 'Fraunces', serif; font-size: 1.5rem; color: var(--copper); font-variant-numeric: tabular-nums; }
+.step h3 { font-size: 1.3rem; }
+.step p { color: var(--muted); font-size: 0.97rem; }
+
+/* ===== Features ==================================================== */
+.features { background: var(--wash); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+/* Explicit column counts (not auto-fit) so the last row is never short and the
+   1px rule background can never show through as empty grey cells. */
+.feat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+}
+.feat { background: var(--wash); padding: 1.9rem 1.7rem; transition: background 0.25s ease; }
+.feat:hover { background: #fff; }
+.feat i { color: var(--copper); font-size: 1.05rem; margin-bottom: 1rem; display: block; }
+.feat h3 { font-size: 1.12rem; margin-bottom: 0.45rem; }
+.feat p { font-size: 0.93rem; color: var(--muted); }
+
+/* ===== Layout showcase ============================================= */
+.templates { background: var(--ink); color: #fff; }
+.templates .section-head { margin-bottom: 0; }
+.templates .section-head p { color: #A9B3BD; }
+.showcase {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 400px);
+  gap: clamp(2.5rem, 7vw, 6rem);
+  align-items: center;
+}
+.layout-list { margin: 1.8rem 0 2.2rem; display: grid; gap: 0.7rem; }
+.layout-list li { display: flex; gap: 0.75rem; align-items: baseline; color: #C9D1D8; font-size: 0.96rem; }
+.layout-list i { color: var(--copper-lt); font-size: 0.8rem; }
+
+.lay-paper {
+  aspect-ratio: 1 / 1.414;
+  width: 100%;
+  background: #fff;
+  padding: 9% 9%;
+  box-shadow: 0 30px 50px -28px rgba(0,0,0,0.75);
+  justify-self: center;
+}
+.lay-head { text-align: center; padding-bottom: 5%; border-bottom: 1px solid #4A4A4A; }
+.lay-bar { height: 5px; background: #E7E3DE; margin-bottom: 7px; }
+.lay-bar.name { height: 10px; background: var(--ink); width: 56%; margin: 0 auto 8px; }
+.lay-bar.role { height: 4px; background: var(--copper); width: 32%; margin: 0 auto; }
+.lay-cols { display: grid; grid-template-columns: 31% 1fr; margin-top: 6%; height: 84%; }
+.lay-side { border-right: 1px dashed #BFBFBF; padding-right: 9%; }
+.lay-main { padding-left: 9%; }
+.lay-bar.h { background: #A9A19A; width: 60%; margin-bottom: 9px; }
+.lay-gap { height: 12px; }
+
+/* ===== Free for now ================================================ */
+.pricing { background: var(--wash); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+.plan {
+  background: #fff;
+  border: 1px solid var(--rule);
+  padding: 2.2rem 2rem;
+  max-width: 26rem;
+  margin: 0 auto;
+}
+.plan-top { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-bottom: 1.3rem; }
+.plan-name { font-size: 0.92rem; font-weight: 500; }
+.plan-flag { font-size: 0.72rem; color: #1F7A52; border: 1px solid currentColor; border-radius: 999px; padding: 0.15rem 0.65rem; white-space: nowrap; }
+.plan .amount { font-family: 'Fraunces', serif; font-size: 2.8rem; font-weight: 600; line-height: 1; }
+.plan .period { font-size: 0.85rem; color: var(--muted); margin: 0.4rem 0 1.6rem; }
+.plan ul { margin-bottom: 1.8rem; }
+.plan li { font-size: 0.93rem; padding: 0.5rem 0; border-bottom: 1px solid var(--rule); display: flex; gap: 0.65rem; align-items: center; }
+.plan li i { color: var(--copper); font-size: 0.8rem; }
+.plan .btn { width: 100%; }
+
+/* ===== FAQ ========================================================= */
+.faq-list { max-width: 46rem; margin: 0 auto; border-top: 1px solid var(--rule); }
+.faq-list details { border-bottom: 1px solid var(--rule); }
+.faq-list summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 1.3rem 2.5rem 1.3rem 0;
+  font-family: 'Fraunces', serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+  position: relative;
+}
+.faq-list summary::-webkit-details-marker { display: none; }
+.faq-list summary::after {
+  content: '+';
+  position: absolute; right: 0.2rem; top: 50%;
+  transform: translateY(-50%);
+  font-family: 'Inter', sans-serif; font-weight: 400; font-size: 1.5rem; color: var(--copper);
+}
+.faq-list details[open] summary::after { content: '\2212'; }
+.faq-list details p { color: var(--muted); padding: 0 2.5rem 1.4rem 0; }
+
+/* ===== Closing call to action ====================================== */
+.closing {
+  background: var(--navy);
+  color: #fff;
+  text-align: center;
+  padding: clamp(3.5rem, 8vw, 6rem) var(--gr) clamp(3.5rem, 8vw, 6rem) var(--gl);
+}
+.closing h2 { font-size: clamp(1.9rem, 4vw, 3rem); margin-bottom: 0.8rem; }
+.closing p { color: #B6C0C9; margin: 0 auto 2rem; }
+
+/* ===== Footer ====================================================== */
+footer { background: var(--ink); color: #9AA4AE; padding: clamp(3rem, 6vw, 4.5rem) 0 calc(2rem + env(safe-area-inset-bottom, 0px)); font-size: 0.9rem; }
+.footer-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: 2.5rem;
+  padding-bottom: 2.5rem;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+footer .logo { color: #fff; margin-bottom: 0.8rem; }
+.footer-brand p { max-width: 34ch; }
+.footer-h { font-family: 'Inter', sans-serif; font-size: 0.85rem; color: #fff; font-weight: 600; margin-bottom: 0.9rem; letter-spacing: 0; }
+.footer-col ul { display: grid; gap: 0.5rem; }
+.footer-col a:hover { color: #fff; }
+.footer-bottom { padding-top: 1.5rem; display: flex; flex-wrap: wrap; gap: 0.6rem 1rem; justify-content: space-between; font-size: 0.83rem; }
+
+/* ===== Chrome: progress + back to top ============================== */
+.scroll-progress { position: fixed; top: 0; left: 0; height: 2px; width: 0; background: var(--copper); z-index: 1000; }
+.to-top {
+  position: fixed;
+  right: max(clamp(1rem, 3vw, 2rem), env(safe-area-inset-right, 0px));
+  bottom: calc(clamp(1rem, 3vw, 2rem) + env(safe-area-inset-bottom, 0px));
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--rule);
+  background: #fff;
+  color: var(--ink);
+  cursor: pointer;
+  display: grid; place-items: center;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition: opacity 0.25s ease, transform 0.25s var(--ease), background 0.2s ease, color 0.2s ease, visibility 0s 0.25s;
+  box-shadow: 0 10px 26px -14px rgba(20,29,38,0.5);
+  z-index: 800;
+}
+.to-top.visible { opacity: 1; visibility: visible; transform: translateY(0); transition-delay: 0s; }
+.to-top:hover { background: var(--ink); color: #fff; }
+
+/* ===== Scroll reveal (self-contained; only hides when JS is running) === */
+.js .reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.6s var(--ease), transform 0.6s var(--ease);
+  transition-delay: var(--d, 0ms);
+}
+.js .reveal.in { opacity: 1; transform: none; }
+
+/* ===== Responsive ================================================== */
+@media (max-width: 1040px) {
+  .feat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 940px) {
+  .nav-links { display: none; }
+  .hamburger { display: inline-flex; }
+
+  .mobile-menu {
+    display: block;
+    /* Overlay, not in-flow: opening it must not shift the page, or anchor jumps
+       are measured with the menu open and overshoot once it closes. */
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #fff;
+    box-shadow: 0 24px 40px -28px rgba(20,29,38,0.45);
+    padding-left: var(--gl);
+    padding-right: var(--gr);
+    max-height: 0;
+    overflow: hidden;
+    visibility: hidden;                       /* closed links are not tabbable */
+    border-top: 1px solid transparent;
+    transition: max-height 0.35s var(--ease), padding 0.35s var(--ease), visibility 0s 0.35s;
+  }
+  .mobile-menu.open {
+    max-height: min(30rem, calc(100vh - var(--nav-h) - env(safe-area-inset-top, 0px) - 1rem));
+    overflow-y: auto;
+    visibility: visible;
+    padding-top: 0.4rem;
+    padding-bottom: 1.4rem;
+    border-top-color: var(--rule);
+    transition: max-height 0.35s var(--ease), padding 0.35s var(--ease), visibility 0s 0s;
+  }
+  /* :not(.btn) keeps the CTA button's own colours and padding */
+  .mobile-menu > a:not(.btn) { display: block; padding: 0.85rem 0; border-bottom: 1px solid var(--rule); color: var(--ink); }
+  .mobile-menu .btn { width: 100%; margin-top: 1.1rem; }
+
+  .hero { grid-template-columns: 1fr; padding-top: 2.5rem; }
+  .hero-visual { max-width: 320px; margin-top: 1rem; }
+  /* Tags sit inside the sheet's edges on small screens so nothing spills sideways */
+  .sheet-tag.live { top: -14px; left: 12px; }
+  .sheet-tag.pdf { bottom: -14px; right: 12px; }
+
+  .showcase { grid-template-columns: 1fr; }
+  .lay-paper { max-width: 340px; order: 2; }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 620px) {
+  .step { grid-template-columns: 2.2rem minmax(0, 1fr); row-gap: 0.4rem; }
+  .step p { grid-column: 2; }
+  .feat-grid { grid-template-columns: 1fr; }
+  .hero-btns .btn { flex: 1 1 100%; }
+  .hero-stats { gap: 1.25rem; }
+  .stat .num { font-size: 1.45rem; }
+  .facts ul { display: grid; grid-template-columns: 1fr 1fr; }
+  .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
+  .footer-bottom { flex-direction: column; }
+  .faq-list summary { font-size: 1.05rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .js .reveal { opacity: 1; transform: none; }
+}
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+
+<nav class="navbar" id="navbar" aria-label="Main">
+  <div class="nav-inner">
+    <a class="logo" href="#top" aria-label="CVCraft — back to top">CVCraft<span class="dot">.</span></a>
+    <div class="nav-links">
+      <a href="#how">How it works</a>
+      <a href="#features">Features</a>
+      <a href="#layout">Layout</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+      <a class="btn btn-solid" href="user.html">Build my resume</a>
+    </div>
+    <button class="hamburger" id="hamburgerBtn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#how">How it works</a>
+    <a href="#features">Features</a>
+    <a href="#layout">Layout</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#faq">FAQ</a>
+    <a class="btn btn-solid" href="user.html">Build my resume</a>
+  </div>
+</nav>
+
+<main id="main">
+
+<!-- HERO -->
+<header class="hero" id="top">
+  <div class="hero-copy">
+    <span class="hero-eyebrow"><i class="fas fa-circle" aria-hidden="true"></i> Free for now — no card needed</span>
+    <h1>Build a resume<br>that gets <em>read</em></h1>
+    <p class="hero-role">Live A4 preview · One-click PDF · Print-ready</p>
+    <p class="hero-lede">Fill in the form and watch the page take shape as you type. Download a print-ready CV when it looks right.</p>
+    <div class="hero-btns">
+      <a class="btn btn-solid btn-lg" href="user.html">Build my resume</a>
+      <a class="btn btn-line btn-lg" href="#layout">See the layout</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="num">$0</div><div class="lbl">Free for now</div></div>
+      <div class="stat"><div class="num">A4</div><div class="lbl">Print-ready page</div></div>
+      <div class="stat"><div class="num">1 click</div><div class="lbl">To download</div></div>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <span class="sheet-tag live"><span class="live-dot"></span> Updating as you type</span>
+    <div class="sheet" role="img" aria-label="Preview of an A4 resume filling in as it is typed">
+      <div class="sheet-name"></div>
+      <div class="sheet-role"></div>
+      <div class="sheet-rule"></div>
+      <div class="sheet-cols">
+        <div class="sheet-block">
+          <div class="sheet-photo"></div>
+          <div class="sheet-h"></div>
+          <div class="sheet-line w80"></div>
+          <div class="sheet-line w60"></div>
+          <div class="sheet-line w80"></div>
+          <div class="sheet-line w45"></div>
+        </div>
+        <div class="sheet-block">
+          <div class="sheet-h"></div>
+          <div class="sheet-line"></div>
+          <div class="sheet-line w80"></div>
+          <div class="sheet-line"></div>
+          <div class="sheet-line w60"></div>
+        </div>
+      </div>
+      <span class="sheet-caret"></span>
+    </div>
+    <span class="sheet-tag pdf"><i class="fas fa-file-pdf" style="color:#C4453B;" aria-hidden="true"></i> PDF ready</span>
+  </div>
+</header>
+
+<!-- FACTS -->
+<section class="facts" aria-label="At a glance">
+  <ul>
+    <li><i class="fas fa-tag" aria-hidden="true"></i> Free for now</li>
+    <li><i class="fas fa-eye" aria-hidden="true"></i> Live A4 preview</li>
+    <li><i class="fas fa-file-pdf" aria-hidden="true"></i> PDF and print</li>
+    <li><i class="fas fa-mobile-alt" aria-hidden="true"></i> Works on your phone</li>
+  </ul>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section" id="how">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>From blank page to PDF in four steps</h2>
+      <p>No settings to learn. The form asks, the page updates, you download.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>Fill in your details</h3>
+        <p>Personal information, experience, education, skills and languages go into one guided form, with a summary and contact links on top.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>Watch the page build</h3>
+        <p>The A4 sheet updates on every keystroke. Add a photo if you want one, or leave it off.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>Download or print</h3>
+        <p>One click gives you an A4 PDF that matches the preview. Or print straight from the browser.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <h3>Tailor it, send it out</h3>
+        <p>Change a few lines for each role and export again. The builder doesn't save between visits, so keep a copy of the file you download.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section features" id="features">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Everything the page needs, nothing it doesn't</h2>
+      <p>The tools that actually change what lands in the recruiter's inbox.</p>
+    </div>
+    <div class="feat-grid">
+      <div class="feat">
+        <i class="fas fa-eye" aria-hidden="true"></i>
+        <h3>Live preview</h3>
+        <p>The A4 sheet updates as you type, so there are no surprises at export time.</p>
+      </div>
+      <div class="feat">
+        <i class="fas fa-file-pdf" aria-hidden="true"></i>
+        <h3>One-click PDF</h3>
+        <p>Export an A4 file that matches the preview, ready to email or upload.</p>
+      </div>
+      <div class="feat">
+        <i class="fas fa-compress-alt" aria-hidden="true"></i>
+        <h3>Fits on one page</h3>
+        <p>Long on experience? The page scales itself to sit on a single A4 sheet.</p>
+      </div>
+      <div class="feat">
+        <i class="fas fa-mobile-alt" aria-hidden="true"></i>
+        <h3>Works on your phone</h3>
+        <p>Edit and preview in two tabs. Fix a typo on the bus, download when you're home.</p>
+      </div>
+      <div class="feat">
+        <i class="fas fa-image" aria-hidden="true"></i>
+        <h3>Add a photo</h3>
+        <p>Drop in a headshot where local hiring norms expect one, or leave it off entirely.</p>
+      </div>
+      <div class="feat">
+        <i class="fas fa-print" aria-hidden="true"></i>
+        <h3>Print or save as text PDF</h3>
+        <p>Print from the browser with margins already set for A4, or choose Save as PDF for selectable text.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LAYOUT -->
+<section class="section templates" id="layout">
+  <div class="wrap">
+    <div class="showcase">
+      <div class="reveal">
+        <div class="section-head">
+          <h2>One clean layout, set properly</h2>
+          <p>A centred name and role over a two-column page: personal details, skills, languages and contact on the left, your story on the right.</p>
+        </div>
+        <ul class="layout-list">
+          <li><i class="fas fa-check" aria-hidden="true"></i> Profile, education and work experience</li>
+          <li><i class="fas fa-check" aria-hidden="true"></i> Personal information, skills and languages in the side column</li>
+          <li><i class="fas fa-check" aria-hidden="true"></i> Contact details and links, with an optional photo</li>
+        </ul>
+        <a class="btn btn-paper btn-lg" href="user.html">Build my resume</a>
+      </div>
+
+      <div class="lay-paper reveal" style="--d:120ms" role="img" aria-label="Illustration of the two-column resume layout">
+        <div class="lay-head">
+          <div class="lay-bar name"></div>
+          <div class="lay-bar role"></div>
+        </div>
+        <div class="lay-cols">
+          <div class="lay-side">
+            <div class="lay-bar h"></div>
+            <div class="lay-bar" style="width:90%"></div>
+            <div class="lay-bar" style="width:70%"></div>
+            <div class="lay-gap"></div>
+            <div class="lay-bar h"></div>
+            <div class="lay-bar" style="width:85%"></div>
+            <div class="lay-bar" style="width:75%"></div>
+            <div class="lay-bar" style="width:60%"></div>
+            <div class="lay-gap"></div>
+            <div class="lay-bar h"></div>
+            <div class="lay-bar" style="width:80%"></div>
+            <div class="lay-bar" style="width:55%"></div>
+          </div>
+          <div class="lay-main">
+            <div class="lay-bar h" style="width:30%"></div>
+            <div class="lay-bar"></div>
+            <div class="lay-bar" style="width:88%"></div>
+            <div class="lay-gap"></div>
+            <div class="lay-bar h" style="width:34%"></div>
+            <div class="lay-bar" style="width:92%"></div>
+            <div class="lay-bar" style="width:60%"></div>
+            <div class="lay-gap"></div>
+            <div class="lay-bar h" style="width:40%"></div>
+            <div class="lay-bar" style="width:95%"></div>
+            <div class="lay-bar" style="width:80%"></div>
+            <div class="lay-bar" style="width:70%"></div>
+            <div class="lay-gap"></div>
+            <div class="lay-bar h" style="width:28%"></div>
+            <div class="lay-bar" style="width:90%"></div>
+            <div class="lay-bar" style="width:64%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="section pricing" id="pricing">
+  <div class="wrap">
+    <div class="section-head center">
+      <h2>Free for now</h2>
+      <p>Everything in the builder is open to you at no cost. No card, no trial clock, no watermark.</p>
+    </div>
+    <div class="plan reveal">
+      <div class="plan-top"><span class="plan-name">Everything included</span><span class="plan-flag">Free for now</span></div>
+      <div class="amount">$0</div>
+      <div class="period">no card required</div>
+      <ul>
+        <li><i class="fas fa-check" aria-hidden="true"></i> Live A4 preview</li>
+        <li><i class="fas fa-check" aria-hidden="true"></i> PDF download</li>
+        <li><i class="fas fa-check" aria-hidden="true"></i> Print from the browser</li>
+        <li><i class="fas fa-check" aria-hidden="true"></i> Automatic one-page fit</li>
+        <li><i class="fas fa-check" aria-hidden="true"></i> Optional profile photo</li>
+        <li><i class="fas fa-check" aria-hidden="true"></i> Works on phone and desktop</li>
+      </ul>
+      <a class="btn btn-solid" href="user.html">Start building</a>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section" id="faq">
+  <div class="wrap">
+    <div class="section-head center">
+      <h2>Questions, answered</h2>
+    </div>
+    <div class="faq-list">
+      <details>
+        <summary>Is CVCraft really free?</summary>
+        <p>Yes. It's free for now: no card, no trial period and no watermark on what you download.</p>
+      </details>
+      <details>
+        <summary>Do you keep my details?</summary>
+        <p>The builder runs in your browser and doesn't upload what you type. It also doesn't save between visits, so download your file before you close the tab.</p>
+      </details>
+      <details>
+        <summary>Will applicant tracking systems read my resume?</summary>
+        <p>For a text-based file that screening software can read, use the Print button and choose Save as PDF. The Download PDF button produces a file that looks identical but is image-based, so its text can't be selected or searched.</p>
+      </details>
+      <details>
+        <summary>What if my CV is too long for one page?</summary>
+        <p>It scales down to fit a single A4 sheet automatically. A very long CV will shrink noticeably, so trim a little if the text starts to look small.</p>
+      </details>
+      <details>
+        <summary>Can I use it on my phone?</summary>
+        <p>Yes. On small screens the builder splits into Edit and Preview tabs, and the page scales to fit your screen.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- CLOSING -->
+<section class="closing">
+  <h2 class="reveal">Your next application starts with one page</h2>
+  <p class="reveal" style="--d:80ms">It's free for now, and it takes a few minutes.</p>
+  <a class="btn btn-paper btn-lg reveal" style="--d:160ms" href="user.html">Build my resume</a>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo">CVCraft<span class="dot">.</span></div>
+        <p>A resume builder for people who would rather spend their evening applying than formatting.</p>
+      </div>
+      <div class="footer-col">
+        <h2 class="footer-h">Product</h2>
+        <ul>
+          <li><a href="user.html">Resume builder</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#layout">Layout</a></li>
+          <li><a href="#faq">FAQ</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 CVCraft</span>
+      <span>Made in Accra for job seekers everywhere</span>
+    </div>
+  </div>
+</footer>
+
+<button class="to-top" id="toTop" type="button" aria-label="Back to top"><i class="fas fa-arrow-up" aria-hidden="true"></i></button>
+
+<script>
+(function () {
+  'use strict';
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var desktop = window.matchMedia('(min-width: 941px)');
+
+  /* ---------- Mobile menu ---------- */
+  var nav = document.getElementById('navbar');
+  var burger = document.getElementById('hamburgerBtn');
+  var menu = document.getElementById('mobileMenu');
+
+  function setMenu(open) {
+    menu.classList.toggle('open', open);
+    nav.classList.toggle('menu-open', open);
+    burger.classList.toggle('is-open', open);
+    burger.setAttribute('aria-expanded', String(open));
+    burger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  }
+  burger.addEventListener('click', function () { setMenu(!menu.classList.contains('open')); });
+  menu.querySelectorAll('a').forEach(function (a) {
+    a.addEventListener('click', function () { setMenu(false); });
+  });
+  document.addEventListener('click', function (e) {
+    if (menu.classList.contains('open') && !nav.contains(e.target)) setMenu(false);
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && menu.classList.contains('open')) { setMenu(false); burger.focus(); }
+  });
+  function onBreakpoint(e) { if (e.matches) setMenu(false); }
+  if (desktop.addEventListener) desktop.addEventListener('change', onBreakpoint);
+  else if (desktop.addListener) desktop.addListener(onBreakpoint);
+
+  /* ---------- Scroll chrome ---------- */
+  var bar = document.getElementById('scrollProgress');
+  var toTop = document.getElementById('toTop');
+  var ticking = false;
+  function onScroll() {
+    var y = window.pageYOffset || document.documentElement.scrollTop;
+    var total = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.width = (total > 0 ? (y / total) * 100 : 0) + '%';
+    nav.classList.toggle('scrolled', y > 24);
+    toTop.classList.toggle('visible', y > 500);
+    ticking = false;
+  }
+  window.addEventListener('scroll', function () {
+    if (!ticking) { ticking = true; requestAnimationFrame(onScroll); }
+  }, { passive: true });
+  window.addEventListener('resize', onScroll);
+  onScroll();
+  toTop.addEventListener('click', function () {
+    window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+  });
+
+  /* ---------- Active nav link while scrolling ---------- */
+  var links = Array.prototype.slice.call(document.querySelectorAll('.nav-links > a[href^="#"]'));
+  var sections = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
+  if ('IntersectionObserver' in window) {
+    var spy = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        var i = sections.indexOf(entry.target);
+        links.forEach(function (a, j) {
+          if (j === i) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
+          a.classList.toggle('active', j === i);
+        });
+      });
+    }, { rootMargin: '-45% 0px -50% 0px' });
+    sections.forEach(function (s) { if (s) spy.observe(s); });
+  }
+
+  /* ---------- Scroll reveal ---------- */
+  var reveals = document.querySelectorAll('.reveal');
+  if (!('IntersectionObserver' in window) || reduceMotion) {
+    reveals.forEach(function (el) { el.classList.add('in'); });
+  } else {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) { entry.target.classList.add('in'); io.unobserve(entry.target); }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    reveals.forEach(function (el) { io.observe(el); });
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>CVCraft | Professional Resume Builder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.10.5/sweetalert2.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.10.5/sweetalert2.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --navy: #1F2E3B;
+      --brown: #A06B45;
+      --light-bg: #F6F5F5;
+      --border: #E8E4E4;
+      --muted: #666;
+      --sidebar-bg: #F0EDEA;
+
+      --ring: rgba(160, 107, 69, 0.18);
+      --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05);
+      --shadow-md: 0 4px 14px rgba(16, 24, 40, 0.07);
+      --shadow-lg: 0 18px 44px rgba(16, 24, 40, 0.14);
+      --radius: 14px;
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+      --cv-ink: #222222;
+      --cv-gray: #5C5C5C;
+      --cv-light-gray: #8A8A8A;
+      --cv-sidebar-bg: #FFFFFF;
+      --cv-divider: #C9C9C9;
+      --cv-dash: #BFBFBF;
+
+      --a4-width: 794px;
+      --a4-height: 1123px;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--light-bg);
+      color: var(--navy);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    button { transition: transform 0.18s var(--ease), background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease; cursor: pointer; }
+    button:active { transform: scale(0.97); }
+    button:focus-visible, input:focus-visible, textarea:focus-visible {
+      outline: 2px solid var(--brown);
+      outline-offset: 2px;
+    }
+
+    input, textarea, select { transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease; }
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--brown);
+      box-shadow: 0 0 0 4px var(--ring);
+    }
+    input:hover:not(:focus), textarea:hover:not(:focus) { border-color: #c9c2bb; }
+    ::placeholder { color: #a9a9a9; }
+
+    .form-panel::-webkit-scrollbar, .preview-panel::-webkit-scrollbar { width: 10px; }
+    .form-panel::-webkit-scrollbar-thumb, .preview-panel::-webkit-scrollbar-thumb {
+      background: #d7d2cd; border-radius: 10px; border: 3px solid transparent; background-clip: content-box;
+    }
+    .form-panel::-webkit-scrollbar-thumb:hover, .preview-panel::-webkit-scrollbar-thumb:hover { background: var(--brown); background-clip: content-box; }
+    .form-panel, .preview-panel { scrollbar-width: thin; scrollbar-color: #d7d2cd transparent; }
+
+    #nprogress .bar { background: var(--brown) !important; height: 3px; }
+    #nprogress .peg { box-shadow: 0 0 10px var(--brown), 0 0 5px var(--brown); }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+
+    /* ===== TOP NAV ===== */
+    .top-nav {
+      background: rgba(255, 255, 255, 0.82);
+      backdrop-filter: saturate(180%) blur(14px);
+      -webkit-backdrop-filter: saturate(180%) blur(14px);
+      border-bottom: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      padding: 0.8rem 4%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 800;
+      font-size: 1.3rem;
+      color: var(--navy);
+      text-decoration: none;
+    }
+    .nav-logo i { color: var(--brown); }
+    .nav-actions { display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap; }
+    .btn-action {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0.5rem 1.1rem;
+      border-radius: 30px;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 0.85rem;
+      border: none;
+    }
+    .btn-action-outline {
+      background: transparent;
+      border: 1.5px solid var(--navy);
+      color: var(--navy);
+    }
+    .btn-action-outline:hover { background: var(--navy); color: #fff; box-shadow: var(--shadow-md); }
+    .btn-action-filled {
+      background: linear-gradient(135deg, var(--navy) 0%, #2c4052 100%);
+      color: #fff;
+      box-shadow: 0 6px 16px rgba(31, 46, 59, 0.22);
+    }
+    .btn-action-filled:hover { background: linear-gradient(135deg, var(--brown) 0%, #b87e55 100%); box-shadow: 0 8px 20px rgba(160, 107, 69, 0.3); }
+    .btn-action[disabled] { opacity: 0.65; pointer-events: none; }
+    .nav-logo i { transition: transform 0.4s var(--ease); }
+    .nav-logo:hover i { transform: rotate(-8deg) scale(1.1); }
+
+    /* ===== BUILDER LAYOUT ===== */
+    .builder-layout {
+      display: flex;
+      height: calc(100vh - 57px);
+      overflow: hidden;
+    }
+
+    /* ===== FORM PANEL ===== */
+    .form-panel {
+      width: 400px;
+      min-width: 320px;
+      background: #fff;
+      overflow-y: auto;
+      padding: 1.5rem;
+      box-shadow: 4px 0 16px rgba(0, 0, 0, 0.04);
+      z-index: 10;
+      flex-shrink: 0;
+    }
+    .panel-heading { margin-bottom: 1.5rem; }
+    .panel-heading h2 { font-size: 1.2rem; color: var(--navy); }
+    .panel-heading p { font-size: 0.82rem; color: var(--muted); }
+    .section-card {
+      background: linear-gradient(180deg, #FBFAF9 0%, var(--light-bg) 100%);
+      border-radius: var(--radius);
+      padding: 1.2rem;
+      margin-bottom: 1.2rem;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow 0.25s var(--ease), transform 0.25s var(--ease), border-color 0.2s ease;
+      animation: fadeUp 0.45s var(--ease) both;
+    }
+    .section-card:hover {
+      box-shadow: var(--shadow-md);
+      border-color: #ddd6cf;
+      transform: translateY(-1px);
+    }
+    .section-card h3 i { color: var(--brown); margin-right: 6px; }
+    .section-card h3 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .form-group { margin-bottom: 0.9rem; }
+    label {
+      font-weight: 500;
+      font-size: 0.83rem;
+      display: block;
+      margin-bottom: 5px;
+      color: var(--navy);
+    }
+    input[type="text"], input[type="email"], input[type="tel"], input[type="url"], textarea, select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1.5px solid #ddd;
+      font-family: inherit;
+      font-size: 0.88rem;
+      background: #fff;
+    }
+    .upload-area {
+      border: 2px dashed #ccc;
+      background: #fff;
+      border-radius: 12px;
+      text-align: center;
+      padding: 1rem;
+      cursor: pointer;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    .upload-area:hover { border-color: var(--brown); color: var(--brown); }
+    .skill-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #fff;
+      border: 1px solid var(--border);
+      padding: 5px 12px;
+      border-radius: 30px;
+      margin: 4px 4px 4px 0;
+      font-size: 0.82rem;
+    }
+    .skill-tag i { cursor: pointer; color: #bbb; font-size: 0.75rem; }
+    .skill-tag i:hover { color: #e44; }
+    .tag-input-row { display: flex; gap: 6px; margin-bottom: 0.8rem; }
+    .tag-input-row input { flex: 1; }
+    .btn-add-tag {
+      background: var(--navy);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 0 14px;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+    .btn-add-tag:hover { background: var(--brown); }
+    .entry-block {
+      border: 1.5px solid var(--border);
+      padding: 1rem;
+      margin-bottom: 0.8rem;
+      border-radius: 12px;
+      background: #fff;
+    }
+    .btn-delete-entry {
+      background: #ffebee;
+      color: #c62828;
+      border: none;
+      border-radius: 20px;
+      padding: 5px 12px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      margin-top: 4px;
+    }
+    .btn-add-entry {
+      background: transparent;
+      border: 1.5px solid var(--brown);
+      color: var(--brown);
+      border-radius: 30px;
+      padding: 7px 16px;
+      cursor: pointer;
+      font-weight: 600;
+      margin-top: 6px;
+      width: 100%;
+    }
+    .btn-add-entry:hover { background: var(--brown); color: #fff; }
+    #charCount { text-align: right; font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
+
+    /* ===== PREVIEW PANEL ===== */
+    .preview-panel {
+      flex: 1;
+      min-width: 0;
+      min-height: 0;
+      overflow: auto;
+      padding: 2.2rem 1.5rem 3rem;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      background:
+        radial-gradient(1200px 500px at 50% -10%, #F7FAFC 0%, transparent 60%),
+        linear-gradient(180deg, #EEF2F5 0%, #E7ECF0 100%);
+    }
+    .resume-canvas {
+      width: var(--a4-width);
+      min-height: var(--a4-height);
+      flex-shrink: 0;
+      background: #fff;
+      box-shadow: var(--shadow-lg);
+      border-radius: 3px;
+      transform-origin: top left;
+      transition: transform 0.25s var(--ease);
+    }
+    .page-hint {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.72rem;
+      color: #8a97a3;
+      letter-spacing: 0.06em;
+      pointer-events: none;
+    }
+    /* Off-screen staging area used to render the PDF / print copy at exact A4 size.
+       It must stay laid out (no display:none, visibility:hidden or opacity:0),
+       otherwise html2canvas captures an empty page. */
+    #pdfStage {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: var(--a4-width);
+      height: var(--a4-height);
+      background: #fff;
+      overflow: hidden;
+      z-index: -1;
+      pointer-events: none;
+    }
+    #pdfStage .export-canvas {
+      box-shadow: none;
+      border-radius: 0;
+      transform: none !important;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    /* ===== RESUME STYLES ===== */
+    .generated-resume {
+      display: flex;
+      flex-direction: column;
+      font-family: 'Lato', 'Poppins', Arial, sans-serif;
+      background: #fff;
+      min-height: var(--a4-height);
+      color: var(--cv-ink);
+    }
+
+    .upload-area img { max-width: 76px; max-height: 76px; border-radius: 50%; object-fit: cover; display: block; margin: 0 auto 6px; }
+    .btn-remove-photo {
+      margin-top: 6px; width: 100%; background: #fff; color: var(--muted);
+      border: 1px solid var(--border); border-radius: 10px; padding: 0.45rem;
+      font-family: inherit; font-size: 0.78rem; cursor: pointer;
+    }
+    .btn-remove-photo:hover { color: #b4443a; border-color: #e6c2be; }
+    .btn-remove-photo[hidden] { display: none; }
+
+    .cv-header {
+      padding: 52px 56px 0 56px;
+      text-align: center;
+    }
+    .cv-photo {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
+      margin: 0 auto 16px;
+    }
+    .cv-name {
+      font-size: 28px;
+      font-weight: 400;
+      color: var(--cv-ink);
+      line-height: 1.15;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      margin: 0 0 12px 0;
+    }
+    .cv-jobtitle {
+      color: var(--cv-gray);
+      font-weight: 400;
+      font-size: 10px;
+      letter-spacing: 0.20em;
+      text-transform: uppercase;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #4A4A4A;
+    }
+
+    .two-column-layout {
+      display: flex;
+      flex: 1;
+      padding: 0 56px 48px 56px;
+      align-items: stretch;
+    }
+    .cv-sidebar {
+      width: 31%;
+      background: var(--cv-sidebar-bg);
+      padding: 24px 22px 0 0;
+      border-right: 1px dashed var(--cv-dash);
+    }
+    .cv-main {
+      width: 69%;
+      padding: 24px 0 0 26px;
+      background: #fff;
+    }
+
+    .cv-section-title {
+      font-weight: 700;
+      font-size: 10.5px;
+      letter-spacing: 0.17em;
+      color: var(--cv-ink);
+      margin: 0 0 12px 0;
+      text-transform: uppercase;
+    }
+    .cv-section-title i { display: none; }
+
+    .cv-sidebar-block,
+    .cv-main-block {
+      padding-bottom: 16px;
+      margin-bottom: 16px;
+      border-bottom: 1px dashed var(--cv-dash);
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+    .cv-sidebar-block:last-child { border-bottom: none; padding-bottom: 0; }
+    .cv-main-block:last-child { border-bottom: 1px solid var(--cv-divider); }
+
+    .cv-info-row {
+      display: grid;
+      grid-template-columns: 45% 55%;
+      gap: 6px;
+      margin-bottom: 9px;
+      font-size: 9.5px;
+      line-height: 1.45;
+      align-items: start;
+    }
+    .cv-info-row .cv-info-label {
+      font-weight: 700;
+      color: var(--cv-ink);
+    }
+    .cv-info-row .cv-info-value {
+      color: var(--cv-gray);
+      display: block;
+    }
+
+    .cv-entry {
+      margin-bottom: 14px;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+    .cv-entry:last-child { margin-bottom: 4px; }
+    .cv-entry-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+    }
+    .cv-entry .title {
+      font-weight: 700;
+      font-size: 10.5px;
+      color: var(--cv-ink);
+      line-height: 1.35;
+    }
+    .dates {
+      font-size: 9.5px;
+      font-weight: 400;
+      color: var(--cv-gray);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .sub {
+      font-size: 9.5px;
+      color: var(--cv-gray);
+      font-weight: 400;
+      margin-top: 2px;
+    }
+    .desc {
+      font-size: 9.5px;
+      color: var(--cv-gray);
+      margin-top: 6px;
+      line-height: 1.6;
+    }
+    .desc-intro {
+      font-size: 9.5px;
+      color: var(--cv-gray);
+      margin-top: 6px;
+    }
+    .desc-list {
+      margin-top: 4px;
+      padding-left: 14px;
+    }
+    .desc-list li {
+      font-size: 9.5px;
+      color: var(--cv-gray);
+      line-height: 1.65;
+      margin-bottom: 1px;
+      padding-left: 2px;
+    }
+    .desc-list li::marker { font-size: 8px; }
+
+    .cv-section-divider {
+      border: none;
+      border-top: 1px dashed var(--cv-dash);
+      margin: 16px 0;
+    }
+
+    .cv-contact-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 9.5px;
+      margin: 0 0 10px 0;
+      color: var(--cv-gray);
+      word-break: break-word;
+    }
+    .cv-contact-item i {
+      color: var(--cv-ink);
+      width: 13px;
+      font-size: 9px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .cv-contact-item a { color: inherit; text-decoration: none; overflow-wrap: anywhere; }
+    .cv-contact-item a:hover { text-decoration: underline; }
+
+    .cv-skill-pill {
+      display: block;
+      background: transparent;
+      border: none;
+      padding: 0 0 7px 0;
+      margin: 0 0 7px 0;
+      font-size: 9.5px;
+      font-weight: 400;
+      color: var(--cv-gray);
+      line-height: 1.4;
+      border-bottom: 1px dotted #E2E2E2;
+    }
+    .cv-skill-pill:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+    .cv-about-text {
+      font-size: 9.5px;
+      line-height: 1.75;
+      color: var(--cv-gray);
+      margin-top: 0;
+      text-align: justify;
+      text-justify: inter-word;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      white-space: pre-wrap;
+    }
+
+    .inline-list-item {
+      font-size: 9.5px;
+      margin: 0 0 9px 0;
+      color: var(--cv-gray);
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 10px;
+      line-height: 1.4;
+    }
+    .inline-list-item .lang-level {
+      font-weight: 700;
+      color: var(--cv-ink);
+      white-space: nowrap;
+    }
+    .inline-list-item i { display: none; }
+
+    /* Mobile & responsive */
+    .mobile-tabs { display: none; background: #fff; border-bottom: 1px solid var(--border); position: sticky; top: 57px; z-index: 100; }
+    .mobile-tabs button {
+      flex: 1; padding: 0.8rem; background: transparent; border: none;
+      font-weight: 600; color: var(--muted); border-bottom: 2px solid transparent;
+    }
+    .mobile-tabs button.active { color: var(--navy); border-bottom-color: var(--brown); }
+    @media (max-width: 860px) {
+      .builder-layout { flex-direction: column; height: auto; overflow: visible; }
+      .form-panel { width: 100%; min-width: unset; height: auto; border-bottom: 1px solid var(--border); }
+      .preview-panel { padding: 1rem; min-height: 60vh; }
+      .mobile-tabs { display: flex; }
+      .form-panel.hidden-mobile { display: none; }
+      .preview-panel.hidden-mobile { display: none; }
+      .top-nav { padding: 0.7rem 4%; }
+      .nav-actions .btn-action span { display: inline-block; }
+    }
+    @media (max-width: 550px) {
+      .preview-panel { padding: 1rem 0.5rem 2rem; }
+    }
+    /* The A4 page never reflows: it is scaled down to fit small screens via JS (--page-scale) */
+    .resume-canvas { transform: scale(var(--page-scale, 1)); }
+    .page-shell {
+      position: relative;
+      flex: 0 0 auto;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+
+    @media print {
+      @page { size: A4; margin: 0; }
+      body { background: white; padding: 0; margin: 0; }
+      .top-nav, .form-panel, .mobile-tabs, .nav-actions, .page-hint { display: none !important; }
+      .preview-panel { display: block !important; padding: 0 !important; margin: 0; background: white; width: 100%; overflow: visible; }
+      .resume-canvas { box-shadow: none; width: 100%; min-height: auto; margin: 0; transform: none !important; }
+      .generated-resume { margin: 0; padding: 0; min-height: auto; }
+      .cv-entry, .cv-sidebar-block, .cv-main-block { break-inside: avoid; page-break-inside: avoid; }
+      .cv-sidebar, .cv-header { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    }
+
+    /* ===== Extra UI polish ===== */
+    .skill-tag {
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.18s var(--ease), box-shadow 0.18s var(--ease), border-color 0.18s ease;
+      animation: fadeUp 0.28s var(--ease) both;
+    }
+    .skill-tag:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); border-color: #ded7d0; }
+    .entry-block {
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow 0.22s var(--ease), border-color 0.2s ease;
+      animation: fadeUp 0.3s var(--ease) both;
+    }
+    .entry-block:hover { box-shadow: var(--shadow-md); border-color: #ded7d0; }
+    .entry-block input, .entry-block textarea { margin-bottom: 7px; }
+    .btn-add-tag { border-radius: 12px; box-shadow: var(--shadow-sm); }
+    .btn-add-entry { transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease; }
+    .btn-add-entry:hover { box-shadow: 0 6px 16px rgba(160, 107, 69, 0.22); }
+    .upload-area { transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease; }
+    .upload-area:hover { background: #FBF8F5; }
+    .mobile-tabs button { transition: color 0.2s ease, border-color 0.2s ease; }
+    .cvcraft-toast {
+      font-family: 'Poppins', sans-serif !important;
+      border-radius: 14px !important;
+      box-shadow: var(--shadow-lg) !important;
+    }
+    .cvcraft-toast .swal2-title { font-size: 0.88rem !important; font-weight: 600 !important; color: var(--navy) !important; }
+
+    /* One-page fit: content is laid out wider, then scaled down to fill exactly one A4 sheet */
+    .cv-fit {
+      width: var(--a4-width);
+      transform-origin: top left;
+      will-change: transform;
+    }
+    .resume-canvas {
+      height: var(--a4-height);
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <a class="nav-logo" href="#"><i class="fas fa-file-alt"></i><span>CVCraft</span></a>
+  <div class="nav-actions">
+    <button class="btn-action btn-action-outline" id="printBtn" type="button"><i class="fas fa-print"></i><span>Print</span></button>
+    <button class="btn-action btn-action-filled" id="downloadPdfBtn" type="button"><i class="fas fa-file-pdf"></i><span>Download PDF</span></button>
+  </div>
+</nav>
+
+<div class="mobile-tabs" id="mobileTabs">
+  <button class="active" id="tabEdit" data-tab="edit" type="button"><i class="fas fa-edit" style="margin-right:5px;"></i>Edit</button>
+  <button id="tabPreview" data-tab="preview" type="button"><i class="fas fa-eye" style="margin-right:5px;"></i>Preview</button>
+</div>
+
+<div class="builder-layout">
+  <div class="form-panel" id="formPanel">
+    <div class="panel-heading"><h2>Resume Builder</h2><p>Fill in — preview updates live</p></div>
+
+    <div class="section-card"><h3><i class="fas fa-user"></i>Personal Info</h3>
+      <div class="form-group"><label for="fullName">Full Name</label><input type="text" id="fullName" value="Samuel Ofori"></div>
+      <div class="form-group"><label for="jobTitle">Job Title</label><input type="text" id="jobTitle" value="Data Magt &amp; Analytics"></div>
+      <div class="form-group"><label>Profile Photo (optional)</label>
+        <div class="upload-area" id="uploadArea" role="button" tabindex="0"><i class="fas fa-camera"></i> Click to upload a photo</div>
+        <input type="file" id="imageUpload" accept="image/*" hidden>
+        <button type="button" class="btn-remove-photo" id="removePhotoBtn" hidden><i class="fas fa-trash"></i> Remove photo</button>
+      </div>
+    </div>
+
+    <div class="section-card"><h3><i class="fas fa-id-card"></i> Personal Information</h3>
+      <div class="form-group"><label for="dob">Date of Birth</label><input type="text" id="dob" placeholder="20 June 1985" value="14 March 1996"></div>
+      <div class="form-group"><label for="countryBirth">Country of Birth</label><input type="text" id="countryBirth" placeholder="Ghana" value="Ghana"></div>
+      <div class="form-group"><label for="nationality">Nationality</label><input type="text" id="nationality" placeholder="Belgian" value="Ghanaian"></div>
+      <div class="form-group"><label for="residence">Place of Residence</label><input type="text" id="residence" placeholder="Street, City, Country" value="Takoradi, Ghana"></div>
+    </div>
+
+    <div class="section-card"><h3><i class="fas fa-align-left"></i> About Me</h3>
+      <div class="form-group"><label for="aboutMe">Professional Summary</label><textarea id="aboutMe" rows="4" maxlength="500">I am a highly motivated and skilled graphic designer with the ability to work with advanced tools to deliver the best results.</textarea><div id="charCount">0/500</div></div>
+    </div>
+
+    <div class="section-card"><h3><i class="fas fa-address-book"></i> Contact</h3>
+      <div class="form-group"><label for="phone">Phone</label><input type="tel" id="phone" value="+233 245902756"></div>
+      <div class="form-group"><label for="email">Email</label><input type="email" id="email" value="sammyofori16@gmail.com"></div>
+      <div class="form-group"><label for="location">Location</label><input type="text" id="location" value="Takoradi, Ghana"></div>
+      <div class="form-group"><label for="newLink">Links</label>
+        <div class="tag-input-row"><input type="url" id="newLink" placeholder="https://your-website.com"><button class="btn-add-tag" id="addLinkBtn" type="button" aria-label="Add link">+</button></div>
+        <div id="contactLinksList"></div>
+      </div>
+    </div>
+
+    <div class="section-card"><h3><i class="fas fa-code"></i> Skills</h3>
+      <div class="tag-input-row"><input type="text" id="newSkill" placeholder="Skill"><button class="btn-add-tag" id="addSkillBtn" type="button" aria-label="Add skill">+</button></div>
+      <div id="skillsList"></div>
+    </div>
+
+    <div class="section-card"><h3><i class="fas fa-language"></i> Languages</h3>
+      <div class="tag-input-row"><input type="text" id="newLang" placeholder="e.g. English - Fluent"><button class="btn-add-tag" id="addLangBtn" type="button" aria-label="Add language">+</button></div>
+      <div id="languagesList"></div>
+    </div>
+
+    <div class="section-card"><h3><i class="fas fa-graduation-cap"></i> Education</h3>
+      <div id="educationEntries"></div>
+      <button class="btn-add-entry" id="addEducationBtn" type="button">+ Add Education</button>
+    </div>
+
+    <div class="section-card"><h3><i class="fas fa-briefcase"></i> Experience</h3>
+      <div id="experienceEntries"></div>
+      <button class="btn-add-entry" id="addExperienceBtn" type="button">+ Add Experience</button>
+    </div>
+  </div>
+
+  <div class="preview-panel" id="previewPanel">
+    <div class="page-shell"><div class="resume-canvas" id="resumeCanvas"></div></div>
+  </div>
+</div>
+<div id="pdfStage" aria-hidden="true"></div>
+
+<script>
+  (function () {
+    'use strict';
+
+    /* ---------- State ---------- */
+    var state = {
+      skills: ["Full Stack Developer", "Database Management", "Graphic Design", "Data Analysis & Visualisation"],
+      languages: ["English", "French"],
+      contactLinks: [],
+      educationList: [
+        { start: "2011", end: "2015", uni: "WARDERE UNIVERSITY", degree: "Bachelor of Design", gpa: "3.65" },
+        { start: "2014", end: "2019", uni: "WARDERE UNIVERSITY", degree: "Bachelor of Design", gpa: "3.99" }
+      ],
+      experienceList: [
+        { start: "2020", end: "2024", title: "SENIOR GRAPHIC DESIGNER", company: "Fauget studio", desc: "" },
+        { start: "2017", end: "2019", title: "SENIOR GRAPHIC DESIGNER", company: "larana, inc", desc: "" }
+      ],
+      profileImageData: null
+    };
+
+    var A4 = { w: 794, h: 1123 };
+    var lastFitScale = null;
+    var fitQueued = false;
+    var panelObserver = null;
+
+    function get(id) { return document.getElementById(id); }
+
+    /* Build HTML tags from pieces. The print / export code below has to write a
+       full HTML page as a string. Writing closing tags such as the body, html,
+       head or style ones literally inside this script makes some previewers and
+       bundlers cut the script at that point and dump the rest of the code onto
+       the page as visible text. Assembling them at run time avoids that. */
+    function T(name, closing) { return '<' + (closing ? '/' : '') + name + '>'; }
+
+    function escapeHtml(str) {
+      if (str === null || str === undefined || str === '') return '';
+      return String(str).replace(/[&<>"']/g, function (m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        if (m === '"') return '&quot;';
+        return '&#39;';
+      });
+    }
+
+    function normalizeLink(value) {
+      var link = String(value || '').trim();
+      if (!link || /^javascript:/i.test(link)) return '';
+      if (/^https?:\/\//i.test(link)) return link;
+      if (/^[a-z][a-z0-9+.-]*:/i.test(link)) return '';
+      return 'https://' + link.replace(/^\/\//, '');
+    }
+
+    /* ---------- Resume markup (single source of truth for preview + export) ---------- */
+    function buildResumeHtml() {
+      var name = (get('fullName') && get('fullName').value) || "Your Name";
+      var title = (get('jobTitle') && get('jobTitle').value) || "";
+      var about = (get('aboutMe') && get('aboutMe').value) || "";
+      var phone = (get('phone') && get('phone').value) || "";
+      var email = (get('email') && get('email').value) || "";
+      var location = (get('location') && get('location').value) || "";
+      var dob = (get('dob') && get('dob').value) || "";
+      var countryBirth = (get('countryBirth') && get('countryBirth').value) || "";
+      var nationality = (get('nationality') && get('nationality').value) || "";
+      var residence = (get('residence') && get('residence').value) || "";
+
+      var contactLinks = state.contactLinks
+        .map(function (link) { return { raw: link, url: normalizeLink(link) }; })
+        .filter(function (link) { return link.url; });
+
+      var personalRows = [
+        ['Date of birth', dob],
+        ['Country of birth', countryBirth],
+        ['Nationality', nationality],
+        ['Place of residence', residence]
+      ].filter(function (row) { return row[1]; });
+
+      var personalInfoHtml = personalRows.length
+        ? '<div class="cv-sidebar-block">' +
+            '<div class="cv-section-title">Personal Information</div>' +
+            personalRows.map(function (row) {
+              return '<div class="cv-info-row">' +
+                '<span class="cv-info-label">' + escapeHtml(row[0]) + '</span>' +
+                '<span class="cv-info-value">' + escapeHtml(row[1]) + '</span>' +
+              '</div>';
+            }).join('') +
+          '</div>'
+        : '';
+
+      var skillHtml = state.skills.length
+        ? '<div class="cv-sidebar-block">' +
+            '<div class="cv-section-title">Skills</div>' +
+            state.skills.map(function (s) { return '<span class="cv-skill-pill">' + escapeHtml(s) + '</span>'; }).join('') +
+          '</div>'
+        : '';
+
+      var langHtml = state.languages.length
+        ? '<div class="cv-sidebar-block">' +
+            '<div class="cv-section-title">Languages</div>' +
+            state.languages.map(function (l) {
+              var parts = l.split('-').map(function (p) { return p.trim(); });
+              var langName = parts[0];
+              var level = parts.length > 1 ? parts.slice(1).join(' - ') : '';
+              return '<div class="inline-list-item"><span>' + escapeHtml(langName) + '</span>' +
+                (level ? '<span class="lang-level">' + escapeHtml(level) + '</span>' : '') + '</div>';
+            }).join('') +
+          '</div>'
+        : '';
+
+      var contactHtml = (phone || email || location || contactLinks.length)
+        ? '<div class="cv-sidebar-block">' +
+            '<div class="cv-section-title">Contact</div>' +
+            (phone ? '<div class="cv-contact-item"><i class="fas fa-phone-alt"></i><span>' + escapeHtml(phone) + '</span></div>' : '') +
+            (email ? '<div class="cv-contact-item"><i class="fas fa-envelope"></i><span>' + escapeHtml(email) + '</span></div>' : '') +
+            (location ? '<div class="cv-contact-item"><i class="fas fa-map-marker-alt"></i><span>' + escapeHtml(location) + '</span></div>' : '') +
+            contactLinks.map(function (link) {
+              return '<div class="cv-contact-item"><i class="fas fa-link"></i><a href="' + escapeHtml(link.url) +
+                '" target="_blank" rel="noopener noreferrer">' + escapeHtml(link.raw) + '</a></div>';
+            }).join('') +
+          '</div>'
+        : '';
+
+      var aboutHtml = about
+        ? '<div class="cv-main-block">' +
+            '<div class="cv-section-title">Profile</div>' +
+            '<div class="cv-about-text">' + escapeHtml(about) + '</div>' +
+          '</div>'
+        : '';
+
+      var educationHtml = state.educationList.length
+        ? '<div class="cv-main-block">' +
+            '<div class="cv-section-title">Education</div>' +
+            state.educationList.map(function (edu) {
+              return '<div class="cv-entry">' +
+                '<div class="cv-entry-header">' +
+                  '<div class="title">' + escapeHtml(edu.uni) + '</div>' +
+                  '<div class="dates">' + escapeHtml(edu.start) + ' - ' + escapeHtml(edu.end) + '</div>' +
+                '</div>' +
+                '<div class="sub">' + escapeHtml(edu.degree) + (edu.gpa ? ' · GPA: ' + escapeHtml(edu.gpa) : '') + '</div>' +
+              '</div>';
+            }).join('') +
+          '</div>'
+        : '';
+
+      var experienceHtml = state.experienceList.length
+        ? '<div class="cv-main-block">' +
+            '<div class="cv-section-title">Work Experience</div>' +
+            state.experienceList.map(function (exp) {
+              var lines = (exp.desc || '').split('\n').map(function (l) { return l.trim(); }).filter(Boolean);
+              var introHtml = '';
+              // A first line ending in ":" becomes a lead-in sentence above the bullets
+              if (lines.length && /:$/.test(lines[0]) && !/^[•\-]/.test(lines[0])) {
+                introHtml = '<div class="desc-intro">' + escapeHtml(lines[0]) + '</div>';
+                lines = lines.slice(1);
+              }
+              var descHtml = introHtml + (lines.length
+                ? '<ul class="desc-list">' + lines.map(function (l) {
+                    return '<li>' + escapeHtml(l.replace(/^[•\-]\s*/, '')) + '</li>';
+                  }).join('') + '</ul>'
+                : '');
+              return '<div class="cv-entry">' +
+                '<div class="cv-entry-header">' +
+                  '<div class="title">' + escapeHtml(exp.title) + '</div>' +
+                  '<div class="dates">' + escapeHtml(exp.start) + ' - ' + escapeHtml(exp.end) + '</div>' +
+                '</div>' +
+                '<div class="sub">' + escapeHtml(exp.company) + '</div>' +
+                descHtml +
+              '</div>';
+            }).join('') +
+          '</div>'
+        : '';
+
+      return '<div class="generated-resume">' +
+        '<div class="cv-header">' +
+          (state.profileImageData ? '<img class="cv-photo" src="' + state.profileImageData + '" alt="">' : '') +
+          '<div class="cv-name">' + escapeHtml(name) + '</div>' +
+          '<div class="cv-jobtitle">' + escapeHtml(title) + '</div>' +
+        '</div>' +
+        '<div class="two-column-layout">' +
+          '<div class="cv-sidebar">' + personalInfoHtml + skillHtml + langHtml + contactHtml + '</div>' +
+          '<div class="cv-main">' + aboutHtml + educationHtml + experienceHtml + '</div>' +
+        '</div>' +
+      '</div>';
+    }
+
+    /* ---------- One-page fit ---------- */
+    /* Shrink the CV until it fits on exactly one A4 page. The block is widened
+       by 1/k and then scaled by k, so text, spacing and rules all shrink
+       proportionally instead of reflowing unpredictably. Preview and export share
+       this function, so both land on the same scale. */
+    function computeFitScale(fitEl, pageW, pageH) {
+      var k = 1;
+      for (var pass = 0; pass < 8; pass++) {
+        fitEl.style.width = (pageW / k) + 'px';
+        var used = fitEl.scrollHeight * k;
+        if (used <= pageH) break;
+        var next = Math.min(1, Math.max(0.5, k * (pageH / used) * 0.995));
+        if (Math.abs(next - k) < 0.002) { k = next; break; }
+        k = next;
+      }
+      fitEl.style.width = (pageW / k) + 'px';
+      return k;
+    }
+
+    function fitToOnePage() {
+      var fit = get('cvFit');
+      if (!fit) return 1;
+      fit.style.transform = 'none';
+      var k = computeFitScale(fit, A4.w, A4.h);
+      fit.style.transform = k < 1 ? 'scale(' + k + ')' : 'none';
+      var sheet = fit.querySelector('.generated-resume');
+      if (sheet) sheet.style.minHeight = Math.round(A4.h / k) + 'px';
+      return k;
+    }
+
+    /* ---------- Fit the A4 page to the visible panel width ---------- */
+    function applyViewportFit() {
+      var panel = get('previewPanel');
+      var canvas = get('resumeCanvas');
+      if (!panel || !canvas) return;
+      var available = panel.clientWidth - 48;
+      if (available <= 0) return;                      // panel hidden (mobile tab) — nothing to measure
+      var scale = Math.round(Math.min(1, available / A4.w) * 1000) / 1000;
+      if (scale === lastFitScale) return;
+      lastFitScale = scale;
+
+      if (panelObserver) panelObserver.disconnect();
+      canvas.style.setProperty('--page-scale', scale);
+      var shell = canvas.parentElement;
+      if (shell) {
+        shell.style.width = (A4.w * scale) + 'px';
+        shell.style.height = (A4.h * scale) + 'px';
+      }
+      if (panelObserver) {
+        requestAnimationFrame(function () {
+          var el = get('previewPanel');
+          if (el && panelObserver) panelObserver.observe(el);
+        });
+      }
+    }
+
+    function fitPageToViewport() {
+      if (fitQueued) return;
+      fitQueued = true;
+      requestAnimationFrame(function () { fitQueued = false; applyViewportFit(); });
+    }
+
+    function watchPreviewPanel() {
+      var panel = get('previewPanel');
+      if (!panel || !window.ResizeObserver) return;
+      panelObserver = new ResizeObserver(function () { fitPageToViewport(); });
+      panelObserver.observe(panel);
+    }
+
+    function updatePreview() {
+      var canvas = get('resumeCanvas');
+      if (canvas) canvas.innerHTML = '<div class="cv-fit" id="cvFit">' + buildResumeHtml() + '</div>';
+      try { fitToOnePage(); } catch (err) { console.error('fitToOnePage failed:', err); }
+      fitPageToViewport();
+    }
+
+    /* Chrome reports a benign "ResizeObserver loop" notice; it is not an app error. */
+    window.addEventListener('error', function (e) {
+      if (e.message && e.message.indexOf('ResizeObserver loop') !== -1) {
+        e.stopImmediatePropagation();
+        e.preventDefault();
+      }
+    });
+
+    /* ---------- Toasts / progress ---------- */
+    var Toast = (typeof Swal !== 'undefined') ? Swal.mixin({
+      toast: true, position: 'top-end', showConfirmButton: false,
+      timer: 2600, timerProgressBar: true,
+      customClass: { popup: 'cvcraft-toast' },
+      didOpen: function (t) {
+        t.addEventListener('mouseenter', Swal.stopTimer);
+        t.addEventListener('mouseleave', Swal.resumeTimer);
+      }
+    }) : null;
+
+    function notify(icon, title) {
+      if (Toast) Toast.fire({ icon: icon, title: title });
+      else console.log(title);
+    }
+    function progressStart() {
+      if (typeof NProgress !== 'undefined') { NProgress.configure({ showSpinner: false, trickleSpeed: 120 }); NProgress.start(); }
+    }
+    function progressDone() { if (typeof NProgress !== 'undefined') NProgress.done(); }
+
+    /* ---------- Form renderers ---------- */
+    function renderSkills() {
+      var container = get('skillsList');
+      if (!container) return;
+      container.innerHTML = state.skills.map(function (sk, idx) {
+        return '<span class="skill-tag">' + escapeHtml(sk) + ' <i class="fas fa-times-circle" data-skill-index="' + idx + '"></i></span>';
+      }).join('');
+      container.querySelectorAll('[data-skill-index]').forEach(function (el) {
+        el.addEventListener('click', function (e) {
+          var idx = parseInt(el.getAttribute('data-skill-index'), 10);
+          if (!isNaN(idx)) { state.skills.splice(idx, 1); renderSkills(); updatePreview(); }
+          e.stopPropagation();
+        });
+      });
+    }
+
+    function renderLanguages() {
+      var container = get('languagesList');
+      if (!container) return;
+      container.innerHTML = state.languages.map(function (l, idx) {
+        return '<span class="skill-tag">' + escapeHtml(l) + ' <i class="fas fa-times-circle" data-lang-index="' + idx + '"></i></span>';
+      }).join('');
+      container.querySelectorAll('[data-lang-index]').forEach(function (el) {
+        el.addEventListener('click', function (e) {
+          var idx = parseInt(el.getAttribute('data-lang-index'), 10);
+          if (!isNaN(idx)) { state.languages.splice(idx, 1); renderLanguages(); updatePreview(); }
+          e.stopPropagation();
+        });
+      });
+    }
+
+    function renderContactLinks() {
+      var container = get('contactLinksList');
+      if (!container) return;
+      container.innerHTML = state.contactLinks.map(function (link, idx) {
+        return '<span class="skill-tag">' + escapeHtml(link) + ' <i class="fas fa-times-circle" data-link-index="' + idx + '" role="button" aria-label="Remove link"></i></span>';
+      }).join('');
+      container.querySelectorAll('[data-link-index]').forEach(function (el) {
+        el.addEventListener('click', function () {
+          var idx = parseInt(el.getAttribute('data-link-index'), 10);
+          if (!isNaN(idx)) { state.contactLinks.splice(idx, 1); renderContactLinks(); updatePreview(); }
+        });
+      });
+    }
+
+    function handleEduInput(e) {
+      var idx = parseInt(e.target.getAttribute('data-edu-idx'), 10);
+      var field = e.target.getAttribute('data-edu-field');
+      if (!isNaN(idx) && state.educationList[idx]) { state.educationList[idx][field] = e.target.value; updatePreview(); }
+    }
+    function handleEduRemove(e) {
+      var btn = e.target.closest('[data-edu-remove]');
+      var idx = btn ? parseInt(btn.getAttribute('data-edu-remove'), 10) : NaN;
+      if (!isNaN(idx)) { state.educationList.splice(idx, 1); renderEducation(); updatePreview(); }
+    }
+    function renderEducation() {
+      var container = get('educationEntries');
+      if (!container) return;
+      container.innerHTML = state.educationList.map(function (edu, idx) {
+        return '<div class="entry-block">' +
+          '<input placeholder="Start Year" value="' + escapeHtml(edu.start) + '" data-edu-field="start" data-edu-idx="' + idx + '">' +
+          '<input placeholder="End Year" value="' + escapeHtml(edu.end) + '" data-edu-field="end" data-edu-idx="' + idx + '">' +
+          '<input placeholder="University" value="' + escapeHtml(edu.uni) + '" data-edu-field="uni" data-edu-idx="' + idx + '">' +
+          '<input placeholder="Degree" value="' + escapeHtml(edu.degree) + '" data-edu-field="degree" data-edu-idx="' + idx + '">' +
+          '<input placeholder="GPA" value="' + escapeHtml(edu.gpa || '') + '" data-edu-field="gpa" data-edu-idx="' + idx + '">' +
+          '<button type="button" class="btn-delete-entry" data-edu-remove="' + idx + '"><i class="fas fa-trash"></i> Remove</button>' +
+        '</div>';
+      }).join('');
+      container.querySelectorAll('[data-edu-field]').forEach(function (inp) { inp.addEventListener('input', handleEduInput); });
+      container.querySelectorAll('[data-edu-remove]').forEach(function (btn) { btn.addEventListener('click', handleEduRemove); });
+    }
+
+    function handleExpInput(e) {
+      var idx = parseInt(e.target.getAttribute('data-exp-idx'), 10);
+      var field = e.target.getAttribute('data-exp-field');
+      if (!isNaN(idx) && state.experienceList[idx]) { state.experienceList[idx][field] = e.target.value; updatePreview(); }
+    }
+    function handleExpRemove(e) {
+      var btn = e.target.closest('[data-exp-remove]');
+      var idx = btn ? parseInt(btn.getAttribute('data-exp-remove'), 10) : NaN;
+      if (!isNaN(idx)) { state.experienceList.splice(idx, 1); renderExperience(); updatePreview(); }
+    }
+    function renderExperience() {
+      var container = get('experienceEntries');
+      if (!container) return;
+      container.innerHTML = state.experienceList.map(function (exp, idx) {
+        return '<div class="entry-block">' +
+          '<input placeholder="Start Year" value="' + escapeHtml(exp.start) + '" data-exp-field="start" data-exp-idx="' + idx + '">' +
+          '<input placeholder="End Year" value="' + escapeHtml(exp.end) + '" data-exp-field="end" data-exp-idx="' + idx + '">' +
+          '<input placeholder="Job Title" value="' + escapeHtml(exp.title) + '" data-exp-field="title" data-exp-idx="' + idx + '">' +
+          '<input placeholder="Company" value="' + escapeHtml(exp.company) + '" data-exp-field="company" data-exp-idx="' + idx + '">' +
+          '<textarea placeholder="One bullet point per line (optional)" data-exp-field="desc" data-exp-idx="' + idx + '" rows="2">' + escapeHtml(exp.desc || '') + '</textarea>' +
+          '<button type="button" class="btn-delete-entry" data-exp-remove="' + idx + '"><i class="fas fa-trash"></i> Remove</button>' +
+        '</div>';
+      }).join('');
+      container.querySelectorAll('[data-exp-field]').forEach(function (inp) { inp.addEventListener('input', handleExpInput); });
+      container.querySelectorAll('[data-exp-remove]').forEach(function (btn) { btn.addEventListener('click', handleExpRemove); });
+    }
+
+    function updateCharCount() {
+      var a = get('aboutMe'), c = get('charCount');
+      if (a && c) c.textContent = a.value.length + '/500';
+    }
+
+    /* ---------- Event wiring ---------- */
+    function bindFormEvents() {
+      ['fullName', 'jobTitle', 'phone', 'email', 'location', 'dob', 'countryBirth', 'nationality', 'residence'].forEach(function (id) {
+        var el = get(id);
+        if (el) el.addEventListener('input', updatePreview);
+      });
+
+      var about = get('aboutMe');
+      if (about) {
+        about.addEventListener('input', function () { updateCharCount(); updatePreview(); });
+        updateCharCount();
+      }
+
+      var addSkill = get('addSkillBtn');
+      if (addSkill) addSkill.addEventListener('click', function () {
+        var input = get('newSkill'); var val = input && input.value.trim();
+        if (val) { state.skills.push(val); input.value = ''; renderSkills(); updatePreview(); }
+      });
+      var addLang = get('addLangBtn');
+      if (addLang) addLang.addEventListener('click', function () {
+        var input = get('newLang'); var val = input && input.value.trim();
+        if (val) { state.languages.push(val); input.value = ''; renderLanguages(); updatePreview(); }
+      });
+      var addLink = get('addLinkBtn');
+      if (addLink) addLink.addEventListener('click', function () {
+        var input = get('newLink'); var val = input && input.value.trim();
+        if (val && normalizeLink(val)) { state.contactLinks.push(val); input.value = ''; renderContactLinks(); updatePreview(); }
+      });
+
+      // Enter key adds the item in the three "tag" inputs
+      [['newSkill', 'addSkillBtn'], ['newLang', 'addLangBtn'], ['newLink', 'addLinkBtn']].forEach(function (pair) {
+        var input = get(pair[0]);
+        if (input) input.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter') { e.preventDefault(); var b = get(pair[1]); if (b) b.click(); }
+        });
+      });
+
+      var addEdu = get('addEducationBtn');
+      if (addEdu) addEdu.addEventListener('click', function () {
+        state.educationList.push({ start: "2020", end: "2024", uni: "New University", degree: "Degree", gpa: "" });
+        renderEducation(); updatePreview();
+      });
+      var addExp = get('addExperienceBtn');
+      if (addExp) addExp.addEventListener('click', function () {
+        state.experienceList.push({ start: "2022", end: "Present", title: "New Role", company: "Company", desc: "" });
+        renderExperience(); updatePreview();
+      });
+
+      var uploadArea = get('uploadArea'), fileInput = get('imageUpload'), removePhoto = get('removePhotoBtn');
+      function renderPhotoControls() {
+        if (!uploadArea) return;
+        uploadArea.innerHTML = state.profileImageData
+          ? '<img src="' + state.profileImageData + '" alt="Profile photo preview">Click to change photo'
+          : '<i class="fas fa-camera"></i> Click to upload a photo';
+        if (removePhoto) removePhoto.hidden = !state.profileImageData;
+      }
+      if (uploadArea && fileInput) {
+        uploadArea.addEventListener('click', function () { fileInput.click(); });
+        uploadArea.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); }
+        });
+        fileInput.addEventListener('change', function (e) {
+          var file = e.target.files[0];
+          if (!file) return;
+          if (!/^image\//.test(file.type)) { notify('error', 'Please choose an image file'); return; }
+          if (file.size > 4 * 1024 * 1024) { notify('error', 'Image is too large (max 4 MB)'); return; }
+          var reader = new FileReader();
+          reader.onload = function (ev) { state.profileImageData = ev.target.result; renderPhotoControls(); updatePreview(); };
+          reader.readAsDataURL(file);
+          e.target.value = '';
+        });
+        if (removePhoto) removePhoto.addEventListener('click', function () { state.profileImageData = null; renderPhotoControls(); updatePreview(); });
+        renderPhotoControls();
+      }
+    }
+
+    function initMobileTabs() {
+      var tabEdit = get('tabEdit'), tabPreview = get('tabPreview'), formPanel = get('formPanel'), previewPanel = get('previewPanel');
+      if (!tabEdit || !tabPreview || !formPanel || !previewPanel) return;
+
+      function switchTab(tab) {
+        if (tab === 'edit') {
+          formPanel.classList.remove('hidden-mobile');
+          previewPanel.classList.add('hidden-mobile');
+          tabEdit.classList.add('active');
+          tabPreview.classList.remove('active');
+        } else {
+          formPanel.classList.add('hidden-mobile');
+          previewPanel.classList.remove('hidden-mobile');
+          tabEdit.classList.remove('active');
+          tabPreview.classList.add('active');
+          setTimeout(fitPageToViewport, 60);
+        }
+      }
+      tabEdit.addEventListener('click', function () { switchTab('edit'); });
+      tabPreview.addEventListener('click', function () { switchTab('preview'); });
+      if (window.innerWidth <= 860) switchTab('edit');
+
+      window.addEventListener('resize', function () {
+        if (window.innerWidth > 860) {
+          formPanel.classList.remove('hidden-mobile');
+          previewPanel.classList.remove('hidden-mobile');
+        } else if (!formPanel.classList.contains('hidden-mobile') && !previewPanel.classList.contains('hidden-mobile')) {
+          switchTab('edit');
+        }
+      });
+    }
+
+    /* ---------- Export (PDF / Print) ---------- */
+    function getStage() {
+      var stage = get('pdfStage');
+      if (!stage) {
+        stage = document.createElement('div');
+        stage.id = 'pdfStage';
+        stage.setAttribute('aria-hidden', 'true');
+        document.body.appendChild(stage);
+      }
+      return stage;
+    }
+
+    function clearStage() {
+      var stage = get('pdfStage');
+      if (!stage) return;
+      stage.innerHTML = '';
+      stage.style.width = A4.w + 'px';
+      stage.style.height = A4.h + 'px';
+    }
+
+    /* Lay the CV out in the stage and shrink it until it occupies exactly one A4
+       sheet, rendered flat (no CSS transform) so html2canvas captures it reliably. */
+    function buildExportPage() {
+      var stage = getStage();
+      stage.innerHTML = '<div class="resume-canvas export-canvas"><div class="cv-fit export-fit">' + buildResumeHtml() + '</div></div>';
+      var canvasEl = stage.querySelector('.export-canvas');
+      var fit = stage.querySelector('.export-fit');
+      if (!canvasEl || !fit) return null;
+
+      var k = computeFitScale(fit, A4.w, A4.h);
+      var W = Math.round(A4.w / k);
+      var H = Math.round(A4.h / k);
+      fit.style.width = W + 'px';
+      fit.style.transform = 'none';
+      canvasEl.style.width = W + 'px';
+      canvasEl.style.height = H + 'px';
+      canvasEl.style.minHeight = H + 'px';
+      stage.style.width = W + 'px';
+      stage.style.height = H + 'px';
+      var sheet = fit.querySelector('.generated-resume');
+      if (sheet) sheet.style.minHeight = H + 'px';
+      return { node: canvasEl, width: W, height: H, scale: k };
+    }
+
+    function waitForAssets(root) {
+      var pending = Array.prototype.slice.call(root.querySelectorAll('img'))
+        .filter(function (img) { return !img.complete || img.naturalWidth === 0; })
+        .map(function (img) {
+          return new Promise(function (res) {
+            img.addEventListener('load', res, { once: true });
+            img.addEventListener('error', res, { once: true });
+            setTimeout(res, 8000);
+          });
+        });
+      var fonts = (document.fonts && document.fonts.ready) ? document.fonts.ready : Promise.resolve();
+      return Promise.all([fonts].concat(pending)).then(function () {
+        return new Promise(function (res) { requestAnimationFrame(function () { requestAnimationFrame(res); }); });
+      });
+    }
+
+    function canvasHasContent(cv) {
+      try {
+        var ctx = cv.getContext('2d');
+        var rowStep = Math.max(1, Math.floor(cv.height / 90));
+        var colStep = Math.max(1, Math.floor(cv.width / 90));
+        for (var y = 0; y < cv.height; y += rowStep) {
+          var row = ctx.getImageData(0, y, cv.width, 1).data;
+          for (var x = 0; x < cv.width; x += colStep) {
+            var i = x * 4;
+            if (row[i] < 235 || row[i + 1] < 235 || row[i + 2] < 235) return true;
+          }
+        }
+        return false;
+      } catch (err) {
+        return true; // tainted canvas — assume it rendered
+      }
+    }
+
+    /* Print from a hidden iframe: no pop-up to be blocked, and the page markup is
+       assembled with T() so no literal closing tags sit inside this script. */
+    function openPrintWindow() {
+      var built = buildExportPage();
+      if (!built) return false;
+
+      var styles = Array.prototype.slice.call(document.querySelectorAll('style'))
+        .map(function (s) { return s.textContent; }).join('\n');
+      var ratio = A4.w / built.width;
+      var markup = built.node.outerHTML;
+      clearStage();
+
+      var printCss = [
+        '@page { size: A4; margin: 0; }',
+        'html, body { margin:0; padding:0; background:#fff; height:auto; overflow:visible; }',
+        '.print-page { width:' + A4.w + 'px; height:' + A4.h + 'px; overflow:hidden; position:relative; }',
+        '.print-scale { width:' + built.width + 'px; transform: scale(' + ratio + '); transform-origin: top left; }',
+        '.print-page .resume-canvas { width:' + built.width + 'px; height:' + built.height + 'px; box-shadow:none; border-radius:0; transform:none !important; }'
+      ].join('\n');
+
+      var page = [
+        '<!DOC' + 'TYPE html>',
+        T('html'), T('head'),
+        '<meta charset="utf-8">',
+        T('title'), 'Resume', T('title', true),
+        '<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">',
+        '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">',
+        T('style'), styles, '\n', printCss, T('style', true),
+        T('head', true), T('body'),
+        '<div class="print-page"><div class="print-scale">', markup, '</div></div>',
+        T('body', true), T('html', true)
+      ].join('');
+
+      var frame = document.createElement('iframe');
+      frame.setAttribute('aria-hidden', 'true');
+      frame.setAttribute('title', 'Print');
+      frame.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0;opacity:0;pointer-events:none;';
+      document.body.appendChild(frame);
+
+      var win = frame.contentWindow;
+      var idoc = win.document;
+      idoc.open();
+      idoc.write(page);
+      idoc.close();
+
+      var printed = false;
+      function removeFrame() {
+        setTimeout(function () { if (frame.parentNode) frame.parentNode.removeChild(frame); }, 500);
+      }
+      function doPrint() {
+        if (printed) return;
+        printed = true;
+        try {
+          win.addEventListener('afterprint', removeFrame);
+          win.focus();
+          win.print();
+        } catch (err) {
+          notify('error', 'Could not open the print dialog');
+          removeFrame();
+        }
+        setTimeout(removeFrame, 60000);
+      }
+      function whenReady() {
+        var f = (idoc.fonts && idoc.fonts.ready) ? idoc.fonts.ready : Promise.resolve();
+        f.then(function () { setTimeout(doPrint, 200); }, function () { setTimeout(doPrint, 200); });
+      }
+      win.addEventListener('load', whenReady);
+      setTimeout(whenReady, 4000);   // safety net if the load event never fires (offline fonts)
+      return true;
+    }
+
+    function exportPdf(button) {
+      var H2C = window.html2canvas;
+      var JsPDF = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
+      if (typeof H2C !== 'function' || typeof JsPDF !== 'function') {
+        notify('error', 'PDF library did not load — check your connection');
+        return Promise.resolve();
+      }
+      var built = buildExportPage();
+      if (!built) { notify('error', 'Nothing to export yet'); return Promise.resolve(); }
+
+      var original = button ? button.innerHTML : '';
+      if (button) {
+        button.disabled = true;
+        button.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i><span>Preparing…</span>';
+      }
+      progressStart();
+      var nameEl = get('fullName');
+      var fileName = ((nameEl && nameEl.value) || 'Resume').trim().replace(/[^\w\s-]/g, '').replace(/\s+/g, '_') || 'Resume';
+      var fallbackToPrint = false;
+
+      return waitForAssets(built.node).then(function () {
+        // Cap the raster so large sheets stay inside mobile canvas limits.
+        var raster = Math.min(2.5, Math.max(1.4, 3400 / Math.max(built.width, built.height)));
+        return H2C(built.node, {
+          scale: raster,
+          backgroundColor: '#ffffff',
+          useCORS: true,
+          logging: false,
+          imageTimeout: 20000,
+          width: built.width,
+          height: built.height,
+          windowWidth: built.width,
+          windowHeight: built.height
+        });
+      }).then(function (canvas) {
+        if (!canvas || !canvas.width || !canvas.height) throw new Error('empty canvas');
+        if (!canvasHasContent(canvas)) throw new Error('blank render');
+        var imgData = canvas.toDataURL('image/jpeg', 0.95);
+        var pdf = new JsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait', compress: true });
+        pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
+        pdf.save(fileName + '_CV.pdf');
+        notify('success', 'PDF downloaded');
+      }).catch(function (err) {
+        console.error('PDF export failed:', err);
+        notify('error', 'Could not build the PDF — opening the print view instead');
+        fallbackToPrint = true;
+      }).then(function () {
+        clearStage();
+        if (button) { button.disabled = false; button.innerHTML = original; }
+        progressDone();
+        if (fallbackToPrint) setTimeout(openPrintWindow, 300);
+      });
+    }
+
+    function bindExport() {
+      var pdfBtn = get('downloadPdfBtn');
+      if (pdfBtn) pdfBtn.addEventListener('click', function () { exportPdf(pdfBtn); });
+      var printBtn = get('printBtn');
+      if (printBtn) printBtn.addEventListener('click', function () { openPrintWindow(); });
+    }
+
+    /* ---------- Init (each step isolated so one failure cannot blank the preview) ---------- */
+    [renderSkills, renderLanguages, renderContactLinks, renderEducation, renderExperience,
+     bindFormEvents, updateCharCount, updatePreview, initMobileTabs, bindExport, watchPreviewPanel]
+      .forEach(function (step) {
+        try { step(); } catch (err) { console.error('CVCraft init step failed:', step.name, err); }
+      });
+
+    window.addEventListener('resize', fitPageToViewport);
+    window.addEventListener('load', function () { updatePreview(); });
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(function () { updatePreview(); });
+    }
+    fitPageToViewport();
+  })();
+</script>
+</body>
+</html>
