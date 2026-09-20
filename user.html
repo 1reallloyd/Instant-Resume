@@ -230,6 +230,7 @@
     .skill-tag i:hover { color: #e44; }
     .tag-input-row { display: flex; gap: 6px; margin-bottom: 0.8rem; }
     .tag-input-row input { flex: 1; }
+    .tag-input-row select { flex: 0 0 7.5rem; width: auto; }
     .btn-add-tag {
       background: var(--navy);
       color: #fff;
@@ -703,7 +704,7 @@
     </div>
 
     <div class="section-card"><h3><i class="fas fa-language"></i> Languages</h3>
-      <div class="tag-input-row"><input type="text" id="newLang" placeholder="e.g. English - Fluent"><button class="btn-add-tag" id="addLangBtn" type="button" aria-label="Add language">+</button></div>
+      <div class="tag-input-row"><input type="text" id="newLang" placeholder="e.g. English"><select id="newLangLevel" aria-label="Language level"><option value="Fluent">Fluent</option><option value="Basic">Basic</option></select><button class="btn-add-tag" id="addLangBtn" type="button" aria-label="Add language">+</button></div>
       <div id="languagesList"></div>
     </div>
 
@@ -735,7 +736,7 @@
     /* ---------- State ---------- */
     var state = {
       skills: ["Full Stack Developer", "Database Management", "Graphic Design", "Data Analysis & Visualisation"],
-      languages: ["English", "French"],
+      languages: ["English - Fluent", "French - Basic"],
       contactLinks: [],
       educationList: [
         { start: "2011", end: "2015", uni: "WARDERE UNIVERSITY", degree: "Bachelor of Design", gpa: "3.65" },
@@ -1141,7 +1142,10 @@
       });
       var addLang = get('addLangBtn');
       if (addLang) addLang.addEventListener('click', function () {
-        var input = get('newLang'); var val = input && input.value.trim();
+        var input = get('newLang');
+        var level = get('newLangLevel');
+        var name = input && input.value.trim();
+        var val = name && name + ' - ' + (level ? level.value : 'Fluent');
         if (val) { state.languages.push(val); input.value = ''; renderLanguages(); updatePreview(); }
       });
       var addLink = get('addLinkBtn');
