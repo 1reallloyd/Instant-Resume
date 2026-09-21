@@ -17,7 +17,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=Lato:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
 <style>
@@ -245,51 +245,112 @@ ul { list-style: none; }
 }
 .stat .lbl { font-size: 0.8rem; color: var(--muted); }
 
-.hero-visual { position: relative; justify-self: center; width: 100%; max-width: 420px; }
+.hero-visual { position: relative; justify-self: center; width: 100%; max-width: 460px; }
+
+/* The hero sheet is a miniature of the builder's real A4 preview: same layout,
+   same proportions, same typeface. The CV is laid out at true A4 size (794 x 1123 px)
+   and scaled to the sheet's width, so it looks identical on phone and desktop.
+   --cv-s is refined by script to the exact width; the values here are the fallback. */
 .sheet {
-  aspect-ratio: 1 / 1.414;
+  --cv-s: 0.5793;
+  aspect-ratio: 794 / 1123;
   background: #fff;
-  border: 1px solid var(--rule);
-  box-shadow: var(--paper-shadow);
-  padding: 9% 8%;
+  box-shadow: 0 0 0 1px var(--rule), var(--paper-shadow);
+  border-radius: 2px;
   position: relative;
+  overflow: hidden;
+  -webkit-user-select: none;
+  user-select: none;
 }
-.sheet-name { height: 11px; width: 52%; background: var(--ink); margin-bottom: 7px; }
-.sheet-role { height: 5px; width: 30%; background: var(--copper); }
-.sheet-rule { height: 1px; background: var(--rule); margin: 13px 0 15px; }
-.sheet-cols { display: grid; grid-template-columns: 32% 1fr; gap: 14px; }
-.sheet-block + .sheet-block { margin-top: 0; }
-.sheet-h { height: 5px; width: 60%; background: #A9A19A; margin-bottom: 8px; }
-.sheet-line { height: 4px; background: #E7E3DE; margin-bottom: 6px; width: 100%; }
-.sheet-line.w80 { width: 80%; }
-.sheet-line.w60 { width: 60%; }
-.sheet-line.w45 { width: 45%; }
-.sheet-photo { width: 34px; height: 34px; border-radius: 50%; background: #EDE8E2; margin-bottom: 10px; }
-
-.sheet-line, .sheet-h, .sheet-name, .sheet-role {
-  transform-origin: left center;
-  animation: fillIn 0.5s var(--ease) both;
-}
-@keyframes fillIn { from { transform: scaleX(0); opacity: 0.4; } to { transform: scaleX(1); opacity: 1; } }
-.sheet-name { animation-delay: 0.20s; }
-.sheet-role { animation-delay: 0.34s; }
-.sheet-block > :nth-child(1) { animation-delay: 0.50s; }
-.sheet-block > :nth-child(2) { animation-delay: 0.58s; }
-.sheet-block > :nth-child(3) { animation-delay: 0.66s; }
-.sheet-block > :nth-child(4) { animation-delay: 0.74s; }
-.sheet-block > :nth-child(5) { animation-delay: 0.82s; }
-.sheet-block > :nth-child(6) { animation-delay: 0.90s; }
-.sheet-photo { animation: fillIn 0.5s var(--ease) 0.46s both; transform-origin: center; }
-
-.sheet-caret {
+.cvm {
+  --cvm-ink: #222222;
+  --cvm-gray: #5C5C5C;
+  --cvm-dash: #BFBFBF;
+  --cvm-divider: #C9C9C9;
   position: absolute;
-  right: 8%;
-  bottom: 9%;
-  width: 1.5px;
-  height: 14px;
-  background: var(--copper);
-  animation: blink 1.1s steps(1, end) 1.2s infinite;
+  top: 0;
+  left: 0;
+  width: 794px;
+  height: 1123px;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  color: var(--cvm-ink);
+  font-family: 'Lato', 'Poppins', Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: normal;          /* the page's 1.65 body line-height must not leak in */
+  letter-spacing: 0;
+  text-align: left;
+  transform-origin: 0 0;
+  transform: scale(var(--cv-s));
+  pointer-events: none;
 }
+.cvm-header { padding: 52px 56px 0; text-align: center; }
+.cvm-name {
+  font-size: 28px;
+  line-height: 1.15;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.cvm-job {
+  color: var(--cvm-gray);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #4A4A4A;
+}
+.cvm-cols { display: flex; flex: 1; align-items: stretch; padding: 0 56px 48px; }
+.cvm-side { width: 31%; padding: 24px 22px 0 0; border-right: 1px dashed var(--cvm-dash); }
+.cvm-main { width: 69%; padding: 24px 0 0 26px; }
+.cvm-title {
+  font-weight: 700;
+  font-size: 10.5px;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.cvm-block { padding-bottom: 16px; margin-bottom: 16px; border-bottom: 1px dashed var(--cvm-dash); }
+.cvm-side .cvm-block:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+.cvm-main .cvm-block:last-child { border-bottom: 1px solid var(--cvm-divider); }
+
+.cvm-info { display: grid; grid-template-columns: 45% 55%; gap: 6px; margin-bottom: 9px; font-size: 9.5px; line-height: 1.45; align-items: start; }
+.cvm-info b { font-weight: 700; }
+.cvm-info span { color: var(--cvm-gray); }
+.cvm-skill { font-size: 9.5px; line-height: 1.4; color: var(--cvm-gray); padding-bottom: 7px; margin-bottom: 7px; border-bottom: 1px dotted #E2E2E2; }
+.cvm-skill:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+.cvm-lang { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; font-size: 9.5px; line-height: 1.4; margin-bottom: 9px; color: var(--cvm-gray); }
+.cvm-lang b { font-weight: 700; color: var(--cvm-ink); white-space: nowrap; }
+.cvm-contact { display: flex; align-items: center; gap: 10px; font-size: 9.5px; margin-bottom: 10px; color: var(--cvm-gray); overflow-wrap: anywhere; }
+.cvm-contact i { color: var(--cvm-ink); width: 13px; font-size: 9px; text-align: center; flex-shrink: 0; }
+
+.cvm-about { font-size: 9.5px; line-height: 1.75; color: var(--cvm-gray); text-align: justify; overflow-wrap: break-word; }
+.cvm-entry { margin-bottom: 14px; }
+.cvm-entry:last-child { margin-bottom: 4px; }
+.cvm-entry-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.cvm-entry-title { font-weight: 700; font-size: 10.5px; line-height: 1.35; }
+.cvm-dates { font-size: 9.5px; color: var(--cvm-gray); white-space: nowrap; flex-shrink: 0; }
+.cvm-sub { font-size: 9.5px; color: var(--cvm-gray); margin-top: 2px; }
+.cvm-list { list-style: disc; margin-top: 6px; padding-left: 14px; }
+.cvm-list li { font-size: 9.5px; line-height: 1.65; color: var(--cvm-gray); margin-bottom: 1px; padding-left: 2px; }
+.cvm-list li::marker { font-size: 8px; }
+
+/* The "typing" cursor at the end of the profile text */
+.cvm-caret { display: inline-block; width: 2px; height: 10px; margin-left: 2px; vertical-align: -1px; background: var(--copper); animation: blink 1.1s steps(1, end) 1.4s infinite; }
+
+/* Sections settle onto the page one after another */
+.cvm-header, .cvm-block { animation: cvmIn 0.6s var(--ease) both; }
+.cvm-header { animation-delay: 0.10s; }
+.cvm-side .cvm-block:nth-child(1) { animation-delay: 0.30s; }
+.cvm-side .cvm-block:nth-child(2) { animation-delay: 0.42s; }
+.cvm-side .cvm-block:nth-child(3) { animation-delay: 0.54s; }
+.cvm-side .cvm-block:nth-child(4) { animation-delay: 0.66s; }
+.cvm-main .cvm-block:nth-child(1) { animation-delay: 0.36s; }
+.cvm-main .cvm-block:nth-child(2) { animation-delay: 0.50s; }
+.cvm-main .cvm-block:nth-child(3) { animation-delay: 0.64s; }
+@keyframes cvmIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
 
 .sheet-tag {
@@ -299,6 +360,7 @@ ul { list-style: none; }
   border-radius: 4px;
   padding: 0.4rem 0.7rem;
   font-size: 0.76rem;
+  line-height: 1.4;
   color: var(--muted);
   display: inline-flex;
   align-items: center;
@@ -306,8 +368,8 @@ ul { list-style: none; }
   box-shadow: 0 8px 22px -12px rgba(20,29,38,0.35);
   z-index: 2;
 }
-.sheet-tag.live { top: 7%; left: -9%; }
-.sheet-tag.pdf { bottom: 8%; right: -7%; }
+.sheet-tag.live { top: 4%; left: -9%; }
+.sheet-tag.pdf { bottom: -14px; right: -7%; }
 .live-dot {
   width: 6px; height: 6px; border-radius: 50%; background: #2F9E6B;
   box-shadow: 0 0 0 0 rgba(47,158,107,0.5);
@@ -547,7 +609,8 @@ footer .logo { color: #fff; margin-bottom: 0.8rem; }
   .mobile-menu .btn { width: 100%; margin-top: 1.1rem; }
 
   .hero { grid-template-columns: 1fr; padding-top: 2.5rem; }
-  .hero-visual { max-width: 320px; margin-top: 1rem; }
+  .hero-visual { max-width: 360px; margin-top: 1rem; }
+  .sheet { --cv-s: 0.4534; }
   /* Tags sit inside the sheet's edges on small screens so nothing spills sideways */
   .sheet-tag.live { top: -14px; left: 12px; }
   .sheet-tag.pdf { bottom: -14px; right: 12px; }
@@ -578,6 +641,8 @@ footer .logo { color: #fff; margin-bottom: 0.8rem; }
     scroll-behavior: auto !important;
   }
   .js .reveal { opacity: 1; transform: none; }
+  .cvm-header, .cvm-block { animation: none; }
+  .cvm-caret { animation: none; }
 }
 </style>
 </head>
@@ -633,28 +698,113 @@ footer .logo { color: #fff; margin-bottom: 0.8rem; }
 
   <div class="hero-visual">
     <span class="sheet-tag live"><span class="live-dot"></span> Updating as you type</span>
-    <div class="sheet" role="img" aria-label="Preview of an A4 resume filling in as it is typed">
-      <div class="sheet-name"></div>
-      <div class="sheet-role"></div>
-      <div class="sheet-rule"></div>
-      <div class="sheet-cols">
-        <div class="sheet-block">
-          <div class="sheet-photo"></div>
-          <div class="sheet-h"></div>
-          <div class="sheet-line w80"></div>
-          <div class="sheet-line w60"></div>
-          <div class="sheet-line w80"></div>
-          <div class="sheet-line w45"></div>
+    <div class="sheet" id="heroSheet" role="img" aria-label="Preview of a finished one-page A4 resume with a centred name, a side column for personal details, skills, languages and contact, and a main column for profile, education and work experience">
+      <div class="cvm" aria-hidden="true">
+        <div class="cvm-header">
+          <div class="cvm-name">Samuel Ofori</div>
+          <div class="cvm-job">Data Magt &amp; Analytics</div>
         </div>
-        <div class="sheet-block">
-          <div class="sheet-h"></div>
-          <div class="sheet-line"></div>
-          <div class="sheet-line w80"></div>
-          <div class="sheet-line"></div>
-          <div class="sheet-line w60"></div>
+        <div class="cvm-cols">
+          <div class="cvm-side">
+            <div class="cvm-block">
+              <div class="cvm-title">Personal Information</div>
+              <div class="cvm-info"><b>Date of birth</b><span>14 March 1996</span></div>
+              <div class="cvm-info"><b>Country of birth</b><span>Ghana</span></div>
+              <div class="cvm-info"><b>Nationality</b><span>Ghanaian</span></div>
+              <div class="cvm-info"><b>Place of residence</b><span>Takoradi, Ghana</span></div>
+            </div>
+            <div class="cvm-block">
+              <div class="cvm-title">Skills</div>
+              <div class="cvm-skill">Full Stack Developer</div>
+              <div class="cvm-skill">Database Management</div>
+              <div class="cvm-skill">Graphic Design</div>
+              <div class="cvm-skill">Data Analysis &amp; Visualisation</div>
+              <div class="cvm-skill">Brand Identity</div>
+              <div class="cvm-skill">UI / UX Design</div>
+              <div class="cvm-skill">Typography &amp; Layout</div>
+              <div class="cvm-skill">Photo Retouching</div>
+              <div class="cvm-skill">Print Production</div>
+              <div class="cvm-skill">Motion Graphics</div>
+              <div class="cvm-skill">Client Communication</div>
+              <div class="cvm-skill">Project Management</div>
+            </div>
+            <div class="cvm-block">
+              <div class="cvm-title">Languages</div>
+              <div class="cvm-lang"><span>English</span><b>Fluent</b></div>
+              <div class="cvm-lang"><span>French</span><b>Basic</b></div>
+              <div class="cvm-lang"><span>Spanish</span><b>Basic</b></div>
+            </div>
+            <div class="cvm-block">
+              <div class="cvm-title">Contact</div>
+              <div class="cvm-contact"><i class="fas fa-phone-alt"></i><span>+233 245902756</span></div>
+              <div class="cvm-contact"><i class="fas fa-envelope"></i><span>sammyofori16@gmail.com</span></div>
+              <div class="cvm-contact"><i class="fas fa-map-marker-alt"></i><span>Takoradi, Ghana</span></div>
+            </div>
+          </div>
+          <div class="cvm-main">
+            <div class="cvm-block">
+              <div class="cvm-title">Profile</div>
+              <div class="cvm-about">I am a highly motivated and skilled graphic designer with the ability to work with advanced tools to deliver the best results. I enjoy turning complex briefs into clear, well-crafted visuals, and I pay close attention to detail, deadlines and the people I work with.<span class="cvm-caret"></span></div>
+            </div>
+            <div class="cvm-block">
+              <div class="cvm-title">Education</div>
+              <div class="cvm-entry">
+                <div class="cvm-entry-head"><div class="cvm-entry-title">WARDERE UNIVERSITY</div><div class="cvm-dates">2011 - 2015</div></div>
+                <div class="cvm-sub">Bachelor of Design · GPA: 3.65</div>
+              </div>
+              <div class="cvm-entry">
+                <div class="cvm-entry-head"><div class="cvm-entry-title">WARDERE UNIVERSITY</div><div class="cvm-dates">2014 - 2019</div></div>
+                <div class="cvm-sub">Bachelor of Design · GPA: 3.99</div>
+              </div>
+            </div>
+            <div class="cvm-block">
+              <div class="cvm-title">Work Experience</div>
+              <div class="cvm-entry">
+                <div class="cvm-entry-head"><div class="cvm-entry-title">SENIOR GRAPHIC DESIGNER</div><div class="cvm-dates">2020 - 2024</div></div>
+                <div class="cvm-sub">Fauget studio</div>
+                <ul class="cvm-list">
+                  <li>Led brand identity and campaign design for a mix of retail and tech clients.</li>
+                  <li>Turned client briefs into print and digital layouts, from first sketch to final files.</li>
+                  <li>Built reusable templates that cut turnaround time on repeat work.</li>
+                  <li>Presented concepts to stakeholders and refined them over several review rounds.</li>
+                  <li>Reviewed junior designers' work before it went to the client.</li>
+                </ul>
+              </div>
+              <div class="cvm-entry">
+                <div class="cvm-entry-head"><div class="cvm-entry-title">SENIOR GRAPHIC DESIGNER</div><div class="cvm-dates">2017 - 2019</div></div>
+                <div class="cvm-sub">larana, inc</div>
+                <ul class="cvm-list">
+                  <li>Designed marketing material, social media graphics and packaging.</li>
+                  <li>Prepared print-ready artwork and kept every piece on brand.</li>
+                  <li>Worked with copywriters and developers to launch campaigns on schedule.</li>
+                  <li>Introduced a shared asset library that kept designers and developers in sync.</li>
+                  <li>Managed several projects at once and updated clients at each stage.</li>
+                </ul>
+              </div>
+              <div class="cvm-entry">
+                <div class="cvm-entry-head"><div class="cvm-entry-title">GRAPHIC DESIGNER</div><div class="cvm-dates">2015 - 2017</div></div>
+                <div class="cvm-sub">Pixel Harbour studio</div>
+                <ul class="cvm-list">
+                  <li>Produced posters, brochures and event branding for local businesses.</li>
+                  <li>Retouched photography and prepared image sets for print and web.</li>
+                  <li>Presented design options and folded client feedback into the final artwork.</li>
+                  <li>Kept a steady flow of work moving through tight weekly deadlines.</li>
+                </ul>
+              </div>
+              <div class="cvm-entry">
+                <div class="cvm-entry-head"><div class="cvm-entry-title">DESIGN INTERN</div><div class="cvm-dates">2013 - 2015</div></div>
+                <div class="cvm-sub">orbis media</div>
+                <ul class="cvm-list">
+                  <li>Supported the design team on layouts, icons and presentation decks.</li>
+                  <li>Learned production workflows, from proofing to print-ready delivery.</li>
+                  <li>Handled file preparation and archiving for finished projects.</li>
+                  <li>Sat in on client meetings and turned the notes into first drafts.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      <span class="sheet-caret"></span>
     </div>
     <span class="sheet-tag pdf"><i class="fas fa-file-pdf" style="color:#C4453B;" aria-hidden="true"></i> PDF ready</span>
   </div>
@@ -900,6 +1050,18 @@ footer .logo { color: #fff; margin-bottom: 0.8rem; }
   'use strict';
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var desktop = window.matchMedia('(min-width: 941px)');
+
+  /* ---------- Hero sheet: scale the true-size A4 CV to the sheet's width ---------- */
+  var heroSheet = document.getElementById('heroSheet');
+  function fitHeroSheet() {
+    var w = heroSheet.clientWidth;
+    if (w > 0) heroSheet.style.setProperty('--cv-s', (w / 794).toFixed(4));
+  }
+  if (heroSheet) {
+    fitHeroSheet();
+    if ('ResizeObserver' in window) new ResizeObserver(fitHeroSheet).observe(heroSheet);
+    else window.addEventListener('resize', fitHeroSheet);
+  }
 
   /* ---------- Mobile menu ---------- */
   var nav = document.getElementById('navbar');
