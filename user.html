@@ -521,12 +521,13 @@
       border: none;
       padding: 0 0 7px 0;
       margin: 0 0 7px 0;
-      font-size: 9.5px;
-      font-weight: 400;
       color: var(--cv-gray);
       line-height: 1.4;
       border-bottom: 1px dotted #E2E2E2;
     }
+    .cv-skill-category { display: block; font-size: 9.5px; font-weight: 700; color: var(--cv-ink); }
+    .cv-skill-details { margin-top: 3px; font-size: 9.2px; }
+    .cv-skill-details strong { color: var(--cv-ink); font-weight: 700; }
     .cv-skill-pill:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
 
     .cv-about-text {
@@ -702,7 +703,9 @@
     </div>
 
     <div class="section-card"><h3><i class="fas fa-code"></i> Skills</h3>
-      <div class="tag-input-row"><input type="text" id="newSkill" placeholder="Skill"><button class="btn-add-tag" id="addSkillBtn" type="button" aria-label="Add skill">+</button></div>
+      <div class="form-group"><label for="newSkillCategory">Skill category</label><input type="text" id="newSkillCategory" placeholder="e.g. Database Management"></div>
+      <div class="form-group"><label for="newSkillDetails">Tools and technology used</label><textarea id="newSkillDetails" rows="2" placeholder="e.g. SQL, MySQL, PostgreSQL, database design, backup and recovery"></textarea></div>
+      <button class="btn-add-entry" id="addSkillBtn" type="button"><i class="fas fa-plus"></i> Add skill category</button>
       <div id="skillsList"></div>
     </div>
 
@@ -738,7 +741,12 @@
 
     /* ---------- State ---------- */
     var state = {
-      skills: ["Full Stack Developer", "Database Management", "Graphic Design", "Data Analysis & Visualisation"],
+      skills: [
+        { category: "Full Stack Developer", details: "" },
+        { category: "Database Management", details: "" },
+        { category: "Graphic Design", details: "" },
+        { category: "Data Analysis & Visualisation", details: "" }
+      ],
       languages: ["English - Fluent", "French - Basic"],
       contactLinks: [],
       educationList: [
@@ -894,7 +902,10 @@
       var skillHtml = state.skills.length
         ? '<div class="cv-sidebar-block">' +
             '<div class="cv-section-title">Skills</div>' +
-            state.skills.map(function (s) { return '<span class="cv-skill-pill">' + escapeHtml(s) + '</span>'; }).join('') +
+            state.skills.map(function (skill) {
+              var details = skill.details ? '<div class="cv-skill-details">' + escapeHtml(skill.details) + '</div>' : '';
+              return '<div class="cv-skill-pill"><strong class="cv-skill-category">' + escapeHtml(skill.category) + '</strong>' + details + '</div>';
+            }).join('') +
           '</div>'
         : '';
 
@@ -1096,7 +1107,7 @@
       var container = get('skillsList');
       if (!container) return;
       container.innerHTML = state.skills.map(function (sk, idx) {
-        return '<span class="skill-tag">' + escapeHtml(sk) + ' <i class="fas fa-times-circle" data-skill-index="' + idx + '"></i></span>';
+        return '<span class="skill-tag">' + escapeHtml(sk.category) + ' <i class="fas fa-times-circle" data-skill-index="' + idx + '" role="button" aria-label="Remove ' + escapeHtml(sk.category) + '"></i></span>';
       }).join('');
       container.querySelectorAll('[data-skill-index]').forEach(function (el) {
         el.addEventListener('click', function (e) {
@@ -1211,8 +1222,17 @@
 
       var addSkill = get('addSkillBtn');
       if (addSkill) addSkill.addEventListener('click', function () {
-        var input = get('newSkill'); var val = input && input.value.trim();
-        if (val) { state.skills.push(val); input.value = ''; renderSkills(); updatePreview(); }
+        var categoryInput = get('newSkillCategory');
+        var detailsInput = get('newSkillDetails');
+        var category = categoryInput && categoryInput.value.trim();
+        var details = detailsInput && detailsInput.value.trim();
+        if (category) {
+          state.skills.push({ category: category, details: details });
+          categoryInput.value = '';
+          detailsInput.value = '';
+          renderSkills();
+          updatePreview();
+        }
       });
       var addLang = get('addLangBtn');
       if (addLang) addLang.addEventListener('click', function () {
@@ -1229,7 +1249,7 @@
       });
 
       // Enter key adds the item in the three "tag" inputs
-      [['newSkill', 'addSkillBtn'], ['newLang', 'addLangBtn'], ['newLink', 'addLinkBtn']].forEach(function (pair) {
+      [['newSkillCategory', 'addSkillBtn'], ['newLang', 'addLangBtn'], ['newLink', 'addLinkBtn']].forEach(function (pair) {
         var input = get(pair[0]);
         if (input) input.addEventListener('keydown', function (e) {
           if (e.key === 'Enter') { e.preventDefault(); var b = get(pair[1]); if (b) b.click(); }
