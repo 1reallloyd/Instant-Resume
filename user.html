@@ -195,7 +195,7 @@
       margin-bottom: 5px;
       color: var(--navy);
     }
-    input[type="text"], input[type="email"], input[type="tel"], input[type="url"], textarea, select {
+    input[type="text"], input[type="email"], input[type="tel"], input[type="url"], input[type="date"], textarea, select {
       width: 100%;
       padding: 10px 12px;
       border-radius: 10px;
@@ -578,6 +578,9 @@
     @media (max-width: 550px) {
       .preview-panel { padding: 1rem 0.5rem 2rem; }
     }
+    @media (max-width: 860px) {
+      #downloadPdfBtn i { font-size: 0.65rem; }
+    }
     /* The A4 page never reflows: it is scaled down to fit small screens via JS (--page-scale) */
     .resume-canvas { transform: scale(var(--page-scale, 1)); }
     .page-shell {
@@ -678,9 +681,9 @@
     </div>
 
     <div class="section-card"><h3><i class="fas fa-id-card"></i> Personal Information</h3>
-      <div class="form-group"><label for="dob">Date of Birth</label><input type="text" id="dob" placeholder="20 June 1985" value="14 March 1996"></div>
-      <div class="form-group"><label for="countryBirth">Country of Birth</label><input type="text" id="countryBirth" placeholder="Ghana" value="Ghana"></div>
-      <div class="form-group"><label for="nationality">Nationality</label><input type="text" id="nationality" placeholder="Belgian" value="Ghanaian"></div>
+      <div class="form-group"><label for="dob">Date of Birth</label><input type="date" id="dob" value="1996-03-14"></div>
+      <div class="form-group"><label for="countryBirth">Country of Birth</label><select id="countryBirth" autocomplete="country-name"></select></div>
+      <div class="form-group"><label for="nationality">Nationality</label><input type="text" id="nationality" value="Ghanaian" readonly aria-readonly="true"></div>
       <div class="form-group"><label for="residence">Place of Residence</label><input type="text" id="residence" placeholder="Street, City, Country" value="Takoradi, Ghana"></div>
     </div>
 
@@ -782,6 +785,76 @@
       return 'https://' + link.replace(/^\/\//, '');
     }
 
+    function initPersonalInfo() {
+      var countrySelect = get('countryBirth');
+      var nationalityInput = get('nationality');
+      if (!countrySelect || !nationalityInput) return;
+
+      var countries = [
+        'Afghanistan|Afghan', 'Albania|Albanian', 'Algeria|Algerian', 'Andorra|Andorran', 'Angola|Angolan',
+        'Antigua and Barbuda|Antiguan and Barbudan', 'Argentina|Argentinian', 'Armenia|Armenian', 'Australia|Australian', 'Austria|Austrian',
+        'Azerbaijan|Azerbaijani', 'Bahamas|Bahamian', 'Bahrain|Bahraini', 'Bangladesh|Bangladeshi', 'Barbados|Barbadian',
+        'Belarus|Belarusian', 'Belgium|Belgian', 'Belize|Belizean', 'Benin|Beninese', 'Bhutan|Bhutanese',
+        'Bolivia|Bolivian', 'Bosnia and Herzegovina|Bosnian and Herzegovinian', 'Botswana|Botswanan', 'Brazil|Brazilian', 'Brunei|Bruneian',
+        'Bulgaria|Bulgarian', 'Burkina Faso|Burkinabe', 'Burundi|Burundian', 'Cabo Verde|Cape Verdean', 'Cambodia|Cambodian',
+        'Cameroon|Cameroonian', 'Canada|Canadian', 'Central African Republic|Central African', 'Chad|Chadian', 'Chile|Chilean',
+        'China|Chinese', 'Colombia|Colombian', 'Comoros|Comorian', 'Congo|Congolese', 'Costa Rica|Costa Rican',
+        'Cote d\'Ivoire|Ivorian', 'Croatia|Croatian', 'Cuba|Cuban', 'Cyprus|Cypriot', 'Czechia|Czech',
+        'Democratic Republic of the Congo|Congolese', 'Denmark|Danish', 'Djibouti|Djiboutian', 'Dominica|Dominican', 'Dominican Republic|Dominican',
+        'Ecuador|Ecuadorian', 'Egypt|Egyptian', 'El Salvador|Salvadoran', 'Equatorial Guinea|Equatoguinean', 'Eritrea|Eritrean',
+        'Estonia|Estonian', 'Eswatini|Swazi', 'Ethiopia|Ethiopian', 'Fiji|Fijian', 'Finland|Finnish',
+        'France|French', 'Gabon|Gabonese', 'Gambia|Gambian', 'Georgia|Georgian', 'Germany|German',
+        'Ghana|Ghanaian', 'Greece|Greek', 'Grenada|Grenadian', 'Guatemala|Guatemalan', 'Guinea|Guinean',
+        'Guinea-Bissau|Bissau-Guinean', 'Guyana|Guyanese', 'Haiti|Haitian', 'Honduras|Honduran', 'Hungary|Hungarian',
+        'Iceland|Icelandic', 'India|Indian', 'Indonesia|Indonesian', 'Iran|Iranian', 'Iraq|Iraqi',
+        'Ireland|Irish', 'Israel|Israeli', 'Italy|Italian', 'Jamaica|Jamaican', 'Japan|Japanese',
+        'Jordan|Jordanian', 'Kazakhstan|Kazakhstani', 'Kenya|Kenyan', 'Kiribati|I-Kiribati', 'Kuwait|Kuwaiti',
+        'Kyrgyzstan|Kyrgyz', 'Laos|Laotian', 'Latvia|Latvian', 'Lebanon|Lebanese', 'Lesotho|Basotho',
+        'Liberia|Liberian', 'Libya|Libyan', 'Liechtenstein|Liechtensteiner', 'Lithuania|Lithuanian', 'Luxembourg|Luxembourgish',
+        'Madagascar|Malagasy', 'Malawi|Malawian', 'Malaysia|Malaysian', 'Maldives|Maldivian', 'Mali|Malian',
+        'Malta|Maltese', 'Marshall Islands|Marshallese', 'Mauritania|Mauritanian', 'Mauritius|Mauritian', 'Mexico|Mexican',
+        'Micronesia|Micronesian', 'Moldova|Moldovan', 'Monaco|Monégaque', 'Mongolia|Mongolian', 'Montenegro|Montenegrin',
+        'Morocco|Moroccan', 'Mozambique|Mozambican', 'Myanmar|Burmese', 'Namibia|Namibian', 'Nauru|Nauruan',
+        'Nepal|Nepali', 'Netherlands|Dutch', 'New Zealand|New Zealander', 'Nicaragua|Nicaraguan', 'Niger|Nigerien',
+        'Nigeria|Nigerian', 'North Korea|North Korean', 'North Macedonia|Macedonian', 'Norway|Norwegian', 'Oman|Omani',
+        'Pakistan|Pakistani', 'Palau|Palauan', 'Palestine|Palestinian', 'Panama|Panamanian', 'Papua New Guinea|Papua New Guinean',
+        'Paraguay|Paraguayan', 'Peru|Peruvian', 'Philippines|Filipino', 'Poland|Polish', 'Portugal|Portuguese',
+        'Qatar|Qatari', 'Romania|Romanian', 'Russia|Russian', 'Rwanda|Rwandan', 'Saint Kitts and Nevis|Kittitian and Nevisian',
+        'Saint Lucia|Saint Lucian', 'Saint Vincent and the Grenadines|Vincentian', 'Samoa|Samoan', 'San Marino|Sammarinese', 'Sao Tome and Principe|Sao Tomean',
+        'Saudi Arabia|Saudi', 'Senegal|Senegalese', 'Serbia|Serbian', 'Seychelles|Seychellois', 'Sierra Leone|Sierra Leonean',
+        'Singapore|Singaporean', 'Slovakia|Slovak', 'Slovenia|Slovenian', 'Solomon Islands|Solomon Islander', 'Somalia|Somali',
+        'South Africa|South African', 'South Korea|South Korean', 'South Sudan|South Sudanese', 'Spain|Spanish', 'Sri Lanka|Sri Lankan',
+        'Sudan|Sudanese', 'Suriname|Surinamese', 'Sweden|Swedish', 'Switzerland|Swiss', 'Syria|Syrian',
+        'Tajikistan|Tajik', 'Tanzania|Tanzanian', 'Thailand|Thai', 'Timor-Leste|Timorese', 'Togo|Togolese',
+        'Tonga|Tongan', 'Trinidad and Tobago|Trinidadian and Tobagonian', 'Tunisia|Tunisian', 'Turkey|Turkish', 'Turkmenistan|Turkmen',
+        'Tuvalu|Tuvaluan', 'Uganda|Ugandan', 'Ukraine|Ukrainian', 'United Arab Emirates|Emirati', 'United Kingdom|British',
+        'United States|American', 'Uruguay|Uruguayan', 'Uzbekistan|Uzbekistani', 'Vanuatu|Ni-Vanuatu', 'Vatican City|Vatican citizen',
+        'Venezuela|Venezuelan', 'Vietnam|Vietnamese', 'Yemen|Yemeni', 'Zambia|Zambian', 'Zimbabwe|Zimbabwean'
+      ];
+      var selectedCountry = countrySelect.value || 'Ghana';
+      countrySelect.innerHTML = '<option value="">Select a country</option>' + countries.map(function (entry) {
+        var parts = entry.split('|');
+        return '<option value="' + escapeHtml(parts[0]) + '">' + escapeHtml(parts[0]) + '</option>';
+      }).join('');
+      countrySelect.value = selectedCountry;
+
+      function syncNationality() {
+        var selected = countries.find(function (entry) { return entry.split('|')[0] === countrySelect.value; });
+        nationalityInput.value = selected ? selected.split('|')[1] : '';
+        updatePreview();
+      }
+      countrySelect.addEventListener('change', syncNationality);
+      syncNationality();
+    }
+
+    function formatDateOfBirth(value) {
+      if (!value) return '';
+      var date = new Date(value + 'T00:00:00');
+      return isNaN(date.getTime()) ? value : date.toLocaleDateString(undefined, {
+        day: 'numeric', month: 'long', year: 'numeric'
+      });
+    }
+
     /* ---------- Resume markup (single source of truth for preview + export) ---------- */
     function buildResumeHtml() {
       var name = (get('fullName') && get('fullName').value) || "Your Name";
@@ -790,7 +863,7 @@
       var phone = (get('phone') && get('phone').value) || "";
       var email = (get('email') && get('email').value) || "";
       var location = (get('location') && get('location').value) || "";
-      var dob = (get('dob') && get('dob').value) || "";
+      var dob = formatDateOfBirth((get('dob') && get('dob').value) || "");
       var countryBirth = (get('countryBirth') && get('countryBirth').value) || "";
       var nationality = (get('nationality') && get('nationality').value) || "";
       var residence = (get('residence') && get('residence').value) || "";
@@ -1127,6 +1200,7 @@
       ['fullName', 'jobTitle', 'phone', 'email', 'location', 'dob', 'countryBirth', 'nationality', 'residence'].forEach(function (id) {
         var el = get(id);
         if (el) el.addEventListener('input', updatePreview);
+        if (el && (id === 'dob' || id === 'countryBirth')) el.addEventListener('change', updatePreview);
       });
 
       var about = get('aboutMe');
@@ -1445,6 +1519,7 @@
 
     /* ---------- Init (each step isolated so one failure cannot blank the preview) ---------- */
     [renderSkills, renderLanguages, renderContactLinks, renderEducation, renderExperience,
+     initPersonalInfo,
      bindFormEvents, updateCharCount, updatePreview, initMobileTabs, bindExport, watchPreviewPanel]
       .forEach(function (step) {
         try { step(); } catch (err) { console.error('CVCraft init step failed:', step.name, err); }
