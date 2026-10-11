@@ -1,91 +1,104 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html><html lang="en" class=" js"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#FFFFFF">
-<title>CVCraft — Your CV, on one clean page</title>
-<meta name="description" content="CVCraft is a free resume builder with a live A4 preview, one-click PDF and print. Fill in your details and download a print-ready CV.">
-<meta property="og:title" content="CVCraft — Your CV, on one clean page">
-<meta property="og:description" content="Free resume builder with a live A4 preview, one-click PDF and print.">
-<meta property="og:type" content="website">
+<meta name="theme-color" content="#141D26">
+<title>CVCraft — Your CV, beautifully crafted in minutes</title>
+<meta name="description" content="Free resume builder with a live A4 preview, dynamic animations, one-click PDF export and print-ready templates in Cedis.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23141D26'/%3E%3Ctext x='32' y='46' font-size='40' text-anchor='middle' fill='%23D2A17C' font-family='Georgia,serif' font-weight='700'%3EC%3C/text%3E%3C/svg%3E">
 
-<!-- Marks the page as script-enabled BEFORE first paint, so scroll reveals only
-     hide content when the script that reveals it is actually running. -->
 <script>document.documentElement.className += ' js';</script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=Lato:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Lato:wght@400;700&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-  --ink:        #141D26;
-  --navy:       #1F2E3B;
-  --copper:     #A06B45;
-  --copper-dk:  #855634;
-  --copper-lt:  #D2A17C;   /* copper for text on dark backgrounds */
-  --paper:      #FFFFFF;
-  --wash:       #F5F3F0;
-  --rule:       #E2DCD5;
-  --muted:      #6C6459;
+  --ink:        #101720;
+  --navy:       #192430;
+  --copper:     #B87343;
+  --copper-glow:#E68F53;
+  --copper-dk:  #8A522A;
+  --copper-lt:  #E8B996;
+  --copper-subtle: rgba(184, 115, 67, 0.12);
+  --paper:      #FAF8F5;
+  --card-bg:    #FFFFFF;
+  --wash:       #F2EFEB;
+  --rule:       #E4DDD5;
+  --muted:      #686054;
+  --cedi-green: #1F8A58;
 
   --measure: 62ch;
-  --page: 1180px;
+  --page: 1200px;
   --gutter: clamp(1.25rem, 5vw, 4rem);
-  /* Side padding that also respects notches in landscape */
   --gl: max(var(--gutter), env(safe-area-inset-left, 0px));
   --gr: max(var(--gutter), env(safe-area-inset-right, 0px));
 
-  --nav-h: 4.1rem;
-  --ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --paper-shadow: 0 1px 1px rgba(20,29,38,0.04), 0 18px 40px -18px rgba(20,29,38,0.28);
+  --nav-h: 4.4rem;
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+  --paper-shadow: 0 4px 6px -1px rgba(16,23,32,0.05), 0 24px 60px -15px rgba(16,23,32,0.22);
 }
 
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
-  /* Anchor jumps land below the sticky navbar instead of underneath it */
-  scroll-padding-top: calc(var(--nav-h) + env(safe-area-inset-top, 0px) + 0.5rem);
+  scroll-padding-top: calc(var(--nav-h) + 1rem);
 }
 
 body {
-  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   background: var(--paper);
   color: var(--ink);
   line-height: 1.65;
   font-size: 1rem;
   overflow-x: hidden;
-  overflow-x: clip;
+  position: relative;
+}
+
+/* Ambient Subtle Background Blobs */
+.bg-ambient {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.ambient-glow {
+  position: absolute;
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.35;
+  animation: floatAmbient 18s ease-in-out infinite alternate;
+}
+.glow-1 { top: -100px; right: -150px; background: radial-gradient(circle, #EDC9AC, #E2B28B); }
+.glow-2 { top: 40%; left: -200px; background: radial-gradient(circle, #E1ECE5, #CBDDD2); animation-delay: -7s; }
+.glow-3 { bottom: 5%; right: -100px; background: radial-gradient(circle, #EADBCF, #DFC4AF); animation-delay: -12s; }
+
+@keyframes floatAmbient {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(40px, 60px) scale(1.1); }
+  100% { transform: translate(-30px, 40px) scale(0.95); }
 }
 
 h1, h2, h3, .display {
-  font-family: 'Fraunces', Georgia, 'Times New Roman', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-optical-sizing: auto;
   font-weight: 600;
-  line-height: 1.1;
-  letter-spacing: -0.015em;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
 }
 
 p { max-width: var(--measure); }
 a { color: inherit; text-decoration: none; }
 img { max-width: 100%; display: block; }
-ul { list-style: none; }
 
-:focus-visible { outline: 2px solid var(--copper); outline-offset: 3px; border-radius: 3px; }
-.templates :focus-visible, .closing :focus-visible, footer :focus-visible { outline-color: var(--copper-lt); }
-::selection { background: #EADFD3; color: var(--ink); }
-
-.skip-link {
-  position: fixed; left: 1rem; top: -4rem; z-index: 2000;
-  background: var(--ink); color: #fff; padding: 0.6rem 1rem; border-radius: 4px;
-  transition: top 0.2s ease;
-}
-.skip-link:focus { top: calc(0.75rem + env(safe-area-inset-top, 0px)); }
+:focus-visible { outline: 2px solid var(--copper); outline-offset: 3px; border-radius: 4px; }
+::selection { background: #EBD6C3; color: var(--ink); }
 
 .wrap {
   width: 100%;
@@ -93,47 +106,105 @@ ul { list-style: none; }
   margin: 0 auto;
   padding-left: var(--gl);
   padding-right: var(--gr);
+  position: relative;
+  z-index: 1;
 }
 
-/* ===== Buttons ===================================================== */
+/* ===== Buttons with Magnetic Hover & Pulse FX ===== */
 .btn {
   font-family: inherit;
   font-size: 0.95rem;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.2;
   border: 1px solid transparent;
-  border-radius: 4px;
-  padding: 0.78rem 1.35rem;
+  border-radius: 8px;
+  padding: 0.82rem 1.45rem;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.55rem;
-  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s var(--ease);
+  gap: 0.6rem;
+  transition: all 0.3s var(--ease-smooth);
   white-space: nowrap;
+  position: relative;
+  overflow: hidden;
 }
-.btn-solid { background: var(--ink); color: #fff; }
-.btn-solid:hover { background: var(--copper-dk); }
-.btn-line { background: transparent; color: var(--ink); border-color: var(--rule); }
-.btn-line:hover { border-color: var(--ink); }
-.btn-paper { background: #fff; color: var(--ink); }
-.btn-paper:hover { background: #F0EBE5; }
-.btn:active { transform: translateY(1px); }
-.btn-lg { padding: 0.95rem 1.7rem; font-size: 1rem; }
+.btn::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 140%; height: 250%;
+  background: radial-gradient(circle, rgba(255,255,255,0.25) 0%, transparent 70%);
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  transition: transform 0.6s ease, opacity 0.4s ease;
+  pointer-events: none;
+}
+.btn:hover::after {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+.btn-solid {
+  background: var(--ink);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(16,23,32,0.18);
+}
+.btn-solid:hover {
+  background: var(--copper);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(184,115,67,0.35);
+  color: #fff;
+}
+.btn-line {
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(8px);
+  color: var(--ink);
+  border-color: var(--rule);
+}
+.btn-line:hover {
+  border-color: var(--ink);
+  background: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(16,23,32,0.06);
+}
+.btn-paper {
+  background: #fff;
+  color: var(--ink);
+  font-weight: 700;
+}
+.btn-paper:hover {
+  background: var(--copper-lt);
+  color: var(--ink);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 26px rgba(0,0,0,0.25);
+}
+.btn:active { transform: translateY(0); }
+.btn-lg { padding: 1rem 1.85rem; font-size: 1.02rem; border-radius: 10px; }
+.btn-icon-bounce:hover i {
+  animation: bounceRight 0.6s var(--ease-spring) infinite alternate;
+}
+@keyframes bounceRight {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(4px); }
+}
 
-/* ===== Navigation ================================================== */
+/* ===== Sticky Glass Navbar ===== */
 .navbar {
   position: sticky;
   top: 0;
   z-index: 900;
   padding-top: env(safe-area-inset-top, 0px);
-  background: rgba(255,255,255,0.92);
-  backdrop-filter: saturate(180%) blur(12px);
-  -webkit-backdrop-filter: saturate(180%) blur(12px);
-  border-bottom: 1px solid transparent;
-  transition: border-color 0.25s ease;
+  background: rgba(250, 248, 245, 0.85);
+  backdrop-filter: saturate(180%) blur(16px);
+  -webkit-backdrop-filter: saturate(180%) blur(16px);
+  border-bottom: 1px solid rgba(228, 221, 213, 0.4);
+  transition: all 0.35s ease;
 }
-.navbar.scrolled, .navbar.menu-open { border-bottom-color: var(--rule); }
+.navbar.scrolled {
+  background: rgba(255, 255, 255, 0.95);
+  border-bottom-color: var(--rule);
+  box-shadow: 0 4px 20px rgba(16,23,32,0.04);
+}
 .nav-inner {
   max-width: var(--page);
   height: var(--nav-h);
@@ -143,37 +214,84 @@ ul { list-style: none; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
 }
 .logo {
   font-family: 'Fraunces', serif;
-  font-size: 1.3rem;
+  font-size: 1.45rem;
   font-weight: 700;
   letter-spacing: -0.02em;
   display: inline-flex;
-  align-items: baseline;
-  gap: 0.1rem;
+  align-items: center;
+  gap: 0.35rem;
+  transition: transform 0.25s ease;
+}
+.logo-badge {
+  width: 28px; height: 28px;
+  background: var(--ink);
+  color: var(--copper-lt);
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+  font-size: 1rem;
+  transition: transform 0.4s var(--ease-spring), background-color 0.3s;
+}
+.logo:hover .logo-badge {
+  transform: rotate(10deg) scale(1.1);
+  background: var(--copper);
+  color: #fff;
 }
 .logo .dot { color: var(--copper); }
-.nav-links { display: flex; align-items: center; gap: 1.9rem; }
-/* :not(.btn) on purpose: the CTA button lives inside .nav-links and must keep
-   its own .btn colours instead of inheriting the text-link style. */
+.nav-links { display: flex; align-items: center; gap: 2rem; }
 .nav-links > a:not(.btn) {
   font-size: 0.92rem;
+  font-weight: 500;
   color: var(--muted);
-  padding: 0.2rem 0;
-  border-bottom: 1px solid transparent;
-  transition: color 0.2s ease, border-color 0.2s ease;
+  position: relative;
+  padding: 0.3rem 0;
+  transition: color 0.25s ease;
 }
-.nav-links > a:not(.btn):hover, .nav-links > a.active { color: var(--ink); border-bottom-color: var(--copper); }
-.nav-links .btn { margin-left: 0.4rem; }
+.nav-links > a:not(.btn)::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 0; height: 2px;
+  background: var(--copper);
+  border-radius: 2px;
+  transition: width 0.3s var(--ease-smooth);
+}
+.nav-links > a:not(.btn):hover, .nav-links > a.active {
+  color: var(--ink);
+}
+.nav-links > a:not(.btn):hover::after, .nav-links > a.active::after {
+  width: 100%;
+}
+
+.currency-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(31, 138, 88, 0.08);
+  border: 1px solid rgba(31, 138, 88, 0.25);
+  color: var(--cedi-green);
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  animation: pulseGlow 3s infinite;
+}
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(31, 138, 88, 0.2); }
+  50% { box-shadow: 0 0 0 4px rgba(31, 138, 88, 0); }
+}
 
 .hamburger {
   display: none;
   background: none;
   border: 1px solid var(--rule);
-  border-radius: 4px;
-  width: 44px; height: 44px;
+  border-radius: 8px;
+  width: 42px; height: 42px;
   padding: 0;
   cursor: pointer;
   align-items: center;
@@ -182,367 +300,797 @@ ul { list-style: none; }
   gap: 4px;
 }
 .hamburger span {
-  display: block;
-  width: 18px;
-  height: 1.5px;
+  width: 18px; height: 1.5px;
   background: var(--ink);
-  transition: transform 0.25s var(--ease), opacity 0.2s ease;
+  transition: transform 0.25s ease, opacity 0.2s ease;
 }
 .hamburger.is-open span:nth-child(1) { transform: translateY(5.5px) rotate(45deg); }
 .hamburger.is-open span:nth-child(2) { opacity: 0; }
 .hamburger.is-open span:nth-child(3) { transform: translateY(-5.5px) rotate(-45deg); }
 
-.mobile-menu { display: none; }
+.mobile-menu {
+  display: none;
+  position: absolute;
+  top: 100%; left: 0; right: 0;
+  background: #fff;
+  padding: 1.5rem var(--gl);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+  border-top: 1px solid var(--rule);
+  transform: translateY(-10px);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s var(--ease-smooth);
+}
+.mobile-menu.open {
+  display: block;
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+.mobile-menu a { display: block; padding: 0.75rem 0; font-weight: 600; border-bottom: 1px solid var(--wash); }
+.mobile-menu .btn { width: 100%; margin-top: 1rem; }
 
-/* ===== Hero ======================================================== */
+/* ===== Hero Section with 3D Tilt Card & Interactive Ripple ===== */
 .hero {
   max-width: var(--page);
   margin: 0 auto;
-  padding: clamp(3rem, 8vw, 6.5rem) var(--gr) clamp(3rem, 7vw, 5.5rem) var(--gl);
+  padding: clamp(3rem, 7vw, 6rem) var(--gr) clamp(3rem, 6vw, 5rem) var(--gl);
   display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-  gap: clamp(2rem, 6vw, 5rem);
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: clamp(2rem, 5vw, 4.5rem);
   align-items: center;
+}
+.hero-copy {
+  position: relative;
+  z-index: 2;
 }
 .hero-eyebrow {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.6rem;
   font-size: 0.82rem;
+  font-weight: 600;
   color: var(--muted);
+  background: #fff;
   border: 1px solid var(--rule);
   border-radius: 999px;
-  padding: 0.35rem 0.85rem;
-  margin-bottom: 1.6rem;
-}
-.hero-eyebrow i { color: #2F9E6B; font-size: 0.6rem; }
-.hero h1 {
-  font-size: clamp(2.3rem, 6vw, 4.4rem);
-  margin-bottom: 0.9rem;
-}
-.hero h1 em { font-style: italic; font-weight: 500; }
-.hero-role {
-  font-size: 0.86rem;
-  color: var(--muted);
-  padding-bottom: 1.5rem;
-  border-bottom: 1px solid var(--rule);
+  padding: 0.38rem 0.95rem;
   margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(16,23,32,0.03);
+  transition: transform 0.25s ease;
 }
-.hero-lede { font-size: 1.06rem; color: var(--muted); margin-bottom: 2rem; max-width: 46ch; }
-.hero-btns { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-bottom: 2.6rem; }
+.hero-eyebrow:hover { transform: translateY(-1px); border-color: var(--copper); }
+.hero-eyebrow .gh-flag {
+  font-size: 0.95rem;
+}
+.hero h1 {
+  font-size: clamp(2.4rem, 5.5vw, 4.2rem);
+  margin-bottom: 1.1rem;
+  color: var(--ink);
+}
+.hero h1 em {
+  font-style: italic;
+  font-weight: 500;
+  background: linear-gradient(135deg, var(--copper-dk), var(--copper));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+  animation: shimmerText 4s ease-in-out infinite alternate;
+}
+@keyframes shimmerText {
+  0% { filter: drop-shadow(0 0 0px rgba(184,115,67,0)); }
+  100% { filter: drop-shadow(0 0 8px rgba(184,115,67,0.3)); }
+}
+.hero-role {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  margin-bottom: 1.3rem;
+}
+.hero-role span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.hero-role i { color: var(--copper); }
+.hero-lede {
+  font-size: 1.1rem;
+  color: var(--muted);
+  margin-bottom: 2.2rem;
+  line-height: 1.7;
+}
+.hero-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2.8rem;
+}
 
 .hero-stats {
   display: flex;
-  gap: clamp(1.5rem, 4vw, 3rem);
+  gap: clamp(1.5rem, 3.5vw, 2.8rem);
   border-top: 1px solid var(--rule);
-  padding-top: 1.4rem;
+  padding-top: 1.6rem;
 }
+.stat {
+  transition: transform 0.3s ease;
+}
+.stat:hover { transform: translateY(-2px); }
 .stat .num {
   font-family: 'Fraunces', serif;
-  font-size: 1.75rem;
-  font-weight: 600;
+  font-size: 1.85rem;
+  font-weight: 700;
   line-height: 1.1;
+  color: var(--ink);
+  display: flex;
+  align-items: baseline;
+  gap: 0.2rem;
 }
-.stat .lbl { font-size: 0.8rem; color: var(--muted); }
+.stat .num span.currency-sym {
+  color: var(--cedi-green);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+.stat .lbl { font-size: 0.82rem; color: var(--muted); font-weight: 500; margin-top: 0.2rem; }
 
-.hero-visual { position: relative; justify-self: center; width: 100%; max-width: 460px; }
+/* 3D Floating Mockup */
+.hero-visual {
+  position: relative;
+  justify-self: center;
+  width: 100%;
+  max-width: 480px;
+  perspective: 1000px;
+}
+.sheet-container {
+  position: relative;
+  transition: transform 0.3s var(--ease-smooth);
+  transform-style: preserve-3d;
+}
+.sheet-container:hover {
+  transform: rotateY(-3deg) rotateX(3deg) translateY(-6px);
+}
 
-/* The hero sheet is a miniature of the builder's real A4 preview: same layout,
-   same proportions, same typeface. The CV is laid out at true A4 size (794 x 1123 px)
-   and scaled to the sheet's width, so it looks identical on phone and desktop.
-   --cv-s is refined by script to the exact width; the values here are the fallback. */
 .sheet {
-  --cv-s: 0.5793;
+  --cv-s: 0.58;
   aspect-ratio: 794 / 1123;
   background: #fff;
   box-shadow: 0 0 0 1px var(--rule), var(--paper-shadow);
-  border-radius: 2px;
+  border-radius: 4px;
   position: relative;
   overflow: hidden;
-  -webkit-user-select: none;
   user-select: none;
+  transition: box-shadow 0.4s ease;
 }
+.sheet-container:hover .sheet {
+  box-shadow: 0 0 0 1px var(--copper-lt), 0 30px 70px -15px rgba(184,115,67,0.22);
+}
+
 .cvm {
-  --cvm-ink: #222222;
-  --cvm-gray: #5C5C5C;
-  --cvm-dash: #BFBFBF;
-  --cvm-divider: #C9C9C9;
+  --cvm-ink: #1B2128;
+  --cvm-gray: #555E68;
+  --cvm-dash: #C8D0D8;
+  --cvm-divider: #DDE2E6;
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 794px;
-  height: 1123px;
+  top: 0; left: 0;
+  width: 794px; height: 1123px;
   display: flex;
   flex-direction: column;
   background: #fff;
   color: var(--cvm-ink);
-  font-family: 'Lato', 'Poppins', Arial, sans-serif;
+  font-family: 'Lato', Arial, sans-serif;
   font-size: 16px;
   font-weight: 400;
-  line-height: normal;          /* the page's 1.65 body line-height must not leak in */
-  letter-spacing: 0;
-  text-align: left;
+  line-height: normal;
   transform-origin: 0 0;
   transform: scale(var(--cv-s));
   pointer-events: none;
 }
-.cvm-header { padding: 52px 56px 0; text-align: center; }
-.cvm-name {
-  font-size: 28px;
-  line-height: 1.15;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  margin-bottom: 12px;
+.cvm-header {
+  padding: 50px 56px 0;
+  text-align: center;
+  position: relative;
 }
-.cvm-job {
-  color: var(--cvm-gray);
-  font-size: 10px;
+.cvm-name {
+  font-size: 29px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  padding-bottom: 14px;
-  border-bottom: 1px solid #4A4A4A;
+  margin-bottom: 10px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.cvm-job {
+  color: var(--copper-dk);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding-bottom: 16px;
+  border-bottom: 1.5px solid #2B3542;
 }
 .cvm-cols { display: flex; flex: 1; align-items: stretch; padding: 0 56px 48px; }
-.cvm-side { width: 31%; padding: 24px 22px 0 0; border-right: 1px dashed var(--cvm-dash); }
-.cvm-main { width: 69%; padding: 24px 0 0 26px; }
+.cvm-side { width: 32%; padding: 24px 22px 0 0; border-right: 1.5px dashed var(--cvm-dash); }
+.cvm-main { width: 68%; padding: 24px 0 0 26px; }
 .cvm-title {
   font-weight: 700;
-  font-size: 10.5px;
-  letter-spacing: 0.17em;
+  font-size: 11px;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   margin-bottom: 12px;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.cvm-title::before {
+  content: '';
+  display: inline-block;
+  width: 6px; height: 6px;
+  background: var(--copper);
+  border-radius: 50%;
 }
 .cvm-block { padding-bottom: 16px; margin-bottom: 16px; border-bottom: 1px dashed var(--cvm-dash); }
 .cvm-side .cvm-block:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
 .cvm-main .cvm-block:last-child { border-bottom: 1px solid var(--cvm-divider); }
 
-.cvm-info { display: grid; grid-template-columns: 45% 55%; gap: 6px; margin-bottom: 9px; font-size: 9.5px; line-height: 1.45; align-items: start; }
-.cvm-info b { font-weight: 700; }
+.cvm-info { display: grid; grid-template-columns: 46% 54%; gap: 6px; margin-bottom: 9px; font-size: 9.8px; line-height: 1.45; }
+.cvm-info b { font-weight: 700; color: #2B3542; }
 .cvm-info span { color: var(--cvm-gray); }
-.cvm-skill { font-size: 9.5px; line-height: 1.4; color: var(--cvm-gray); padding-bottom: 7px; margin-bottom: 7px; border-bottom: 1px dotted #E2E2E2; }
-.cvm-skill:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
-.cvm-lang { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; font-size: 9.5px; line-height: 1.4; margin-bottom: 9px; color: var(--cvm-gray); }
-.cvm-lang b { font-weight: 700; color: var(--cvm-ink); white-space: nowrap; }
-.cvm-contact { display: flex; align-items: center; gap: 10px; font-size: 9.5px; margin-bottom: 10px; color: var(--cvm-gray); overflow-wrap: anywhere; }
-.cvm-contact i { color: var(--cvm-ink); width: 13px; font-size: 9px; text-align: center; flex-shrink: 0; }
+.cvm-skill {
+  font-size: 9.8px;
+  line-height: 1.4;
+  color: var(--cvm-gray);
+  padding: 4px 6px;
+  margin-bottom: 5px;
+  background: #F7FAFC;
+  border-radius: 3px;
+  border-left: 2px solid var(--copper);
+}
+.cvm-lang { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; font-size: 9.8px; margin-bottom: 8px; color: var(--cvm-gray); }
+.cvm-lang b { font-weight: 700; color: var(--cvm-ink); }
+.cvm-contact { display: flex; align-items: center; gap: 10px; font-size: 9.8px; margin-bottom: 10px; color: var(--cvm-gray); }
+.cvm-contact i { color: var(--copper); width: 14px; font-size: 9.5px; text-align: center; }
 
-.cvm-about { font-size: 9.5px; line-height: 1.75; color: var(--cvm-gray); text-align: justify; overflow-wrap: break-word; }
+.cvm-about { font-size: 9.8px; line-height: 1.75; color: var(--cvm-gray); text-align: justify; }
 .cvm-entry { margin-bottom: 14px; }
-.cvm-entry:last-child { margin-bottom: 4px; }
 .cvm-entry-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
-.cvm-entry-title { font-weight: 700; font-size: 10.5px; line-height: 1.35; }
-.cvm-dates { font-size: 9.5px; color: var(--cvm-gray); white-space: nowrap; flex-shrink: 0; }
-.cvm-sub { font-size: 9.5px; color: var(--cvm-gray); margin-top: 2px; }
+.cvm-entry-title { font-weight: 700; font-size: 11px; color: #1E2833; }
+.cvm-dates { font-size: 9.8px; color: var(--copper-dk); font-weight: 700; }
+.cvm-sub { font-size: 9.8px; color: var(--cvm-gray); margin-top: 2px; }
 .cvm-list { list-style: disc; margin-top: 6px; padding-left: 14px; }
-.cvm-list li { font-size: 9.5px; line-height: 1.65; color: var(--cvm-gray); margin-bottom: 1px; padding-left: 2px; }
-.cvm-list li::marker { font-size: 8px; }
+.cvm-list li { font-size: 9.5px; line-height: 1.6; color: var(--cvm-gray); margin-bottom: 2px; }
 
-/* The "typing" cursor at the end of the profile text */
-.cvm-caret { display: inline-block; width: 2px; height: 10px; margin-left: 2px; vertical-align: -1px; background: var(--copper); animation: blink 1.1s steps(1, end) 1.4s infinite; }
-
-/* Sections settle onto the page one after another */
-.cvm-header, .cvm-block { animation: cvmIn 0.6s var(--ease) both; }
-.cvm-header { animation-delay: 0.10s; }
-.cvm-side .cvm-block:nth-child(1) { animation-delay: 0.30s; }
-.cvm-side .cvm-block:nth-child(2) { animation-delay: 0.42s; }
-.cvm-side .cvm-block:nth-child(3) { animation-delay: 0.54s; }
-.cvm-side .cvm-block:nth-child(4) { animation-delay: 0.66s; }
-.cvm-main .cvm-block:nth-child(1) { animation-delay: 0.36s; }
-.cvm-main .cvm-block:nth-child(2) { animation-delay: 0.50s; }
-.cvm-main .cvm-block:nth-child(3) { animation-delay: 0.64s; }
-@keyframes cvmIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-@keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
-
+/* Dynamic Floating Interactive Badges with Smooth Hover Animations */
 .sheet-tag {
   position: absolute;
-  background: #fff;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(8px);
   border: 1px solid var(--rule);
-  border-radius: 4px;
-  padding: 0.4rem 0.7rem;
-  font-size: 0.76rem;
-  line-height: 1.4;
-  color: var(--muted);
+  border-radius: 999px;
+  padding: 0.5rem 0.95rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ink);
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
-  box-shadow: 0 8px 22px -12px rgba(20,29,38,0.35);
-  z-index: 2;
+  gap: 0.55rem;
+  box-shadow: 0 10px 28px -8px rgba(16,23,32,0.15);
+  z-index: 10;
+  transition: all 0.3s var(--ease-spring);
+  cursor: pointer;
 }
-.sheet-tag.live { top: 4%; left: -9%; }
-.sheet-tag.pdf { bottom: -14px; right: -7%; }
+.sheet-tag:hover {
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 14px 34px -6px rgba(184,115,67,0.3);
+  border-color: var(--copper);
+}
+.sheet-tag.live { top: -16px; left: -14px; animation: floatBadge1 4s ease-in-out infinite; }
+.sheet-tag.pdf { bottom: -18px; right: -12px; animation: floatBadge2 4.5s ease-in-out infinite; }
+.sheet-tag.currency-tag { bottom: 35%; left: -26px; animation: floatBadge3 5s ease-in-out infinite; }
+
+@keyframes floatBadge1 {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+@keyframes floatBadge2 {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+@keyframes floatBadge3 {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
 .live-dot {
-  width: 6px; height: 6px; border-radius: 50%; background: #2F9E6B;
+  width: 8px; height: 8px; border-radius: 50%; background: #2F9E6B;
   box-shadow: 0 0 0 0 rgba(47,158,107,0.5);
-  animation: pulse 2s ease-out infinite;
+  animation: pulse 1.8s ease-out infinite;
 }
 @keyframes pulse {
-  70% { box-shadow: 0 0 0 7px rgba(47,158,107,0); }
+  70% { box-shadow: 0 0 0 8px rgba(47,158,107,0); }
   100% { box-shadow: 0 0 0 0 rgba(47,158,107,0); }
 }
 
-/* ===== Facts strip (replaces the old logo marquee) ================= */
-.facts {
+/* Typing Caret Animation */
+.cvm-caret {
+  display: inline-block;
+  width: 2px; height: 10px;
+  margin-left: 3px;
+  background: var(--copper);
+  animation: blink 1s steps(1, end) infinite;
+}
+@keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
+
+/* ===== Interactive Ticker Bar ===== */
+.facts-strip {
   border-top: 1px solid var(--rule);
   border-bottom: 1px solid var(--rule);
-  background: var(--wash);
+  background: #fff;
+  overflow: hidden;
+  position: relative;
+  padding: 1.1rem 0;
 }
-.facts ul {
-  max-width: var(--page);
-  margin: 0 auto;
-  padding: 1.25rem var(--gr) 1.25rem var(--gl);
+.ticker-wrap {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 0.9rem 2rem;
+  width: 200%;
+  animation: tickerMove 30s linear infinite;
 }
-.facts li { display: inline-flex; align-items: center; gap: 0.6rem; font-size: 0.9rem; color: var(--muted); }
-.facts i { color: var(--copper); font-size: 0.85rem; width: 1rem; text-align: center; }
+.ticker-wrap:hover { animation-play-state: paused; }
+.ticker-content {
+  display: flex;
+  gap: 3.5rem;
+  width: 100%;
+  justify-content: space-around;
+  align-items: center;
+  flex-shrink: 0;
+}
+.ticker-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+  transition: color 0.2s, transform 0.2s;
+}
+.ticker-item:hover { color: var(--ink); transform: scale(1.04); }
+.ticker-item i { color: var(--copper); font-size: 1rem; }
+@keyframes tickerMove {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
 
-/* ===== Section furniture =========================================== */
-.section { padding: clamp(4rem, 9vw, 7rem) 0; }
-.section-head { margin-bottom: clamp(2.5rem, 5vw, 3.5rem); max-width: 34rem; }
-.section-head h2 { font-size: clamp(1.9rem, 3.6vw, 2.8rem); margin-bottom: 0.9rem; }
-.section-head p { color: var(--muted); }
+/* ===== Interactive Step Cards with Staggered Hover & Active States ===== */
+.section { padding: clamp(4.5rem, 8vw, 7.5rem) 0; position: relative; }
+.section-head { margin-bottom: clamp(2.5rem, 5vw, 4rem); max-width: 36rem; }
+.section-head h2 { font-size: clamp(2rem, 3.8vw, 3rem); margin-bottom: 0.8rem; }
+.section-head p { color: var(--muted); font-size: 1.05rem; }
 .section-head.center { margin-inline: auto; text-align: center; }
 .section-head.center p { margin-inline: auto; }
 
-/* ===== How it works ================================================ */
-.steps { border-top: 1px solid var(--rule); }
-.step {
+.steps-grid {
   display: grid;
-  grid-template-columns: 3.5rem minmax(0, 20rem) minmax(0, 1fr);
-  gap: clamp(1rem, 4vw, 3rem);
-  align-items: baseline;
-  padding: 1.9rem 0;
-  border-bottom: 1px solid var(--rule);
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
 }
-.step-num { font-family: 'Fraunces', serif; font-size: 1.5rem; color: var(--copper); font-variant-numeric: tabular-nums; }
-.step h3 { font-size: 1.3rem; }
-.step p { color: var(--muted); font-size: 0.97rem; }
+.step-card {
+  background: #fff;
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  padding: 2rem 1.6rem;
+  position: relative;
+  transition: all 0.35s var(--ease-spring);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.step-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 3px;
+  background: var(--copper);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s var(--ease-spring);
+}
+.step-card:hover {
+  transform: translateY(-8px);
+  border-color: var(--copper-lt);
+  box-shadow: 0 16px 36px -10px rgba(184,115,67,0.18);
+}
+.step-card:hover::before { transform: scaleX(1); }
+.step-icon-wrap {
+  width: 48px; height: 48px;
+  border-radius: 10px;
+  background: var(--wash);
+  color: var(--copper);
+  display: grid;
+  place-items: center;
+  font-size: 1.25rem;
+  margin-bottom: 1.4rem;
+  transition: all 0.3s ease;
+}
+.step-card:hover .step-icon-wrap {
+  background: var(--copper);
+  color: #fff;
+  transform: scale(1.1) rotate(-6deg);
+}
+.step-num-badge {
+  position: absolute;
+  top: 1.5rem; right: 1.5rem;
+  font-family: 'Fraunces', serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: rgba(20,29,38,0.15);
+  transition: color 0.3s;
+}
+.step-card:hover .step-num-badge { color: var(--copper-glow); }
+.step-card h3 { font-size: 1.22rem; margin-bottom: 0.6rem; }
+.step-card p { font-size: 0.92rem; color: var(--muted); line-height: 1.6; }
 
-/* ===== Features ==================================================== */
-.features { background: var(--wash); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
-/* Explicit column counts (not auto-fit) so the last row is never short and the
-   1px rule background can never show through as empty grey cells. */
+/* ===== Interactive Features Grid with Hover Glow ===== */
+.features-section { background: var(--wash); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
 .feat-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1px;
-  background: var(--rule);
-  border: 1px solid var(--rule);
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
 }
-.feat { background: var(--wash); padding: 1.9rem 1.7rem; transition: background 0.25s ease; }
-.feat:hover { background: #fff; }
-.feat i { color: var(--copper); font-size: 1.05rem; margin-bottom: 1rem; display: block; }
-.feat h3 { font-size: 1.12rem; margin-bottom: 0.45rem; }
-.feat p { font-size: 0.93rem; color: var(--muted); }
+.feat-item {
+  background: #fff;
+  padding: 2.2rem 2rem;
+  border-radius: 14px;
+  border: 1px solid var(--rule);
+  transition: all 0.35s var(--ease-spring);
+  position: relative;
+  overflow: hidden;
+}
+.feat-item::after {
+  content: '';
+  position: absolute;
+  top: -50%; right: -50%;
+  width: 200%; height: 200%;
+  background: radial-gradient(circle, rgba(184,115,67,0.06) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.4s;
+  pointer-events: none;
+}
+.feat-item:hover {
+  transform: translateY(-6px);
+  border-color: var(--copper-lt);
+  box-shadow: 0 16px 32px -8px rgba(16,23,32,0.08);
+}
+.feat-item:hover::after { opacity: 1; }
+.feat-icon {
+  width: 50px; height: 50px;
+  border-radius: 12px;
+  background: rgba(184,115,67,0.1);
+  color: var(--copper);
+  display: grid;
+  place-items: center;
+  font-size: 1.3rem;
+  margin-bottom: 1.3rem;
+  transition: transform 0.35s var(--ease-spring);
+}
+.feat-item:hover .feat-icon {
+  transform: scale(1.12) rotate(6deg);
+  background: var(--copper);
+  color: #fff;
+}
+.feat-item h3 { font-size: 1.25rem; margin-bottom: 0.6rem; }
+.feat-item p { font-size: 0.94rem; color: var(--muted); }
 
-/* ===== Layout showcase ============================================= */
+/* ===== Interactive Layout Preview with Animated Highlight Bars ===== */
 .templates { background: var(--ink); color: #fff; }
-.templates .section-head { margin-bottom: 0; }
-.templates .section-head p { color: #A9B3BD; }
+.templates .section-head p { color: #A8B4BF; }
 .showcase {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 400px);
-  gap: clamp(2.5rem, 7vw, 6rem);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 440px);
+  gap: clamp(2.5rem, 6vw, 5.5rem);
   align-items: center;
 }
-.layout-list { margin: 1.8rem 0 2.2rem; display: grid; gap: 0.7rem; }
-.layout-list li { display: flex; gap: 0.75rem; align-items: baseline; color: #C9D1D8; font-size: 0.96rem; }
-.layout-list i { color: var(--copper-lt); font-size: 0.8rem; }
+.layout-list { margin: 2rem 0 2.4rem; display: grid; gap: 0.9rem; }
+.layout-list li {
+  display: flex;
+  gap: 0.9rem;
+  align-items: center;
+  color: #E2E8F0;
+  font-size: 0.98rem;
+  background: rgba(255,255,255,0.04);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.06);
+  transition: all 0.25s ease;
+}
+.layout-list li:hover {
+  background: rgba(255,255,255,0.08);
+  border-color: var(--copper);
+  transform: translateX(4px);
+}
+.layout-list i { color: var(--copper-lt); font-size: 0.9rem; }
 
+.interactive-mockup-frame {
+  perspective: 900px;
+  justify-self: center;
+  width: 100%;
+}
 .lay-paper {
   aspect-ratio: 1 / 1.414;
   width: 100%;
   background: #fff;
-  padding: 9% 9%;
-  box-shadow: 0 30px 50px -28px rgba(0,0,0,0.75);
-  justify-self: center;
+  border-radius: 6px;
+  padding: 9%;
+  box-shadow: 0 30px 60px -20px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.1);
+  transform: rotateY(-6deg) rotateX(4deg);
+  transition: transform 0.4s var(--ease-spring), box-shadow 0.4s;
+  cursor: pointer;
 }
-.lay-head { text-align: center; padding-bottom: 5%; border-bottom: 1px solid #4A4A4A; }
-.lay-bar { height: 5px; background: #E7E3DE; margin-bottom: 7px; }
-.lay-bar.name { height: 10px; background: var(--ink); width: 56%; margin: 0 auto 8px; }
-.lay-bar.role { height: 4px; background: var(--copper); width: 32%; margin: 0 auto; }
-.lay-cols { display: grid; grid-template-columns: 31% 1fr; margin-top: 6%; height: 84%; }
-.lay-side { border-right: 1px dashed #BFBFBF; padding-right: 9%; }
+.interactive-mockup-frame:hover .lay-paper {
+  transform: rotateY(0deg) rotateX(0deg) translateY(-8px);
+  box-shadow: 0 35px 75px -15px rgba(184,115,67,0.3), 0 0 0 2px var(--copper);
+}
+.lay-head { text-align: center; padding-bottom: 5%; border-bottom: 1.5px solid #E2E8F0; }
+.lay-bar {
+  height: 5px;
+  background: #E8ECEF;
+  margin-bottom: 7px;
+  border-radius: 3px;
+  transition: background-color 0.3s;
+}
+.interactive-mockup-frame:hover .lay-bar { background: #D5DDE4; }
+.lay-bar.name { height: 11px; background: var(--ink); width: 60%; margin: 0 auto 8px; }
+.lay-bar.role { height: 5px; background: var(--copper); width: 34%; margin: 0 auto; }
+.lay-cols { display: grid; grid-template-columns: 32% 1fr; margin-top: 6%; height: 84%; }
+.lay-side { border-right: 1.5px dashed #CBD5E1; padding-right: 9%; }
 .lay-main { padding-left: 9%; }
-.lay-bar.h { background: #A9A19A; width: 60%; margin-bottom: 9px; }
-.lay-gap { height: 12px; }
+.lay-bar.h { background: var(--copper); width: 60%; margin-bottom: 9px; opacity: 0.85; }
+.lay-gap { height: 14px; }
 
-/* ===== Free for now ================================================ */
-.pricing { background: var(--wash); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
-.plan {
+/* ===== Pricing in Cedis (GH₵) with Currency Switcher & Card Animations ===== */
+.pricing-section { background: var(--wash); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+.pricing-switcher-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 2.5rem;
+}
+.currency-pill {
   background: #fff;
   border: 1px solid var(--rule);
-  padding: 2.2rem 2rem;
-  max-width: 26rem;
-  margin: 0 auto;
+  padding: 0.4rem 0.5rem;
+  border-radius: 999px;
+  display: inline-flex;
+  gap: 0.3rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
 }
-.plan-top { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-bottom: 1.3rem; }
-.plan-name { font-size: 0.92rem; font-weight: 500; }
-.plan-flag { font-size: 0.72rem; color: #1F7A52; border: 1px solid currentColor; border-radius: 999px; padding: 0.15rem 0.65rem; white-space: nowrap; }
-.plan .amount { font-family: 'Fraunces', serif; font-size: 2.8rem; font-weight: 600; line-height: 1; }
-.plan .period { font-size: 0.85rem; color: var(--muted); margin: 0.4rem 0 1.6rem; }
-.plan ul { margin-bottom: 1.8rem; }
-.plan li { font-size: 0.93rem; padding: 0.5rem 0; border-bottom: 1px solid var(--rule); display: flex; gap: 0.65rem; align-items: center; }
-.plan li i { color: var(--copper); font-size: 0.8rem; }
-.plan .btn { width: 100%; }
+.currency-pill-btn {
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.25s;
+  color: var(--muted);
+}
+.currency-pill-btn.active {
+  background: var(--ink);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(16,23,32,0.15);
+}
 
-/* ===== FAQ ========================================================= */
-.faq-list { max-width: 46rem; margin: 0 auto; border-top: 1px solid var(--rule); }
-.faq-list details { border-bottom: 1px solid var(--rule); }
-.faq-list summary {
+.pricing-card-wrap {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 420px));
+  justify-content: center;
+  gap: 2rem;
+}
+.pricing-card {
+  background: #fff;
+  border: 1px solid var(--rule);
+  border-radius: 16px;
+  padding: 2.6rem 2.2rem;
+  position: relative;
+  transition: all 0.35s var(--ease-spring);
+  display: flex;
+  flex-direction: column;
+}
+.pricing-card:hover {
+  transform: translateY(-8px);
+  border-color: var(--copper);
+  box-shadow: 0 20px 40px -10px rgba(184,115,67,0.15);
+}
+.pricing-card.featured {
+  border: 2px solid var(--copper);
+  box-shadow: 0 16px 36px -10px rgba(184,115,67,0.12);
+  position: relative;
+}
+.featured-badge {
+  position: absolute;
+  top: -13px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--copper);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.9rem;
+  border-radius: 999px;
+}
+.plan-top { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 1.4rem; }
+.plan-name { font-size: 1.15rem; font-weight: 700; }
+.plan-tag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--cedi-green);
+  background: rgba(31, 138, 88, 0.08);
+  border: 1px solid rgba(31, 138, 88, 0.2);
+  border-radius: 999px;
+  padding: 0.2rem 0.65rem;
+}
+.pricing-amount-group {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  margin-bottom: 0.4rem;
+}
+.pricing-amount-group .currency-symbol {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--cedi-green);
+}
+.pricing-amount-group .amount {
+  font-family: 'Fraunces', serif;
+  font-size: 3.2rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--ink);
+}
+.pricing-period {
+  font-size: 0.88rem;
+  color: var(--muted);
+  margin-bottom: 1.8rem;
+}
+.pricing-card ul { margin-bottom: 2.2rem; flex: 1; display: grid; gap: 0.75rem; }
+.pricing-card li {
+  font-size: 0.94rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--ink);
+}
+.pricing-card li i {
+  color: var(--cedi-green);
+  font-size: 0.85rem;
+  background: rgba(31, 138, 88, 0.1);
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.pricing-card .btn { width: 100%; }
+
+/* ===== FAQ with Animated Accordion ===== */
+.faq-list { max-width: 48rem; margin: 0 auto; display: grid; gap: 1rem; }
+.faq-card {
+  background: #fff;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+.faq-card:hover { border-color: var(--copper); box-shadow: 0 4px 16px rgba(0,0,0,0.03); }
+.faq-card summary {
   list-style: none;
   cursor: pointer;
-  padding: 1.3rem 2.5rem 1.3rem 0;
+  padding: 1.4rem 1.6rem;
   font-family: 'Fraunces', serif;
   font-size: 1.15rem;
   font-weight: 600;
-  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: color 0.25s;
 }
-.faq-list summary::-webkit-details-marker { display: none; }
-.faq-list summary::after {
-  content: '+';
-  position: absolute; right: 0.2rem; top: 50%;
-  transform: translateY(-50%);
-  font-family: 'Inter', sans-serif; font-weight: 400; font-size: 1.5rem; color: var(--copper);
+.faq-card summary::-webkit-details-marker { display: none; }
+.faq-card summary:hover { color: var(--copper); }
+.faq-icon-toggle {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--wash);
+  color: var(--ink);
+  display: grid;
+  place-items: center;
+  font-size: 0.9rem;
+  transition: transform 0.3s var(--ease-spring), background-color 0.2s, color 0.2s;
 }
-.faq-list details[open] summary::after { content: '\2212'; }
-.faq-list details p { color: var(--muted); padding: 0 2.5rem 1.4rem 0; }
+.faq-card[open] .faq-icon-toggle {
+  transform: rotate(45deg);
+  background: var(--copper);
+  color: #fff;
+}
+.faq-card p {
+  color: var(--muted);
+  padding: 0 1.6rem 1.4rem 1.6rem;
+  font-size: 0.96rem;
+  line-height: 1.65;
+  animation: fadeInDown 0.35s ease;
+}
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
-/* ===== Closing call to action ====================================== */
+/* ===== Closing Call To Action ===== */
 .closing {
-  background: var(--navy);
+  background: radial-gradient(circle at 50% 20%, #253444, var(--navy));
   color: #fff;
   text-align: center;
-  padding: clamp(3.5rem, 8vw, 6rem) var(--gr) clamp(3.5rem, 8vw, 6rem) var(--gl);
+  padding: clamp(4.5rem, 9vw, 7rem) var(--gr);
+  position: relative;
+  overflow: hidden;
 }
-.closing h2 { font-size: clamp(1.9rem, 4vw, 3rem); margin-bottom: 0.8rem; }
-.closing p { color: #B6C0C9; margin: 0 auto 2rem; }
+.closing::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.02' fill-rule='evenodd'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+}
+.closing h2 { font-size: clamp(2.2rem, 4.5vw, 3.4rem); margin-bottom: 1rem; }
+.closing p { color: #CBD5E1; margin: 0 auto 2.4rem; font-size: 1.15rem; }
+.closing-btns { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
 
-/* ===== Footer ====================================================== */
-footer { background: var(--ink); color: #9AA4AE; padding: clamp(3rem, 6vw, 4.5rem) 0 calc(2rem + env(safe-area-inset-bottom, 0px)); font-size: 0.9rem; }
+/* ===== Footer ===== */
+footer { background: var(--ink); color: #8F9CA8; padding: clamp(3.5rem, 6vw, 5rem) 0 calc(2rem + env(safe-area-inset-bottom, 0px)); font-size: 0.92rem; }
 .footer-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
-  gap: 2.5rem;
+  grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: 3rem;
   padding-bottom: 2.5rem;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
 }
-footer .logo { color: #fff; margin-bottom: 0.8rem; }
-.footer-brand p { max-width: 34ch; }
-.footer-h { font-family: 'Inter', sans-serif; font-size: 0.85rem; color: #fff; font-weight: 600; margin-bottom: 0.9rem; letter-spacing: 0; }
-.footer-col ul { display: grid; gap: 0.5rem; }
-.footer-col a:hover { color: #fff; }
-.footer-bottom { padding-top: 1.5rem; display: flex; flex-wrap: wrap; gap: 0.6rem 1rem; justify-content: space-between; font-size: 0.83rem; }
+footer .logo { color: #fff; margin-bottom: 0.9rem; }
+.footer-brand p { max-width: 36ch; font-size: 0.92rem; color: #8F9CA8; }
+.footer-h { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.88rem; color: #fff; font-weight: 700; margin-bottom: 1rem; letter-spacing: 0.05em; text-transform: uppercase; }
+.footer-col ul { display: grid; gap: 0.6rem; }
+.footer-col a { transition: color 0.2s, transform 0.2s; display: inline-block; }
+.footer-col a:hover { color: #fff; transform: translateX(3px); }
+.footer-bottom {
+  padding-top: 1.8rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem 1.5rem;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  align-items: center;
+}
 
-/* ===== Chrome: progress + back to top ============================== */
-.scroll-progress { position: fixed; top: 0; left: 0; height: 2px; width: 0; background: var(--copper); z-index: 1000; }
+/* Chrome Scroll Indicators */
+.scroll-progress {
+  position: fixed;
+  top: 0; left: 0;
+  height: 3px; width: 0;
+  background: linear-gradient(90deg, var(--copper), var(--copper-glow));
+  z-index: 1000;
+  transition: width 0.1s linear;
+}
 .to-top {
   position: fixed;
-  right: max(clamp(1rem, 3vw, 2rem), env(safe-area-inset-right, 0px));
-  bottom: calc(clamp(1rem, 3vw, 2rem) + env(safe-area-inset-bottom, 0px));
-  width: 44px; height: 44px;
+  right: max(1.5rem, env(safe-area-inset-right, 0px));
+  bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
+  width: 48px; height: 48px;
   border-radius: 50%;
   border: 1px solid var(--rule);
   background: #fff;
@@ -551,406 +1099,410 @@ footer .logo { color: #fff; margin-bottom: 0.8rem; }
   display: grid; place-items: center;
   opacity: 0;
   visibility: hidden;
-  transform: translateY(8px);
-  transition: opacity 0.25s ease, transform 0.25s var(--ease), background 0.2s ease, color 0.2s ease, visibility 0s 0.25s;
-  box-shadow: 0 10px 26px -14px rgba(20,29,38,0.5);
+  transform: translateY(12px) scale(0.9);
+  transition: all 0.3s var(--ease-spring);
+  box-shadow: 0 8px 24px rgba(16,23,32,0.14);
   z-index: 800;
 }
-.to-top.visible { opacity: 1; visibility: visible; transform: translateY(0); transition-delay: 0s; }
-.to-top:hover { background: var(--ink); color: #fff; }
+.to-top.visible { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
+.to-top:hover { background: var(--copper); color: #fff; transform: translateY(-4px); }
 
-/* ===== Scroll reveal (self-contained; only hides when JS is running) === */
-.js .reveal {
+/* Scroll Reveal */
+.reveal {
   opacity: 0;
-  transform: translateY(16px);
-  transition: opacity 0.6s var(--ease), transform 0.6s var(--ease);
-  transition-delay: var(--d, 0ms);
+  transform: translateY(22px);
+  transition: opacity 0.7s var(--ease-smooth), transform 0.7s var(--ease-smooth);
 }
-.js .reveal.in { opacity: 1; transform: none; }
+.reveal.in { opacity: 1; transform: translateY(0); }
 
-/* ===== Responsive ================================================== */
 @media (max-width: 1040px) {
-  .feat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .steps-grid { grid-template-columns: repeat(2, 1fr); }
+  .feat-grid { grid-template-columns: repeat(2, 1fr); }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
 }
 
 @media (max-width: 940px) {
   .nav-links { display: none; }
   .hamburger { display: inline-flex; }
-
-  .mobile-menu {
-    display: block;
-    /* Overlay, not in-flow: opening it must not shift the page, or anchor jumps
-       are measured with the menu open and overshoot once it closes. */
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: #fff;
-    box-shadow: 0 24px 40px -28px rgba(20,29,38,0.45);
-    padding-left: var(--gl);
-    padding-right: var(--gr);
-    max-height: 0;
-    overflow: hidden;
-    visibility: hidden;                       /* closed links are not tabbable */
-    border-top: 1px solid transparent;
-    transition: max-height 0.35s var(--ease), padding 0.35s var(--ease), visibility 0s 0.35s;
-  }
-  .mobile-menu.open {
-    max-height: min(30rem, calc(100vh - var(--nav-h) - env(safe-area-inset-top, 0px) - 1rem));
-    overflow-y: auto;
-    visibility: visible;
-    padding-top: 0.4rem;
-    padding-bottom: 1.4rem;
-    border-top-color: var(--rule);
-    transition: max-height 0.35s var(--ease), padding 0.35s var(--ease), visibility 0s 0s;
-  }
-  /* :not(.btn) keeps the CTA button's own colours and padding */
-  .mobile-menu > a:not(.btn) { display: block; padding: 0.85rem 0; border-bottom: 1px solid var(--rule); color: var(--ink); }
-  .mobile-menu .btn { width: 100%; margin-top: 1.1rem; }
-
-  .hero { grid-template-columns: 1fr; padding-top: 2.5rem; }
-  .hero-visual { max-width: 360px; margin-top: 1rem; }
-  .sheet { --cv-s: 0.4534; }
-  /* Tags sit inside the sheet's edges on small screens so nothing spills sideways */
-  .sheet-tag.live { top: -14px; left: 12px; }
-  .sheet-tag.pdf { bottom: -14px; right: 12px; }
-
+  .hero { grid-template-columns: 1fr; padding-top: 2rem; }
+  .hero-visual { max-width: 400px; margin: 1.5rem auto 0; }
+  .sheet { --cv-s: 0.48; }
   .showcase { grid-template-columns: 1fr; }
-  .lay-paper { max-width: 340px; order: 2; }
-  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .pricing-card-wrap { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
 }
 
-@media (max-width: 620px) {
-  .step { grid-template-columns: 2.2rem minmax(0, 1fr); row-gap: 0.4rem; }
-  .step p { grid-column: 2; }
+@media (max-width: 640px) {
+  .steps-grid { grid-template-columns: 1fr; }
   .feat-grid { grid-template-columns: 1fr; }
-  .hero-btns .btn { flex: 1 1 100%; }
-  .hero-stats { gap: 1.25rem; }
-  .stat .num { font-size: 1.45rem; }
-  .facts ul { display: grid; grid-template-columns: 1fr 1fr; }
+  .hero-stats { gap: 1rem; justify-content: space-between; }
   .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
-  .footer-bottom { flex-direction: column; }
-  .faq-list summary { font-size: 1.05rem; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
-    scroll-behavior: auto !important;
-  }
-  .js .reveal { opacity: 1; transform: none; }
-  .cvm-header, .cvm-block { animation: none; }
-  .cvm-caret { animation: none; }
+  .sheet { --cv-s: 0.38; }
+  .sheet-tag.live { left: 4px; top: -12px; }
+  .sheet-tag.pdf { right: 4px; bottom: -12px; }
+  .sheet-tag.currency-tag { left: 4px; bottom: 20%; }
 }
 </style>
-     <!-- GoatCounter: privacy-friendly visit counter -->
-<script data-goatcounter="https://instant-resume.goatcounter.com/count"
-        async src="//gc.zgo.at/count.js"></script>
 </head>
 <body>
 
-<a class="skip-link" href="#main">Skip to content</a>
+<div class="bg-ambient" aria-hidden="true">
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+  <div class="ambient-glow glow-3"></div>
+</div>
+
 <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
 
-<nav class="navbar" id="navbar" aria-label="Main">
+<!-- NAVIGATION -->
+<nav class="navbar" id="navbar" aria-label="Main navigation">
   <div class="nav-inner">
-    <a class="logo" href="#top" aria-label="CVCraft — back to top">CVCraft<span class="dot">.</span></a>
+    <a class="logo" href="#top" aria-label="CVCraft Home">
+      <div class="logo-badge"><i class="fas fa-file-invoice"></i></div>
+      CVCraft<span class="dot">.</span>
+    </a>
+    
     <div class="nav-links">
-      <a href="#how">How it works</a>
-      <a href="#features">Features</a>
-      <a href="#layout">Layout</a>
-      <a href="#pricing">Pricing</a>
-      <a href="#faq">FAQ</a>
-      <a class="btn btn-solid" href="user.html">Build my resume</a>
+      <a href="#how" class="">How it works</a>
+      <a href="#features" class="">Features</a>
+      <a href="#layout" class="">Interactive Layout</a>
+      <a href="#pricing" class="">Pricing</a>
+      <a href="#faq" class="">FAQ</a>
+      <span class="currency-badge"><i class="fas fa-coins"></i> GH₵ 0 · 100% Free</span>
+      <a class="btn btn-solid btn-icon-bounce" href="user.html">
+        <span class="">Build my resume</span>
+        <i class="fas fa-arrow-right"></i>
+      </a>
     </div>
-    <button class="hamburger" id="hamburgerBtn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+
+    <button class="hamburger" id="hamburgerBtn" type="button" aria-label="Toggle navigation menu" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
   </div>
+
   <div class="mobile-menu" id="mobileMenu">
-    <a href="#how">How it works</a>
-    <a href="#features">Features</a>
-    <a href="#layout">Layout</a>
-    <a href="#pricing">Pricing</a>
-    <a href="#faq">FAQ</a>
+    <a href="#how" class="">How it works</a>
+    <a href="#features" class="">Features</a>
+    <a href="#layout" class="">Interactive Layout</a>
+    <a href="#pricing" class="">Pricing</a>
+    <a href="#faq" class="">FAQ</a>
+    <div style="margin-top: 1rem;">
+      <span class="currency-badge"><i class="fas fa-coins"></i> 100% Free · GH₵ 0</span>
+    </div>
     <a class="btn btn-solid" href="user.html">Build my resume</a>
   </div>
 </nav>
 
-<main id="main">
+<main id="top">
 
-<!-- HERO -->
-<header class="hero" id="top">
-  <div class="hero-copy">
-    <span class="hero-eyebrow"><i class="fas fa-circle" aria-hidden="true"></i> Free for now — no card needed</span>
-    <h1>Build a resume<br>that gets <em>read</em></h1>
-    <p class="hero-role">Live A4 preview · One-click PDF · Print-ready</p>
-    <p class="hero-lede">Fill in the form and watch the page take shape as you type. Download a print-ready CV when it looks right.</p>
-    <div class="hero-btns">
-      <a class="btn btn-solid btn-lg" href="user.html">Build my resume</a>
-      <a class="btn btn-line btn-lg" href="#layout">See the layout</a>
+<!-- HERO SECTION -->
+<header class="hero">
+  <div class="hero-copy reveal in">
+    <div class="hero-eyebrow"><span class="gh-flag">🇬🇭</span><span class="">100% Free for Everyone · No Paid Plans</span></div>
+
+    <h1 class="">Build a resume<br>that gets <em>read</em></h1>
+
+    <div class="hero-role">
+      <span class=""><i class="fas fa-bolt"></i> Live A4 preview</span>
+      <span class=""><i class="fas fa-file-pdf"></i> One-click PDF</span>
+      <span class=""><i class="fas fa-print"></i> Print-ready output</span>
     </div>
+
+    <p class="hero-lede">
+      Fill in your experience and watch your document morph smoothly in real-time. Designed with high-impact typography and effortless formatting tailored for top opportunities.
+    </p>
+
+    <div class="hero-btns">
+      <a class="btn btn-solid btn-lg btn-icon-bounce" href="user.html">
+        <span class="">Start Building Free</span>
+        <i class="fas fa-arrow-right"></i>
+      </a>
+      <a class="btn btn-line btn-lg" href="#layout">
+        <i class="fas fa-play-circle"></i>
+        <span class="">Explore Layout</span>
+      </a>
+    </div>
+
     <div class="hero-stats">
-      <div class="stat"><div class="num">$0</div><div class="lbl">Free for now</div></div>
-      <div class="stat"><div class="num">A4</div><div class="lbl">Print-ready page</div></div>
-      <div class="stat"><div class="num">1 click</div><div class="lbl">To download</div></div>
+      <div class="stat">
+        <div class="num"><span class="currency-sym">GH₵</span>0</div>
+        <div class="lbl">Always Free Starter</div>
+      </div>
+      <div class="stat">
+        <div class="num">A4</div>
+        <div class="lbl">Exact Print Dimensions</div>
+      </div>
+      <div class="stat">
+        <div class="num">1-Click</div>
+        <div class="lbl">Instant PDF Download</div>
+      </div>
     </div>
   </div>
 
-  <div class="hero-visual">
-    <span class="sheet-tag live"><span class="live-dot"></span> Updating as you type</span>
-    <div class="sheet" id="heroSheet" role="img" aria-label="Preview of a finished one-page A4 resume with a centred name, a side column for personal details, skills, languages and contact, and a main column for profile, education and work experience">
-      <div class="cvm" aria-hidden="true">
-        <div class="cvm-header">
-          <div class="cvm-name">Samuel Ofori</div>
-          <div class="cvm-job">Data Magt &amp; Analytics</div>
-        </div>
-        <div class="cvm-cols">
-          <div class="cvm-side">
-            <div class="cvm-block">
-              <div class="cvm-title">Personal Information</div>
-              <div class="cvm-info"><b>Date of birth</b><span>14 March 1996</span></div>
-              <div class="cvm-info"><b>Country of birth</b><span>Ghana</span></div>
-              <div class="cvm-info"><b>Nationality</b><span>Ghanaian</span></div>
-              <div class="cvm-info"><b>Place of residence</b><span>Takoradi, Ghana</span></div>
-            </div>
-            <div class="cvm-block">
-              <div class="cvm-title">Skills</div>
-              <div class="cvm-skill">Full Stack Developer</div>
-              <div class="cvm-skill">Database Management</div>
-              <div class="cvm-skill">Graphic Design</div>
-              <div class="cvm-skill">Data Analysis &amp; Visualisation</div>
-              <div class="cvm-skill">Brand Identity</div>
-              <div class="cvm-skill">UI / UX Design</div>
-              <div class="cvm-skill">Typography &amp; Layout</div>
-              <div class="cvm-skill">Photo Retouching</div>
-              <div class="cvm-skill">Print Production</div>
-              <div class="cvm-skill">Motion Graphics</div>
-              <div class="cvm-skill">Client Communication</div>
-              <div class="cvm-skill">Project Management</div>
-            </div>
-            <div class="cvm-block">
-              <div class="cvm-title">Languages</div>
-              <div class="cvm-lang"><span>English</span><b>Fluent</b></div>
-              <div class="cvm-lang"><span>French</span><b>Basic</b></div>
-              <div class="cvm-lang"><span>Spanish</span><b>Basic</b></div>
-            </div>
-            <div class="cvm-block">
-              <div class="cvm-title">Contact</div>
-              <div class="cvm-contact"><i class="fas fa-phone-alt"></i><span>+233 245902756</span></div>
-              <div class="cvm-contact"><i class="fas fa-envelope"></i><span>sammyofori16@gmail.com</span></div>
-              <div class="cvm-contact"><i class="fas fa-map-marker-alt"></i><span>Takoradi, Ghana</span></div>
-            </div>
+  <!-- INTERACTIVE HERO RESUME PREVIEW -->
+  <div class="hero-visual reveal in">
+    <div class="sheet-container" id="interactiveCard">
+      <span class="sheet-tag live">
+        <span class="live-dot"></span>
+        <span class="">Updating as you type</span>
+      </span>
+
+      <span class="sheet-tag currency-tag">
+        <i class="fas fa-tag" style="color:var(--cedi-green);"></i>
+        <span class="">GH₵ 0.00 Free Tier</span>
+      </span>
+
+      <div class="sheet" id="heroSheet" role="img" aria-label="Live interactive A4 resume mockup" style="--cv-s: 0.5718;">
+        <div class="cvm">
+          <div class="cvm-header">
+            <div class="cvm-name">Samuel Ofori</div>
+            <div class="cvm-job">Data Management &amp; Analytics Specialist</div>
           </div>
-          <div class="cvm-main">
-            <div class="cvm-block">
-              <div class="cvm-title">Profile</div>
-              <div class="cvm-about">I am a highly motivated and skilled graphic designer with the ability to work with advanced tools to deliver the best results. I enjoy turning complex briefs into clear, well-crafted visuals, and I pay close attention to detail, deadlines and the people I work with.<span class="cvm-caret"></span></div>
+          <div class="cvm-cols">
+            <div class="cvm-side">
+              <div class="cvm-block">
+                <div class="cvm-title">Personal Details</div>
+                <div class="cvm-info"><b>Location</b><span class="">Accra, Ghana</span></div>
+                <div class="cvm-info"><b>Nationality</b><span class="">Ghanaian</span></div>
+                <div class="cvm-info"><b>Phone</b><span class="">+233 24 590 2756</span></div>
+              </div>
+              <div class="cvm-block">
+                <div class="cvm-title">Top Skills</div>
+                <div class="cvm-skill">Data Modeling &amp; SQL</div>
+                <div class="cvm-skill">Full-Stack Development</div>
+                <div class="cvm-skill">Business Intelligence</div>
+                <div class="cvm-skill">UI/UX &amp; Prototyping</div>
+              </div>
+              <div class="cvm-block">
+                <div class="cvm-title">Languages</div>
+                <div class="cvm-lang"><span class="">English</span><b>Fluent</b></div>
+                <div class="cvm-lang"><span class="">Twi</span><b>Native</b></div>
+                <div class="cvm-lang"><span class="">French</span><b>Working</b></div>
+              </div>
+              <div class="cvm-block">
+                <div class="cvm-title">Contact</div>
+                <div class="cvm-contact"><i class="fas fa-envelope"></i><span class="">sammyofori@cvcraft.gh</span></div>
+                <div class="cvm-contact"><i class="fas fa-globe"></i><span class="">takoradi-tech.gh</span></div>
+              </div>
             </div>
-            <div class="cvm-block">
-              <div class="cvm-title">Education</div>
-              <div class="cvm-entry">
-                <div class="cvm-entry-head"><div class="cvm-entry-title">WARDERE UNIVERSITY</div><div class="cvm-dates">2011 - 2015</div></div>
-                <div class="cvm-sub">Bachelor of Design · GPA: 3.65</div>
+            <div class="cvm-main">
+              <div class="cvm-block">
+                <div class="cvm-title">Executive Summary</div>
+                <div class="cvm-about">
+                  Motivated Analytics and Engineering Specialist with 6+ years delivering scalable enterprise solutions across West Africa. Focused on high-fidelity user workflows and measurable performance.<span class="cvm-caret"></span>
+                </div>
               </div>
-              <div class="cvm-entry">
-                <div class="cvm-entry-head"><div class="cvm-entry-title">WARDERE UNIVERSITY</div><div class="cvm-dates">2014 - 2019</div></div>
-                <div class="cvm-sub">Bachelor of Design · GPA: 3.99</div>
+              <div class="cvm-block">
+                <div class="cvm-title">Experience</div>
+                <div class="cvm-entry">
+                  <div class="cvm-entry-head">
+                    <div class="cvm-entry-title">SENIOR ANALYTICS LEAD</div>
+                    <div class="cvm-dates">2021 — PRESENT</div>
+                  </div>
+                  <div class="cvm-sub">Fauget Studios · Accra, Ghana</div>
+                  <ul class="cvm-list">
+                    <li class="">Led analytics workflows saving 14+ hours of manual reporting per cycle.</li>
+                    <li class="">Designed responsive customer dashboards using modern UI tokens.</li>
+                  </ul>
+                </div>
+                <div class="cvm-entry">
+                  <div class="cvm-entry-head">
+                    <div class="cvm-entry-title">SOFTWARE ENGINEER</div>
+                    <div class="cvm-dates">2018 — 2021</div>
+                  </div>
+                  <div class="cvm-sub">Larana Tech · Takoradi</div>
+                  <ul class="cvm-list">
+                    <li class="">Engineered multi-currency checkout systems supporting Mobile Money and GH₵.</li>
+                  </ul>
+                </div>
               </div>
-            </div>
-            <div class="cvm-block">
-              <div class="cvm-title">Work Experience</div>
-              <div class="cvm-entry">
-                <div class="cvm-entry-head"><div class="cvm-entry-title">SENIOR GRAPHIC DESIGNER</div><div class="cvm-dates">2020 - 2024</div></div>
-                <div class="cvm-sub">Fauget studio</div>
-                <ul class="cvm-list">
-                  <li>Led brand identity and campaign design for a mix of retail and tech clients.</li>
-                  <li>Turned client briefs into print and digital layouts, from first sketch to final files.</li>
-                  <li>Built reusable templates that cut turnaround time on repeat work.</li>
-                  <li>Presented concepts to stakeholders and refined them over several review rounds.</li>
-                  <li>Reviewed junior designers' work before it went to the client.</li>
-                </ul>
-              </div>
-              <div class="cvm-entry">
-                <div class="cvm-entry-head"><div class="cvm-entry-title">SENIOR GRAPHIC DESIGNER</div><div class="cvm-dates">2017 - 2019</div></div>
-                <div class="cvm-sub">larana, inc</div>
-                <ul class="cvm-list">
-                  <li>Designed marketing material, social media graphics and packaging.</li>
-                  <li>Prepared print-ready artwork and kept every piece on brand.</li>
-                  <li>Worked with copywriters and developers to launch campaigns on schedule.</li>
-                  <li>Introduced a shared asset library that kept designers and developers in sync.</li>
-                  <li>Managed several projects at once and updated clients at each stage.</li>
-                </ul>
-              </div>
-              <div class="cvm-entry">
-                <div class="cvm-entry-head"><div class="cvm-entry-title">GRAPHIC DESIGNER</div><div class="cvm-dates">2015 - 2017</div></div>
-                <div class="cvm-sub">Pixel Harbour studio</div>
-                <ul class="cvm-list">
-                  <li>Produced posters, brochures and event branding for local businesses.</li>
-                  <li>Retouched photography and prepared image sets for print and web.</li>
-                  <li>Presented design options and folded client feedback into the final artwork.</li>
-                  <li>Kept a steady flow of work moving through tight weekly deadlines.</li>
-                </ul>
-              </div>
-              <div class="cvm-entry">
-                <div class="cvm-entry-head"><div class="cvm-entry-title">DESIGN INTERN</div><div class="cvm-dates">2013 - 2015</div></div>
-                <div class="cvm-sub">orbis media</div>
-                <ul class="cvm-list">
-                  <li>Supported the design team on layouts, icons and presentation decks.</li>
-                  <li>Learned production workflows, from proofing to print-ready delivery.</li>
-                  <li>Handled file preparation and archiving for finished projects.</li>
-                  <li>Sat in on client meetings and turned the notes into first drafts.</li>
-                </ul>
+              <div class="cvm-block">
+                <div class="cvm-title">Education</div>
+                <div class="cvm-entry">
+                  <div class="cvm-entry-head">
+                    <div class="cvm-entry-title">KWAME NKRUMAH UNIV OF SCI &amp; TECH</div>
+                    <div class="cvm-dates">2014 — 2018</div>
+                  </div>
+                  <div class="cvm-sub">B.Sc. Computer Science · First Class Honours</div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      <span class="sheet-tag pdf">
+        <i class="fas fa-file-pdf" style="color:#C4453B;"></i>
+        <span class="">Print-Ready A4</span>
+      </span>
     </div>
-    <span class="sheet-tag pdf"><i class="fas fa-file-pdf" style="color:#C4453B;" aria-hidden="true"></i> PDF ready</span>
   </div>
 </header>
 
-<!-- FACTS -->
-<section class="facts" aria-label="At a glance">
-  <ul>
-    <li><i class="fas fa-tag" aria-hidden="true"></i> Free for now</li>
-    <li><i class="fas fa-eye" aria-hidden="true"></i> Live A4 preview</li>
-    <li><i class="fas fa-file-pdf" aria-hidden="true"></i> PDF and print</li>
-    <li><i class="fas fa-mobile-alt" aria-hidden="true"></i> Works on your phone</li>
-  </ul>
+<!-- ANIMATED TICKER STRIP -->
+<section class="facts-strip" aria-label="Platform Highlights">
+  <div class="ticker-wrap">
+    <div class="ticker-content">
+      <div class="ticker-item"><i class="fas fa-money-bill-wave"></i> Priced in Ghanaian Cedis (GH₵)</div>
+      <div class="ticker-item"><i class="fas fa-eye"></i> Real-Time Kinetic A4 Preview</div>
+      <div class="ticker-item"><i class="fas fa-magic"></i> Instant ATS-Compliant Layout</div>
+      <div class="ticker-item"><i class="fas fa-mobile-screen"></i> Responsive On Mobile &amp; Desktop</div>
+      <div class="ticker-item"><i class="fas fa-lock"></i> Client-Side Privacy: No Data Leaks</div>
+      <div class="ticker-item"><i class="fas fa-file-arrow-down"></i> High-Resolution Vector PDF</div>
+    </div>
+    <div class="ticker-content" aria-hidden="true">
+      <div class="ticker-item"><i class="fas fa-money-bill-wave"></i> Priced in Ghanaian Cedis (GH₵)</div>
+      <div class="ticker-item"><i class="fas fa-eye"></i> Real-Time Kinetic A4 Preview</div>
+      <div class="ticker-item"><i class="fas fa-magic"></i> Instant ATS-Compliant Layout</div>
+      <div class="ticker-item"><i class="fas fa-mobile-screen"></i> Responsive On Mobile &amp; Desktop</div>
+      <div class="ticker-item"><i class="fas fa-lock"></i> Client-Side Privacy: No Data Leaks</div>
+      <div class="ticker-item"><i class="fas fa-file-arrow-down"></i> High-Resolution Vector PDF</div>
+    </div>
+  </div>
 </section>
 
-<!-- HOW IT WORKS -->
+<!-- STEP BY STEP PROCESS -->
 <section class="section" id="how">
   <div class="wrap">
-    <div class="section-head">
-      <h2>From blank page to PDF in four steps</h2>
-      <p>No settings to learn. The form asks, the page updates, you download.</p>
+    <div class="section-head reveal in">
+      <h2 class="">Crafted for speed. Built for interviews.</h2>
+      <p class="">Four effortless steps from a blank canvas to an interview-ready resume.</p>
     </div>
-    <div class="steps">
-      <div class="step">
-        <div class="step-num">1</div>
-        <h3>Fill in your details</h3>
-        <p>Personal information, experience, education, skills and languages go into one guided form, with a summary and contact links on top.</p>
+
+    <div class="steps-grid">
+      <div class="step-card reveal in">
+        <span class="step-num-badge">01</span>
+        <div class="step-icon-wrap"><i class="fas fa-keyboard"></i></div>
+        <h3 class="">Fill In Your Details</h3>
+        <p class="">Type your professional history, skills, and accomplishments into an intuitive, guided form.</p>
       </div>
-      <div class="step">
-        <div class="step-num">2</div>
-        <h3>Watch the page build</h3>
-        <p>The A4 sheet updates on every keystroke. Add a photo if you want one, or leave it off.</p>
+
+      <div class="step-card reveal in" style="transition-delay: 100ms;">
+        <span class="step-num-badge">02</span>
+        <div class="step-icon-wrap"><i class="fas fa-wand-magic-sparkles"></i></div>
+        <h3 class="">Watch It Morph Live</h3>
+        <p class="">Every keystroke animates and repaginates smoothly into a standardized single A4 page.</p>
       </div>
-      <div class="step">
-        <div class="step-num">3</div>
-        <h3>Download or print</h3>
-        <p>One click gives you an A4 PDF that matches the preview. Or print straight from the browser.</p>
+
+      <div class="step-card reveal in" style="transition-delay: 200ms;">
+        <span class="step-num-badge">03</span>
+        <div class="step-icon-wrap"><i class="fas fa-sliders"></i></div>
+        <h3 class="">Auto-Fit Geometry</h3>
+        <p class="">Dynamic compression algorithms ensure your content stays perfectly balanced on one sheet.</p>
       </div>
-      <div class="step">
-        <div class="step-num">4</div>
-        <h3>Tailor it, send it out</h3>
-        <p>Change a few lines for each role and export again. The builder doesn't save between visits, so keep a copy of the file you download.</p>
+
+      <div class="step-card reveal in" style="transition-delay: 300ms;">
+        <span class="step-num-badge">04</span>
+        <div class="step-icon-wrap"><i class="fas fa-download"></i></div>
+        <h3 class="">Download in Cedis</h3>
+        <p class="">Export your crisp, high-resolution PDF or print right away with zero watermark.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- FEATURES -->
-<section class="section features" id="features">
+<!-- FEATURES GRID -->
+<section class="section features-section" id="features">
   <div class="wrap">
-    <div class="section-head">
-      <h2>Everything the page needs, nothing it doesn't</h2>
-      <p>The tools that actually change what lands in the recruiter's inbox.</p>
+    <div class="section-head reveal in">
+      <h2 class="">Everything recruiters look for. Nothing they don't.</h2>
+      <p class="">Purpose-built features designed to speed up your job search process.</p>
     </div>
+
     <div class="feat-grid">
-      <div class="feat">
-        <i class="fas fa-eye" aria-hidden="true"></i>
-        <h3>Live preview</h3>
-        <p>The A4 sheet updates as you type, so there are no surprises at export time.</p>
+      <div class="feat-item reveal in">
+        <div class="feat-icon"><i class="fas fa-eye"></i></div>
+        <h3 class="">Kinetic Live Preview</h3>
+        <p class="">Instant feedback loop with micro-animations that reflect formatting changes on the fly.</p>
       </div>
-      <div class="feat">
-        <i class="fas fa-file-pdf" aria-hidden="true"></i>
-        <h3>One-click PDF</h3>
-        <p>Export an A4 file that matches the preview, ready to email or upload.</p>
+
+      <div class="feat-item reveal in" style="transition-delay: 100ms;">
+        <div class="feat-icon"><i class="fas fa-file-pdf"></i></div>
+        <h3 class="">Direct PDF Export</h3>
+        <p class="">True vector PDF rendering guarantees crisp typography on both digital screens and physical print.</p>
       </div>
-      <div class="feat">
-        <i class="fas fa-compress-alt" aria-hidden="true"></i>
-        <h3>Fits on one page</h3>
-        <p>Long on experience? The page scales itself to sit on a single A4 sheet.</p>
+
+      <div class="feat-item reveal in" style="transition-delay: 200ms;">
+        <div class="feat-icon"><i class="fas fa-compress-arrows-alt"></i></div>
+        <h3 class="">Smart Single-Page Fit</h3>
+        <p class="">Automatic spacing adjustments to eliminate awkward page breaks and trailing sentences.</p>
       </div>
-      <div class="feat">
-        <i class="fas fa-mobile-alt" aria-hidden="true"></i>
-        <h3>Works on your phone</h3>
-        <p>Edit and preview in two tabs. Fix a typo on the bus, download when you're home.</p>
+
+      <div class="feat-item reveal in" style="transition-delay: 300ms;">
+        <div class="feat-icon"><i class="fas fa-mobile-alt"></i></div>
+        <h3 class="">Fluid Mobile Editor</h3>
+        <p class="">Edit effortlessly on your smartphone with synchronized tab switching and gesture support.</p>
       </div>
-      <div class="feat">
-        <i class="fas fa-image" aria-hidden="true"></i>
-        <h3>Add a photo</h3>
-        <p>Drop in a headshot where local hiring norms expect one, or leave it off entirely.</p>
+
+      <div class="feat-item reveal in" style="transition-delay: 400ms;">
+        <div class="feat-icon"><i class="fas fa-shield-halved"></i></div>
+        <h3 class="">Zero Data Tracking</h3>
+        <p class="">Your resume data is stored locally in your browser memory — total privacy with zero data sales.</p>
       </div>
-      <div class="feat">
-        <i class="fas fa-print" aria-hidden="true"></i>
-        <h3>Print or save as text PDF</h3>
-        <p>Print from the browser with margins already set for A4, or choose Save as PDF for selectable text.</p>
+
+      <div class="feat-item reveal in" style="transition-delay: 500ms;">
+        <div class="feat-icon"><i class="fas fa-coins"></i></div>
+        <h3 class="">Cedis Native (GH₵)</h3>
+        <p class="">Accessible pricing in Ghanaian Cedis with zero exchange fee penalties.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- LAYOUT -->
+<!-- INTERACTIVE LAYOUT SECTION -->
 <section class="section templates" id="layout">
   <div class="wrap">
     <div class="showcase">
-      <div class="reveal">
+      <div class="reveal in">
         <div class="section-head">
-          <h2>One clean layout, set properly</h2>
-          <p>A centred name and role over a two-column page: personal details, skills, languages and contact on the left, your story on the right.</p>
+          <h2 class="">One pristine layout, engineered to pass ATS</h2>
+          <p class="">Carefully balanced proportions featuring a prominent header and a dual-column modular architecture.</p>
         </div>
+
         <ul class="layout-list">
-          <li><i class="fas fa-check" aria-hidden="true"></i> Profile, education and work experience</li>
-          <li><i class="fas fa-check" aria-hidden="true"></i> Personal information, skills and languages in the side column</li>
-          <li><i class="fas fa-check" aria-hidden="true"></i> Contact details and links, with an optional photo</li>
+          <li class=""><i class="fas fa-check-circle"></i> High-priority summary and chronological work history</li>
+          <li class=""><i class="fas fa-check-circle"></i> Modular side-rail for contact tags, languages, and proficiencies</li>
+          <li class=""><i class="fas fa-check-circle"></i> Optimal typography scaling to maximize readability</li>
         </ul>
-        <a class="btn btn-paper btn-lg" href="user.html">Build my resume</a>
+
+        <a class="btn btn-paper btn-lg btn-icon-bounce" href="user.html">
+          <span class="">Start With This Template</span>
+          <i class="fas fa-arrow-right"></i>
+        </a>
       </div>
 
-      <div class="lay-paper reveal" style="--d:120ms" role="img" aria-label="Illustration of the two-column resume layout">
-        <div class="lay-head">
-          <div class="lay-bar name"></div>
-          <div class="lay-bar role"></div>
-        </div>
-        <div class="lay-cols">
-          <div class="lay-side">
-            <div class="lay-bar h"></div>
-            <div class="lay-bar" style="width:90%"></div>
-            <div class="lay-bar" style="width:70%"></div>
-            <div class="lay-gap"></div>
-            <div class="lay-bar h"></div>
-            <div class="lay-bar" style="width:85%"></div>
-            <div class="lay-bar" style="width:75%"></div>
-            <div class="lay-bar" style="width:60%"></div>
-            <div class="lay-gap"></div>
-            <div class="lay-bar h"></div>
-            <div class="lay-bar" style="width:80%"></div>
-            <div class="lay-bar" style="width:55%"></div>
+      <div class="interactive-mockup-frame reveal in">
+        <div class="lay-paper" role="img" aria-label="Interactive Blueprint Layout">
+          <div class="lay-head">
+            <div class="lay-bar name"></div>
+            <div class="lay-bar role"></div>
           </div>
-          <div class="lay-main">
-            <div class="lay-bar h" style="width:30%"></div>
-            <div class="lay-bar"></div>
-            <div class="lay-bar" style="width:88%"></div>
-            <div class="lay-gap"></div>
-            <div class="lay-bar h" style="width:34%"></div>
-            <div class="lay-bar" style="width:92%"></div>
-            <div class="lay-bar" style="width:60%"></div>
-            <div class="lay-gap"></div>
-            <div class="lay-bar h" style="width:40%"></div>
-            <div class="lay-bar" style="width:95%"></div>
-            <div class="lay-bar" style="width:80%"></div>
-            <div class="lay-bar" style="width:70%"></div>
-            <div class="lay-gap"></div>
-            <div class="lay-bar h" style="width:28%"></div>
-            <div class="lay-bar" style="width:90%"></div>
-            <div class="lay-bar" style="width:64%"></div>
+          <div class="lay-cols">
+            <div class="lay-side">
+              <div class="lay-bar h"></div>
+              <div class="lay-bar" style="width:90%"></div>
+              <div class="lay-bar" style="width:75%"></div>
+              <div class="lay-gap"></div>
+              <div class="lay-bar h"></div>
+              <div class="lay-bar" style="width:85%"></div>
+              <div class="lay-bar" style="width:65%"></div>
+              <div class="lay-gap"></div>
+              <div class="lay-bar h"></div>
+              <div class="lay-bar" style="width:80%"></div>
+              <div class="lay-bar" style="width:50%"></div>
+            </div>
+            <div class="lay-main">
+              <div class="lay-bar h" style="width:35%"></div>
+              <div class="lay-bar"></div>
+              <div class="lay-bar" style="width:88%"></div>
+              <div class="lay-gap"></div>
+              <div class="lay-bar h" style="width:40%"></div>
+              <div class="lay-bar" style="width:95%"></div>
+              <div class="lay-bar" style="width:70%"></div>
+              <div class="lay-gap"></div>
+              <div class="lay-bar h" style="width:30%"></div>
+              <div class="lay-bar" style="width:90%"></div>
+              <div class="lay-bar" style="width:60%"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -958,191 +1510,201 @@ footer .logo { color: #fff; margin-bottom: 0.8rem; }
   </div>
 </section>
 
-<!-- PRICING -->
-<section class="section pricing" id="pricing">
+<!-- PRICING IN CEDIS (GH₵) -->
+<section class="section pricing-section" id="pricing">
   <div class="wrap">
-    <div class="section-head center">
-      <h2>Free for now</h2>
-      <p>Everything in the builder is open to you at no cost. No card, no trial clock, no watermark.</p>
-    </div>
-    <div class="plan reveal">
-      <div class="plan-top"><span class="plan-name">Everything included</span><span class="plan-flag">Free for now</span></div>
-      <div class="amount">$0</div>
-      <div class="period">no card required</div>
-      <ul>
-        <li><i class="fas fa-check" aria-hidden="true"></i> Live A4 preview</li>
-        <li><i class="fas fa-check" aria-hidden="true"></i> PDF download</li>
-        <li><i class="fas fa-check" aria-hidden="true"></i> Print from the browser</li>
-        <li><i class="fas fa-check" aria-hidden="true"></i> Automatic one-page fit</li>
-        <li><i class="fas fa-check" aria-hidden="true"></i> Optional profile photo</li>
-        <li><i class="fas fa-check" aria-hidden="true"></i> Works on phone and desktop</li>
-      </ul>
-      <a class="btn btn-solid" href="user.html">Start building</a>
-    </div>
+    <div class="section-head center reveal in"><h2 class="">Free for Everyone</h2><p class="">Everything in the builder is open to you at no cost. No card, no subscription, no watermark.</p></div>
+
+    <div class="pricing-card-wrap"><div class="pricing-card featured reveal" style="max-width: 520px; width: 100%; margin: 0px auto;"><span class="featured-badge">All Features Unlocked</span><div class="plan-top"><span class="plan-name">Full Builder Access</span><span class="plan-tag">Free Forever</span></div><div class="pricing-amount-group"><span class="currency-symbol">GH₵</span><span class="amount">0</span></div><div class="pricing-period">No card required · Instant access · Zero fees</div><ul><li class=""><i class="fas fa-check"></i> Live A4 real-time preview</li><li class=""><i class="fas fa-check"></i> Vector PDF download &amp; direct print</li><li class=""><i class="fas fa-check"></i> Smart single-page auto compaction</li><li class=""><i class="fas fa-check"></i> ATS-compliant layout &amp; scoring</li><li class=""><i class="fas fa-check"></i> Fluid mobile &amp; desktop editor</li><li class=""><i class="fas fa-check"></i> 100% client-side privacy (no data tracking)</li></ul><a class="btn btn-solid btn-icon-bounce" href="user.html"><span class="">Start Building For Free</span><i class="fas fa-arrow-right"></i></a></div></div>
   </div>
 </section>
 
-<!-- FAQ -->
+<!-- FREQUENTLY ASKED QUESTIONS -->
 <section class="section" id="faq">
   <div class="wrap">
-    <div class="section-head center">
-      <h2>Questions, answered</h2>
+    <div class="section-head center reveal in">
+      <h2 class="">Frequently Asked Questions</h2>
+      <p class="">Have questions about formats, privacy, or Cedis payments? We've got answers.</p>
     </div>
+
     <div class="faq-list">
-      <details>
-        <summary>Is CVCraft really free?</summary>
-        <p>Yes. It's free for now: no card, no trial period and no watermark on what you download.</p>
+      <details class="faq-card reveal in">
+        <summary>
+          <span class="">Can I use CVCraft completely free in Ghana?</span>
+          <div class="faq-icon-toggle"><i class="fas fa-plus"></i></div>
+        </summary>
+        <p class="">Yes! Our Starter tier is GH₵ 0.00 with full access to the live preview, single-page fit algorithms, and instant PDF download with zero watermarks.</p>
       </details>
-      <details>
-        <summary>Do you keep my details?</summary>
-        <p>The builder runs in your browser and doesn't upload what you type. It also doesn't save between visits, so download your file before you close the tab.</p>
+
+      <details class="faq-card reveal in" style="transition-delay: 80ms;"><summary><span class="">Are there any hidden fees or paid upgrades?</span><div class="faq-icon-toggle"><i class="fas fa-plus"></i></div></summary><p class="">None at all. All features, exports, formatting tools, and ATS templates are 100% free to use with zero cost (GH₵ 0.00). No credit cards or mobile money payments are required.</p></details>
+
+      <details class="faq-card reveal in" style="transition-delay: 160ms;">
+        <summary>
+          <span class="">Will applicant tracking systems (ATS) parse this resume?</span>
+          <div class="faq-icon-toggle"><i class="fas fa-plus"></i></div>
+        </summary>
+        <p class="">Yes. The structure uses standard semantic headers, selectable fonts, and clean hierarchies designed specifically to pass automated applicant tracking systems without garbled formatting.</p>
       </details>
-      <details>
-        <summary>Will applicant tracking systems read my resume?</summary>
-        <p>For a text-based file that screening software can read, use the Print button and choose Save as PDF. The Download PDF button produces a file that looks identical but is image-based, so its text can't be selected or searched.</p>
-      </details>
-      <details>
-        <summary>What if my CV is too long for one page?</summary>
-        <p>It scales down to fit a single A4 sheet automatically. A very long CV will shrink noticeably, so trim a little if the text starts to look small.</p>
-      </details>
-      <details>
-        <summary>Can I use it on my phone?</summary>
-        <p>Yes. On small screens the builder splits into Edit and Preview tabs, and the page scales to fit your screen.</p>
+
+      <details class="faq-card reveal in" style="transition-delay: 240ms;">
+        <summary>
+          <span class="">What happens if my content is too long for one page?</span>
+          <div class="faq-icon-toggle"><i class="fas fa-plus"></i></div>
+        </summary>
+        <p class="">Our smart scaling engine automatically tightens line-height and margins dynamically to maintain optimal vertical balance on a standard A4 sheet.</p>
       </details>
     </div>
   </div>
 </section>
 
-<!-- CLOSING -->
+<!-- CALL TO ACTION BANNER -->
 <section class="closing">
-  <h2 class="reveal">Your next application starts with one page</h2>
-  <p class="reveal" style="--d:80ms">It's free for now, and it takes a few minutes.</p>
-  <a class="btn btn-paper btn-lg reveal" style="--d:160ms" href="user.html">Build my resume</a>
+  <div class="wrap reveal in">
+    <h2 class="">Your next career chapter begins with one standout page</h2>
+    <p class="">Join thousands of professionals landing interviews faster with zero formatting friction.</p>
+    <div class="closing-btns">
+      <a class="btn btn-paper btn-lg btn-icon-bounce" href="user.html">
+        <span class="">Build Your Resume (GH₵ 0)</span>
+        <i class="fas fa-arrow-right"></i>
+      </a>
+    </div>
+  </div>
 </section>
 
 </main>
 
+<!-- FOOTER -->
 <footer>
   <div class="wrap">
     <div class="footer-grid">
       <div class="footer-brand">
-        <div class="logo">CVCraft<span class="dot">.</span></div>
-        <p>A resume builder for people who would rather spend their evening applying than formatting.</p>
+        <div class="logo">
+          <div class="logo-badge" style="background:#263442; color:#fff;"><i class="fas fa-file-invoice"></i></div>
+          CVCraft<span class="dot">.</span>
+        </div>
+        <p class="">A precision resume builder crafted for professionals who want to spend their time landing roles, not fighting word processors.</p>
       </div>
+
       <div class="footer-col">
-        <h2 class="footer-h">Product</h2>
+        <h3 class="footer-h">Platform</h3>
         <ul>
-          <li><a href="user.html">Resume builder</a></li>
-          <li><a href="#features">Features</a></li>
-          <li><a href="#layout">Layout</a></li>
-          <li><a href="#faq">FAQ</a></li>
+          <li class=""><a href="#how" class="">How It Works</a></li>
+          <li class=""><a href="#features" class="">Core Features</a></li>
+          <li class=""><a href="#layout" class="">Layout Specifications</a></li>
+          <li class=""><a href="#pricing" class="">Free Access</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h3 class="footer-h">Accra Tech Hub</h3>
+        <ul>
+          <li class=""><a href="#" class="">Careers in Ghana</a></li>
+          <li class=""><a href="#" class="">ATS Guidelines</a></li>
+          <li class=""><a href="#" class="">Privacy Policy</a></li>
+          <li class=""><a href="#" class="">Terms of Service</a></li>
         </ul>
       </div>
     </div>
+
     <div class="footer-bottom">
-      <a href="https://1reallloyd.github.io/My-Porfolio-Page/">© 2026 SamTech</a>
-      <span>Made in Accra for job seekers everywhere</span>
+      <span class="">© 2026 CVCraft Tech. Built with pride in Accra, Ghana.</span>
+      <span class="">Currency: Ghanaian Cedis (GH₵)</span>
     </div>
   </div>
 </footer>
 
-<button class="to-top" id="toTop" type="button" aria-label="Back to top"><i class="fas fa-arrow-up" aria-hidden="true"></i></button>
+<button class="to-top" id="toTop" type="button" aria-label="Return to top">
+  <i class="fas fa-arrow-up"></i>
+</button>
 
 <script>
-(function () {
+(function() {
   'use strict';
-  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var desktop = window.matchMedia('(min-width: 941px)');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* ---------- Hero sheet: scale the true-size A4 CV to the sheet's width ---------- */
-  var heroSheet = document.getElementById('heroSheet');
+  // Responsive A4 Preview Scaler
+  const heroSheet = document.getElementById('heroSheet');
   function fitHeroSheet() {
-    var w = heroSheet.clientWidth;
-    if (w > 0) heroSheet.style.setProperty('--cv-s', (w / 794).toFixed(4));
+    if (!heroSheet) return;
+    const w = heroSheet.clientWidth;
+    if (w > 0) {
+      heroSheet.style.setProperty('--cv-s', (w / 794).toFixed(4));
+    }
   }
   if (heroSheet) {
     fitHeroSheet();
-    if ('ResizeObserver' in window) new ResizeObserver(fitHeroSheet).observe(heroSheet);
-    else window.addEventListener('resize', fitHeroSheet);
+    window.addEventListener('resize', fitHeroSheet);
   }
 
-  /* ---------- Mobile menu ---------- */
-  var nav = document.getElementById('navbar');
-  var burger = document.getElementById('hamburgerBtn');
-  var menu = document.getElementById('mobileMenu');
-
-  function setMenu(open) {
-    menu.classList.toggle('open', open);
-    nav.classList.toggle('menu-open', open);
-    burger.classList.toggle('is-open', open);
-    burger.setAttribute('aria-expanded', String(open));
-    burger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  // 3D Card Hover Tilt Interaction
+  const card = document.getElementById('interactiveCard');
+  if (card && !reduceMotion) {
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
+      card.style.transform = `perspective(1000px) rotateY(${x / 24}deg) rotateX(${-y / 24}deg) translateY(-4px)`;
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = 'perspective(1000px) rotateY(0deg) rotateX(0deg) translateY(0)';
+    });
   }
-  burger.addEventListener('click', function () { setMenu(!menu.classList.contains('open')); });
-  menu.querySelectorAll('a').forEach(function (a) {
-    a.addEventListener('click', function () { setMenu(false); });
-  });
-  document.addEventListener('click', function (e) {
-    if (menu.classList.contains('open') && !nav.contains(e.target)) setMenu(false);
-  });
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && menu.classList.contains('open')) { setMenu(false); burger.focus(); }
-  });
-  function onBreakpoint(e) { if (e.matches) setMenu(false); }
-  if (desktop.addEventListener) desktop.addEventListener('change', onBreakpoint);
-  else if (desktop.addListener) desktop.addListener(onBreakpoint);
 
-  /* ---------- Scroll chrome ---------- */
-  var bar = document.getElementById('scrollProgress');
-  var toTop = document.getElementById('toTop');
-  var ticking = false;
-  function onScroll() {
-    var y = window.pageYOffset || document.documentElement.scrollTop;
-    var total = document.documentElement.scrollHeight - window.innerHeight;
-    bar.style.width = (total > 0 ? (y / total) * 100 : 0) + '%';
-    nav.classList.toggle('scrolled', y > 24);
-    toTop.classList.toggle('visible', y > 500);
-    ticking = false;
+  // Mobile Menu Toggle
+  const burger = document.getElementById('hamburgerBtn');
+  const menu = document.getElementById('mobileMenu');
+  if (burger && menu) {
+    burger.addEventListener('click', () => {
+      const isOpen = menu.classList.toggle('open');
+      burger.classList.toggle('is-open', isOpen);
+      burger.setAttribute('aria-expanded', String(isOpen));
+    });
+    menu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        menu.classList.remove('open');
+        burger.classList.remove('is-open');
+        burger.setAttribute('aria-expanded', 'false');
+      });
+    });
   }
-  window.addEventListener('scroll', function () {
-    if (!ticking) { ticking = true; requestAnimationFrame(onScroll); }
+
+  // Scroll Progress & To-Top Button
+  const bar = document.getElementById('scrollProgress');
+  const toTop = document.getElementById('toTop');
+  const nav = document.getElementById('navbar');
+
+  window.addEventListener('scroll', () => {
+    const y = window.pageYOffset || document.documentElement.scrollTop;
+    const total = document.documentElement.scrollHeight - window.innerHeight;
+    if (bar && total > 0) bar.style.width = `${(y / total) * 100}%`;
+    if (nav) nav.classList.toggle('scrolled', y > 30);
+    if (toTop) toTop.classList.toggle('visible', y > 450);
   }, { passive: true });
-  window.addEventListener('resize', onScroll);
-  onScroll();
-  toTop.addEventListener('click', function () {
-    window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
-  });
 
-  /* ---------- Active nav link while scrolling ---------- */
-  var links = Array.prototype.slice.call(document.querySelectorAll('.nav-links > a[href^="#"]'));
-  var sections = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
-  if ('IntersectionObserver' in window) {
-    var spy = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (!entry.isIntersecting) return;
-        var i = sections.indexOf(entry.target);
-        links.forEach(function (a, j) {
-          if (j === i) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
-          a.classList.toggle('active', j === i);
-        });
-      });
-    }, { rootMargin: '-45% 0px -50% 0px' });
-    sections.forEach(function (s) { if (s) spy.observe(s); });
+  if (toTop) {
+    toTop.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+    });
   }
 
-  /* ---------- Scroll reveal ---------- */
-  var reveals = document.querySelectorAll('.reveal');
-  if (!('IntersectionObserver' in window) || reduceMotion) {
-    reveals.forEach(function (el) { el.classList.add('in'); });
-  } else {
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (entry.isIntersecting) { entry.target.classList.add('in'); io.unobserve(entry.target); }
+  // Scroll Reveal Animations
+  const reveals = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window && !reduceMotion) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in');
+          observer.unobserve(entry.target);
+        }
       });
-    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
-    reveals.forEach(function (el) { io.observe(el); });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    reveals.forEach(el => observer.observe(el));
+  } else {
+    reveals.forEach(el => el.classList.add('in'));
   }
 })();
 </script>
-</body>
-</html>
+
+
+
+</body></html>
