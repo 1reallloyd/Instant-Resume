@@ -1,4 +1,6 @@
-<!DOCTYPE html><html lang="en" class=" js"><head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#141D26">
@@ -6,11 +8,11 @@
 <meta name="description" content="Free resume builder with a live A4 preview, dynamic animations, one-click PDF export and print-ready templates in Cedis.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23141D26'/%3E%3Ctext x='32' y='46' font-size='40' text-anchor='middle' fill='%23D2A17C' font-family='Georgia,serif' font-weight='700'%3EC%3C/text%3E%3C/svg%3E">
 
-<script>document.documentElement.className += ' js';</script>
+<script>document.documentElement.classList.add('js');</script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Lato:wght@400;700&amp;display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
@@ -23,9 +25,7 @@
   --copper-glow:#E68F53;
   --copper-dk:  #8A522A;
   --copper-lt:  #E8B996;
-  --copper-subtle: rgba(184, 115, 67, 0.12);
   --paper:      #FAF8F5;
-  --card-bg:    #FFFFFF;
   --wash:       #F2EFEB;
   --rule:       #E4DDD5;
   --muted:      #686054;
@@ -46,6 +46,7 @@
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
   scroll-padding-top: calc(var(--nav-h) + 1rem);
 }
 
@@ -56,13 +57,17 @@ body {
   line-height: 1.65;
   font-size: 1rem;
   overflow-x: hidden;
+  overflow-x: clip;
   position: relative;
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* Ambient Subtle Background Blobs */
+ul { list-style: none; }
+
+/* Ambient background blobs (lighter blur on phones for smooth performance) */
 .bg-ambient {
   position: fixed;
-  top: 0; left: 0; width: 100vw; height: 100vh;
+  inset: 0;
   pointer-events: none;
   z-index: 0;
   overflow: hidden;
@@ -73,6 +78,7 @@ body {
   border-radius: 50%;
   filter: blur(120px);
   opacity: 0.35;
+  will-change: transform;
   animation: floatAmbient 18s ease-in-out infinite alternate;
 }
 .glow-1 { top: -100px; right: -150px; background: radial-gradient(circle, #EDC9AC, #E2B28B); }
@@ -80,9 +86,9 @@ body {
 .glow-3 { bottom: 5%; right: -100px; background: radial-gradient(circle, #EADBCF, #DFC4AF); animation-delay: -12s; }
 
 @keyframes floatAmbient {
-  0% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(40px, 60px) scale(1.1); }
-  100% { transform: translate(-30px, 40px) scale(0.95); }
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  50%  { transform: translate3d(40px, 60px, 0) scale(1.1); }
+  100% { transform: translate3d(-30px, 40px, 0) scale(0.95); }
 }
 
 h1, h2, h3, .display {
@@ -100,6 +106,17 @@ img { max-width: 100%; display: block; }
 :focus-visible { outline: 2px solid var(--copper); outline-offset: 3px; border-radius: 4px; }
 ::selection { background: #EBD6C3; color: var(--ink); }
 
+.skip-link {
+  position: absolute;
+  left: 1rem; top: -4rem;
+  background: var(--ink); color: #fff;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  z-index: 2000;
+  transition: top 0.2s;
+}
+.skip-link:focus { top: 0.75rem; }
+
 .wrap {
   width: 100%;
   max-width: var(--page);
@@ -110,7 +127,7 @@ img { max-width: 100%; display: block; }
   z-index: 1;
 }
 
-/* ===== Buttons with Magnetic Hover & Pulse FX ===== */
+/* ===== Buttons ===== */
 .btn {
   font-family: inherit;
   font-size: 0.95rem;
@@ -128,6 +145,7 @@ img { max-width: 100%; display: block; }
   white-space: nowrap;
   position: relative;
   overflow: hidden;
+  touch-action: manipulation;
 }
 .btn::after {
   content: '';
@@ -140,16 +158,9 @@ img { max-width: 100%; display: block; }
   transition: transform 0.6s ease, opacity 0.4s ease;
   pointer-events: none;
 }
-.btn:hover::after {
-  transform: translate(-50%, -50%) scale(1);
-  opacity: 1;
-}
-.btn-solid {
-  background: var(--ink);
-  color: #fff;
-  box-shadow: 0 4px 14px rgba(16,23,32,0.18);
-}
-.btn-solid:hover {
+.btn:hover::after, .btn:active::after { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+.btn-solid { background: var(--ink); color: #fff; box-shadow: 0 4px 14px rgba(16,23,32,0.18); }
+.btn-solid:hover, .btn-solid:active {
   background: var(--copper);
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(184,115,67,0.35);
@@ -157,51 +168,46 @@ img { max-width: 100%; display: block; }
 }
 .btn-line {
   background: rgba(255,255,255,0.7);
+  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
   color: var(--ink);
   border-color: var(--rule);
 }
-.btn-line:hover {
+.btn-line:hover, .btn-line:active {
   border-color: var(--ink);
   background: #fff;
   transform: translateY(-2px);
   box-shadow: 0 6px 18px rgba(16,23,32,0.06);
 }
-.btn-paper {
-  background: #fff;
-  color: var(--ink);
-  font-weight: 700;
-}
-.btn-paper:hover {
+.btn-paper { background: #fff; color: var(--ink); font-weight: 700; }
+.btn-paper:hover, .btn-paper:active {
   background: var(--copper-lt);
   color: var(--ink);
   transform: translateY(-2px);
   box-shadow: 0 8px 26px rgba(0,0,0,0.25);
 }
-.btn:active { transform: translateY(0); }
 .btn-lg { padding: 1rem 1.85rem; font-size: 1.02rem; border-radius: 10px; }
-.btn-icon-bounce:hover i {
-  animation: bounceRight 0.6s var(--ease-spring) infinite alternate;
-}
+.btn-icon-bounce:hover i, .btn-icon-bounce:active i,
+.btn-icon-bounce.lit i { animation: bounceRight 0.6s var(--ease-spring) infinite alternate; }
 @keyframes bounceRight {
-  0% { transform: translateX(0); }
+  0%   { transform: translateX(0); }
   100% { transform: translateX(4px); }
 }
 
-/* ===== Sticky Glass Navbar ===== */
+/* ===== Navbar ===== */
 .navbar {
   position: sticky;
   top: 0;
   z-index: 900;
   padding-top: env(safe-area-inset-top, 0px);
-  background: rgba(250, 248, 245, 0.85);
-  backdrop-filter: saturate(180%) blur(16px);
+  background: rgba(250, 248, 245, 0.92);
   -webkit-backdrop-filter: saturate(180%) blur(16px);
+  backdrop-filter: saturate(180%) blur(16px);
   border-bottom: 1px solid rgba(228, 221, 213, 0.4);
-  transition: all 0.35s ease;
+  transition: background 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
 }
 .navbar.scrolled {
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.96);
   border-bottom-color: var(--rule);
   box-shadow: 0 4px 20px rgba(16,23,32,0.04);
 }
@@ -223,7 +229,6 @@ img { max-width: 100%; display: block; }
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  transition: transform 0.25s ease;
 }
 .logo-badge {
   width: 28px; height: 28px;
@@ -235,7 +240,7 @@ img { max-width: 100%; display: block; }
   font-size: 1rem;
   transition: transform 0.4s var(--ease-spring), background-color 0.3s;
 }
-.logo:hover .logo-badge {
+.logo:hover .logo-badge, .logo:active .logo-badge {
   transform: rotate(10deg) scale(1.1);
   background: var(--copper);
   color: #fff;
@@ -259,12 +264,8 @@ img { max-width: 100%; display: block; }
   border-radius: 2px;
   transition: width 0.3s var(--ease-smooth);
 }
-.nav-links > a:not(.btn):hover, .nav-links > a.active {
-  color: var(--ink);
-}
-.nav-links > a:not(.btn):hover::after, .nav-links > a.active::after {
-  width: 100%;
-}
+.nav-links > a:not(.btn):hover, .nav-links > a.active { color: var(--ink); }
+.nav-links > a:not(.btn):hover::after, .nav-links > a.active::after { width: 100%; }
 
 .currency-badge {
   display: inline-flex;
@@ -282,8 +283,8 @@ img { max-width: 100%; display: block; }
   animation: pulseGlow 3s infinite;
 }
 @keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(31, 138, 88, 0.2); }
-  50% { box-shadow: 0 0 0 4px rgba(31, 138, 88, 0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(31, 138, 88, 0.25); }
+  50%      { box-shadow: 0 0 0 5px rgba(31, 138, 88, 0); }
 }
 
 .hamburger {
@@ -291,13 +292,14 @@ img { max-width: 100%; display: block; }
   background: none;
   border: 1px solid var(--rule);
   border-radius: 8px;
-  width: 42px; height: 42px;
+  width: 44px; height: 44px;
   padding: 0;
   cursor: pointer;
   align-items: center;
   justify-content: center;
   flex-direction: column;
   gap: 4px;
+  touch-action: manipulation;
 }
 .hamburger span {
   width: 18px; height: 1.5px;
@@ -308,29 +310,32 @@ img { max-width: 100%; display: block; }
 .hamburger.is-open span:nth-child(2) { opacity: 0; }
 .hamburger.is-open span:nth-child(3) { transform: translateY(-5.5px) rotate(-45deg); }
 
+/* Mobile menu: visibility-based so the slide/fade transition actually plays */
 .mobile-menu {
-  display: none;
+  display: block;
   position: absolute;
   top: 100%; left: 0; right: 0;
   background: #fff;
   padding: 1.5rem var(--gl);
   box-shadow: 0 20px 40px rgba(0,0,0,0.1);
   border-top: 1px solid var(--rule);
-  transform: translateY(-10px);
+  transform: translateY(-12px);
   opacity: 0;
+  visibility: hidden;
   pointer-events: none;
-  transition: all 0.3s var(--ease-smooth);
+  transition: transform 0.3s var(--ease-smooth), opacity 0.3s var(--ease-smooth), visibility 0s linear 0.3s;
 }
 .mobile-menu.open {
-  display: block;
   transform: translateY(0);
   opacity: 1;
+  visibility: visible;
   pointer-events: auto;
+  transition-delay: 0s;
 }
-.mobile-menu a { display: block; padding: 0.75rem 0; font-weight: 600; border-bottom: 1px solid var(--wash); }
+.mobile-menu a:not(.btn) { display: block; padding: 0.85rem 0; font-weight: 600; border-bottom: 1px solid var(--wash); }
 .mobile-menu .btn { width: 100%; margin-top: 1rem; }
 
-/* ===== Hero Section with 3D Tilt Card & Interactive Ripple ===== */
+/* ===== Hero ===== */
 .hero {
   max-width: var(--page);
   margin: 0 auto;
@@ -339,11 +344,10 @@ img { max-width: 100%; display: block; }
   grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
   gap: clamp(2rem, 5vw, 4.5rem);
   align-items: center;
-}
-.hero-copy {
   position: relative;
-  z-index: 2;
+  z-index: 1;
 }
+.hero-copy { position: relative; z-index: 2; }
 .hero-eyebrow {
   display: inline-flex;
   align-items: center;
@@ -357,11 +361,6 @@ img { max-width: 100%; display: block; }
   padding: 0.38rem 0.95rem;
   margin-bottom: 1.5rem;
   box-shadow: 0 2px 8px rgba(16,23,32,0.03);
-  transition: transform 0.25s ease;
-}
-.hero-eyebrow:hover { transform: translateY(-1px); border-color: var(--copper); }
-.hero-eyebrow .gh-flag {
-  font-size: 0.95rem;
 }
 .hero h1 {
   font-size: clamp(2.4rem, 5.5vw, 4.2rem);
@@ -373,12 +372,14 @@ img { max-width: 100%; display: block; }
   font-weight: 500;
   background: linear-gradient(135deg, var(--copper-dk), var(--copper));
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
+  color: transparent;
   display: inline-block;
   animation: shimmerText 4s ease-in-out infinite alternate;
 }
 @keyframes shimmerText {
-  0% { filter: drop-shadow(0 0 0px rgba(184,115,67,0)); }
+  0%   { filter: drop-shadow(0 0 0 rgba(184,115,67,0)); }
   100% { filter: drop-shadow(0 0 8px rgba(184,115,67,0.3)); }
 }
 .hero-role {
@@ -391,24 +392,10 @@ img { max-width: 100%; display: block; }
   gap: 0.5rem 1rem;
   margin-bottom: 1.3rem;
 }
-.hero-role span {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-}
+.hero-role span { display: inline-flex; align-items: center; gap: 0.4rem; }
 .hero-role i { color: var(--copper); }
-.hero-lede {
-  font-size: 1.1rem;
-  color: var(--muted);
-  margin-bottom: 2.2rem;
-  line-height: 1.7;
-}
-.hero-btns {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-bottom: 2.8rem;
-}
+.hero-lede { font-size: 1.1rem; color: var(--muted); margin-bottom: 2.2rem; line-height: 1.7; }
+.hero-btns { display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 2.8rem; }
 
 .hero-stats {
   display: flex;
@@ -416,10 +403,8 @@ img { max-width: 100%; display: block; }
   border-top: 1px solid var(--rule);
   padding-top: 1.6rem;
 }
-.stat {
-  transition: transform 0.3s ease;
-}
-.stat:hover { transform: translateY(-2px); }
+.stat { transition: transform 0.3s ease; }
+.stat:hover, .stat:active { transform: translateY(-2px); }
 .stat .num {
   font-family: 'Fraunces', serif;
   font-size: 1.85rem;
@@ -430,7 +415,7 @@ img { max-width: 100%; display: block; }
   align-items: baseline;
   gap: 0.2rem;
 }
-.stat .num span.currency-sym {
+.stat .num .currency-sym {
   color: var(--cedi-green);
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.3rem;
@@ -438,21 +423,19 @@ img { max-width: 100%; display: block; }
 }
 .stat .lbl { font-size: 0.82rem; color: var(--muted); font-weight: 500; margin-top: 0.2rem; }
 
-/* 3D Floating Mockup */
+/* Hero mockup */
 .hero-visual {
   position: relative;
   justify-self: center;
   width: 100%;
   max-width: 480px;
-  perspective: 1000px;
 }
 .sheet-container {
   position: relative;
-  transition: transform 0.3s var(--ease-smooth);
+  transition: transform 0.35s var(--ease-smooth);
   transform-style: preserve-3d;
-}
-.sheet-container:hover {
-  transform: rotateY(-3deg) rotateX(3deg) translateY(-6px);
+  will-change: transform;
+  touch-action: pan-y;
 }
 
 .sheet {
@@ -463,10 +446,11 @@ img { max-width: 100%; display: block; }
   border-radius: 4px;
   position: relative;
   overflow: hidden;
+  -webkit-user-select: none;
   user-select: none;
   transition: box-shadow 0.4s ease;
 }
-.sheet-container:hover .sheet {
+.sheet-container:hover .sheet, .sheet-container.touching .sheet {
   box-shadow: 0 0 0 1px var(--copper-lt), 0 30px 70px -15px rgba(184,115,67,0.22);
 }
 
@@ -490,11 +474,7 @@ img { max-width: 100%; display: block; }
   transform: scale(var(--cv-s));
   pointer-events: none;
 }
-.cvm-header {
-  padding: 50px 56px 0;
-  text-align: center;
-  position: relative;
-}
+.cvm-header { padding: 50px 56px 0; text-align: center; position: relative; }
 .cvm-name {
   font-size: 29px;
   letter-spacing: 0.2em;
@@ -555,7 +535,7 @@ img { max-width: 100%; display: block; }
 .cvm-contact { display: flex; align-items: center; gap: 10px; font-size: 9.8px; margin-bottom: 10px; color: var(--cvm-gray); }
 .cvm-contact i { color: var(--copper); width: 14px; font-size: 9.5px; text-align: center; }
 
-.cvm-about { font-size: 9.8px; line-height: 1.75; color: var(--cvm-gray); text-align: justify; }
+.cvm-about { font-size: 9.8px; line-height: 1.75; color: var(--cvm-gray); text-align: justify; min-height: 5.25em; }
 .cvm-entry { margin-bottom: 14px; }
 .cvm-entry-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
 .cvm-entry-title { font-weight: 700; font-size: 11px; color: #1E2833; }
@@ -564,10 +544,11 @@ img { max-width: 100%; display: block; }
 .cvm-list { list-style: disc; margin-top: 6px; padding-left: 14px; }
 .cvm-list li { font-size: 9.5px; line-height: 1.6; color: var(--cvm-gray); margin-bottom: 2px; }
 
-/* Dynamic Floating Interactive Badges with Smooth Hover Animations */
+/* Floating badges */
 .sheet-tag {
   position: absolute;
   background: rgba(255, 255, 255, 0.94);
+  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
   border: 1px solid var(--rule);
   border-radius: 999px;
@@ -580,30 +561,20 @@ img { max-width: 100%; display: block; }
   gap: 0.55rem;
   box-shadow: 0 10px 28px -8px rgba(16,23,32,0.15);
   z-index: 10;
-  transition: all 0.3s var(--ease-spring);
-  cursor: pointer;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+  white-space: nowrap;
 }
-.sheet-tag:hover {
-  transform: translateY(-4px) scale(1.05);
+.sheet-tag:hover, .sheet-tag:active {
   box-shadow: 0 14px 34px -6px rgba(184,115,67,0.3);
   border-color: var(--copper);
 }
-.sheet-tag.live { top: -16px; left: -14px; animation: floatBadge1 4s ease-in-out infinite; }
-.sheet-tag.pdf { bottom: -18px; right: -12px; animation: floatBadge2 4.5s ease-in-out infinite; }
+.sheet-tag.live         { top: -16px; left: -14px; animation: floatBadge1 4s ease-in-out infinite; }
+.sheet-tag.pdf          { bottom: -18px; right: -12px; animation: floatBadge2 4.5s ease-in-out infinite; }
 .sheet-tag.currency-tag { bottom: 35%; left: -26px; animation: floatBadge3 5s ease-in-out infinite; }
 
-@keyframes floatBadge1 {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
-}
-@keyframes floatBadge2 {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(6px); }
-}
-@keyframes floatBadge3 {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
-}
+@keyframes floatBadge1 { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+@keyframes floatBadge2 { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
+@keyframes floatBadge3 { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
 
 .live-dot {
   width: 8px; height: 8px; border-radius: 50%; background: #2F9E6B;
@@ -611,42 +582,52 @@ img { max-width: 100%; display: block; }
   animation: pulse 1.8s ease-out infinite;
 }
 @keyframes pulse {
-  70% { box-shadow: 0 0 0 8px rgba(47,158,107,0); }
+  70%  { box-shadow: 0 0 0 8px rgba(47,158,107,0); }
   100% { box-shadow: 0 0 0 0 rgba(47,158,107,0); }
 }
 
-/* Typing Caret Animation */
 .cvm-caret {
   display: inline-block;
   width: 2px; height: 10px;
-  margin-left: 3px;
+  margin-left: 2px;
+  vertical-align: -1px;
   background: var(--copper);
   animation: blink 1s steps(1, end) infinite;
 }
 @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
 
-/* ===== Interactive Ticker Bar ===== */
+/* Touch devices have no hover, so give the hero mockup a gentle idle float instead */
+@media (hover: none) {
+  .hero-visual { animation: idleFloat 6s ease-in-out infinite; }
+}
+@keyframes idleFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+
+/* ===== Ticker ===== */
 .facts-strip {
   border-top: 1px solid var(--rule);
   border-bottom: 1px solid var(--rule);
   background: #fff;
   overflow: hidden;
   position: relative;
+  z-index: 1;
   padding: 1.1rem 0;
 }
 .ticker-wrap {
   display: flex;
-  width: 200%;
-  animation: tickerMove 30s linear infinite;
+  width: max-content;
+  will-change: transform;
+  animation: tickerMove 40s linear infinite;
 }
 .ticker-wrap:hover { animation-play-state: paused; }
 .ticker-content {
   display: flex;
-  gap: 3.5rem;
-  width: 100%;
-  justify-content: space-around;
-  align-items: center;
   flex-shrink: 0;
+  align-items: center;
+  gap: 3.5rem;
+  padding-right: 3.5rem;
 }
 .ticker-item {
   display: inline-flex;
@@ -656,35 +637,31 @@ img { max-width: 100%; display: block; }
   font-weight: 600;
   color: var(--muted);
   white-space: nowrap;
-  transition: color 0.2s, transform 0.2s;
+  transition: color 0.2s;
 }
-.ticker-item:hover { color: var(--ink); transform: scale(1.04); }
+.ticker-item:hover { color: var(--ink); }
 .ticker-item i { color: var(--copper); font-size: 1rem; }
 @keyframes tickerMove {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  0%   { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
 }
 
-/* ===== Interactive Step Cards with Staggered Hover & Active States ===== */
-.section { padding: clamp(4.5rem, 8vw, 7.5rem) 0; position: relative; }
+/* ===== Sections ===== */
+.section { padding: clamp(4.5rem, 8vw, 7.5rem) 0; position: relative; z-index: 1; }
 .section-head { margin-bottom: clamp(2.5rem, 5vw, 4rem); max-width: 36rem; }
 .section-head h2 { font-size: clamp(2rem, 3.8vw, 3rem); margin-bottom: 0.8rem; }
 .section-head p { color: var(--muted); font-size: 1.05rem; }
 .section-head.center { margin-inline: auto; text-align: center; }
 .section-head.center p { margin-inline: auto; }
 
-.steps-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.5rem;
-}
+.steps-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
 .step-card {
   background: #fff;
   border: 1px solid var(--rule);
   border-radius: 14px;
   padding: 2rem 1.6rem;
   position: relative;
-  transition: all 0.35s var(--ease-spring);
+  transition: transform 0.35s var(--ease-spring), border-color 0.35s, box-shadow 0.35s;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -698,12 +675,12 @@ img { max-width: 100%; display: block; }
   transform-origin: left;
   transition: transform 0.35s var(--ease-spring);
 }
-.step-card:hover {
+.step-card:hover, .step-card.lit {
   transform: translateY(-8px);
   border-color: var(--copper-lt);
   box-shadow: 0 16px 36px -10px rgba(184,115,67,0.18);
 }
-.step-card:hover::before { transform: scaleX(1); }
+.step-card:hover::before, .step-card.lit::before { transform: scaleX(1); }
 .step-icon-wrap {
   width: 48px; height: 48px;
   border-radius: 10px;
@@ -715,7 +692,7 @@ img { max-width: 100%; display: block; }
   margin-bottom: 1.4rem;
   transition: all 0.3s ease;
 }
-.step-card:hover .step-icon-wrap {
+.step-card:hover .step-icon-wrap, .step-card.lit .step-icon-wrap {
   background: var(--copper);
   color: #fff;
   transform: scale(1.1) rotate(-6deg);
@@ -729,23 +706,18 @@ img { max-width: 100%; display: block; }
   color: rgba(20,29,38,0.15);
   transition: color 0.3s;
 }
-.step-card:hover .step-num-badge { color: var(--copper-glow); }
+.step-card:hover .step-num-badge, .step-card.lit .step-num-badge { color: var(--copper-glow); }
 .step-card h3 { font-size: 1.22rem; margin-bottom: 0.6rem; }
 .step-card p { font-size: 0.92rem; color: var(--muted); line-height: 1.6; }
 
-/* ===== Interactive Features Grid with Hover Glow ===== */
 .features-section { background: var(--wash); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
-.feat-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-}
+.feat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
 .feat-item {
   background: #fff;
   padding: 2.2rem 2rem;
   border-radius: 14px;
   border: 1px solid var(--rule);
-  transition: all 0.35s var(--ease-spring);
+  transition: transform 0.35s var(--ease-spring), border-color 0.35s, box-shadow 0.35s;
   position: relative;
   overflow: hidden;
 }
@@ -759,12 +731,12 @@ img { max-width: 100%; display: block; }
   transition: opacity 0.4s;
   pointer-events: none;
 }
-.feat-item:hover {
+.feat-item:hover, .feat-item.lit {
   transform: translateY(-6px);
   border-color: var(--copper-lt);
   box-shadow: 0 16px 32px -8px rgba(16,23,32,0.08);
 }
-.feat-item:hover::after { opacity: 1; }
+.feat-item:hover::after, .feat-item.lit::after { opacity: 1; }
 .feat-icon {
   width: 50px; height: 50px;
   border-radius: 12px;
@@ -774,9 +746,9 @@ img { max-width: 100%; display: block; }
   place-items: center;
   font-size: 1.3rem;
   margin-bottom: 1.3rem;
-  transition: transform 0.35s var(--ease-spring);
+  transition: transform 0.35s var(--ease-spring), background-color 0.3s, color 0.3s;
 }
-.feat-item:hover .feat-icon {
+.feat-item:hover .feat-icon, .feat-item.lit .feat-icon {
   transform: scale(1.12) rotate(6deg);
   background: var(--copper);
   color: #fff;
@@ -784,7 +756,7 @@ img { max-width: 100%; display: block; }
 .feat-item h3 { font-size: 1.25rem; margin-bottom: 0.6rem; }
 .feat-item p { font-size: 0.94rem; color: var(--muted); }
 
-/* ===== Interactive Layout Preview with Animated Highlight Bars ===== */
+/* Layout showcase */
 .templates { background: var(--ink); color: #fff; }
 .templates .section-head p { color: #A8B4BF; }
 .showcase {
@@ -806,18 +778,14 @@ img { max-width: 100%; display: block; }
   border: 1px solid rgba(255,255,255,0.06);
   transition: all 0.25s ease;
 }
-.layout-list li:hover {
+.layout-list li:hover, .layout-list li.lit {
   background: rgba(255,255,255,0.08);
   border-color: var(--copper);
   transform: translateX(4px);
 }
 .layout-list i { color: var(--copper-lt); font-size: 0.9rem; }
 
-.interactive-mockup-frame {
-  perspective: 900px;
-  justify-self: center;
-  width: 100%;
-}
+.interactive-mockup-frame { perspective: 900px; justify-self: center; width: 100%; }
 .lay-paper {
   aspect-ratio: 1 / 1.414;
   width: 100%;
@@ -827,20 +795,20 @@ img { max-width: 100%; display: block; }
   box-shadow: 0 30px 60px -20px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.1);
   transform: rotateY(-6deg) rotateX(4deg);
   transition: transform 0.4s var(--ease-spring), box-shadow 0.4s;
-  cursor: pointer;
+  touch-action: pan-y;
 }
-.interactive-mockup-frame:hover .lay-paper {
+.interactive-mockup-frame:hover .lay-paper, .interactive-mockup-frame.touching .lay-paper {
   transform: rotateY(0deg) rotateX(0deg) translateY(-8px);
   box-shadow: 0 35px 75px -15px rgba(184,115,67,0.3), 0 0 0 2px var(--copper);
 }
-.lay-head { text-align: center; padding-bottom: 5%; border-bottom: 1.5px solid #E2E8F0; }
-.lay-bar {
-  height: 5px;
-  background: #E8ECEF;
-  margin-bottom: 7px;
-  border-radius: 3px;
-  transition: background-color 0.3s;
+/* When it scrolls into view the sheet swings in (this is what plays on phones) */
+.js .interactive-mockup-frame.in .lay-paper { animation: paperSwing 1.4s var(--ease-spring) 0.15s both; }
+@keyframes paperSwing {
+  0%   { transform: rotateY(-28deg) rotateX(10deg) translateY(24px); }
+  100% { transform: rotateY(-6deg) rotateX(4deg) translateY(0); }
 }
+.lay-head { text-align: center; padding-bottom: 5%; border-bottom: 1.5px solid #E2E8F0; }
+.lay-bar { height: 5px; background: #E8ECEF; margin-bottom: 7px; border-radius: 3px; transition: background-color 0.3s; }
 .interactive-mockup-frame:hover .lay-bar { background: #D5DDE4; }
 .lay-bar.name { height: 11px; background: var(--ink); width: 60%; margin: 0 auto 8px; }
 .lay-bar.role { height: 5px; background: var(--copper); width: 34%; margin: 0 auto; }
@@ -850,68 +818,21 @@ img { max-width: 100%; display: block; }
 .lay-bar.h { background: var(--copper); width: 60%; margin-bottom: 9px; opacity: 0.85; }
 .lay-gap { height: 14px; }
 
-/* ===== Pricing in Cedis (GH₵) with Currency Switcher & Card Animations ===== */
+/* ===== Pricing ===== */
 .pricing-section { background: var(--wash); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
-.pricing-switcher-wrap {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 0.8rem;
-  margin-bottom: 2.5rem;
-}
-.currency-pill {
-  background: #fff;
-  border: 1px solid var(--rule);
-  padding: 0.4rem 0.5rem;
-  border-radius: 999px;
-  display: inline-flex;
-  gap: 0.3rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-}
-.currency-pill-btn {
-  background: transparent;
-  border: none;
-  font-family: inherit;
-  font-size: 0.82rem;
-  font-weight: 700;
-  padding: 0.35rem 0.9rem;
-  border-radius: 999px;
-  cursor: pointer;
-  transition: all 0.25s;
-  color: var(--muted);
-}
-.currency-pill-btn.active {
-  background: var(--ink);
-  color: #fff;
-  box-shadow: 0 2px 8px rgba(16,23,32,0.15);
-}
-
-.pricing-card-wrap {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 420px));
-  justify-content: center;
-  gap: 2rem;
-}
+.pricing-card-wrap { display: grid; grid-template-columns: minmax(0, 520px); justify-content: center; }
 .pricing-card {
   background: #fff;
   border: 1px solid var(--rule);
   border-radius: 16px;
   padding: 2.6rem 2.2rem;
   position: relative;
-  transition: all 0.35s var(--ease-spring);
+  transition: transform 0.35s var(--ease-spring), border-color 0.35s, box-shadow 0.35s;
   display: flex;
   flex-direction: column;
 }
-.pricing-card:hover {
-  transform: translateY(-8px);
-  border-color: var(--copper);
-  box-shadow: 0 20px 40px -10px rgba(184,115,67,0.15);
-}
-.pricing-card.featured {
-  border: 2px solid var(--copper);
-  box-shadow: 0 16px 36px -10px rgba(184,115,67,0.12);
-  position: relative;
-}
+.pricing-card:hover { transform: translateY(-8px); border-color: var(--copper); box-shadow: 0 20px 40px -10px rgba(184,115,67,0.15); }
+.pricing-card.featured { border: 2px solid var(--copper); box-shadow: 0 16px 36px -10px rgba(184,115,67,0.12); }
 .featured-badge {
   position: absolute;
   top: -13px;
@@ -925,8 +846,9 @@ img { max-width: 100%; display: block; }
   text-transform: uppercase;
   padding: 0.25rem 0.9rem;
   border-radius: 999px;
+  white-space: nowrap;
 }
-.plan-top { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 1.4rem; }
+.plan-top { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 1.4rem; gap: 1rem; }
 .plan-name { font-size: 1.15rem; font-weight: 700; }
 .plan-tag {
   font-size: 0.72rem;
@@ -936,39 +858,14 @@ img { max-width: 100%; display: block; }
   border: 1px solid rgba(31, 138, 88, 0.2);
   border-radius: 999px;
   padding: 0.2rem 0.65rem;
+  white-space: nowrap;
 }
-.pricing-amount-group {
-  display: flex;
-  align-items: baseline;
-  gap: 0.35rem;
-  margin-bottom: 0.4rem;
-}
-.pricing-amount-group .currency-symbol {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: var(--cedi-green);
-}
-.pricing-amount-group .amount {
-  font-family: 'Fraunces', serif;
-  font-size: 3.2rem;
-  font-weight: 700;
-  line-height: 1;
-  color: var(--ink);
-}
-.pricing-period {
-  font-size: 0.88rem;
-  color: var(--muted);
-  margin-bottom: 1.8rem;
-}
+.pricing-amount-group { display: flex; align-items: baseline; gap: 0.35rem; margin-bottom: 0.4rem; }
+.pricing-amount-group .currency-symbol { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.6rem; font-weight: 700; color: var(--cedi-green); }
+.pricing-amount-group .amount { font-family: 'Fraunces', serif; font-size: 3.2rem; font-weight: 700; line-height: 1; color: var(--ink); }
+.pricing-period { font-size: 0.88rem; color: var(--muted); margin-bottom: 1.8rem; }
 .pricing-card ul { margin-bottom: 2.2rem; flex: 1; display: grid; gap: 0.75rem; }
-.pricing-card li {
-  font-size: 0.94rem;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  color: var(--ink);
-}
+.pricing-card li { font-size: 0.94rem; display: flex; align-items: center; gap: 0.75rem; color: var(--ink); }
 .pricing-card li i {
   color: var(--cedi-green);
   font-size: 0.85rem;
@@ -981,16 +878,10 @@ img { max-width: 100%; display: block; }
 }
 .pricing-card .btn { width: 100%; }
 
-/* ===== FAQ with Animated Accordion ===== */
+/* ===== FAQ ===== */
 .faq-list { max-width: 48rem; margin: 0 auto; display: grid; gap: 1rem; }
-.faq-card {
-  background: #fff;
-  border: 1px solid var(--rule);
-  border-radius: 12px;
-  transition: all 0.3s ease;
-  overflow: hidden;
-}
-.faq-card:hover { border-color: var(--copper); box-shadow: 0 4px 16px rgba(0,0,0,0.03); }
+.faq-card { background: #fff; border: 1px solid var(--rule); border-radius: 12px; transition: border-color 0.3s, box-shadow 0.3s; overflow: hidden; }
+.faq-card:hover, .faq-card[open] { border-color: var(--copper); box-shadow: 0 4px 16px rgba(0,0,0,0.03); }
 .faq-card summary {
   list-style: none;
   cursor: pointer;
@@ -1001,12 +892,15 @@ img { max-width: 100%; display: block; }
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 1rem;
   transition: color 0.25s;
+  touch-action: manipulation;
 }
 .faq-card summary::-webkit-details-marker { display: none; }
 .faq-card summary:hover { color: var(--copper); }
 .faq-icon-toggle {
   width: 28px; height: 28px;
+  flex-shrink: 0;
   border-radius: 50%;
   background: var(--wash);
   color: var(--ink);
@@ -1015,45 +909,37 @@ img { max-width: 100%; display: block; }
   font-size: 0.9rem;
   transition: transform 0.3s var(--ease-spring), background-color 0.2s, color 0.2s;
 }
-.faq-card[open] .faq-icon-toggle {
-  transform: rotate(45deg);
-  background: var(--copper);
-  color: #fff;
-}
-.faq-card p {
-  color: var(--muted);
-  padding: 0 1.6rem 1.4rem 1.6rem;
-  font-size: 0.96rem;
-  line-height: 1.65;
-  animation: fadeInDown 0.35s ease;
-}
+.faq-card[open] .faq-icon-toggle { transform: rotate(45deg); background: var(--copper); color: #fff; }
+.faq-card p { color: var(--muted); padding: 0 1.6rem 1.4rem; font-size: 0.96rem; line-height: 1.65; animation: fadeInDown 0.35s ease; }
 @keyframes fadeInDown {
   from { opacity: 0; transform: translateY(-8px); }
-  to { opacity: 1; transform: translateY(0); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ===== Closing Call To Action ===== */
+/* ===== Closing CTA ===== */
 .closing {
   background: radial-gradient(circle at 50% 20%, #253444, var(--navy));
   color: #fff;
   text-align: center;
-  padding: clamp(4.5rem, 9vw, 7rem) var(--gr);
+  padding: clamp(4.5rem, 9vw, 7rem) var(--gr) clamp(4.5rem, 9vw, 7rem) var(--gl);
   position: relative;
+  z-index: 1;
   overflow: hidden;
 }
 .closing::before {
   content: '';
   position: absolute;
-  top: 0; left: 0; width: 100%; height: 100%;
+  inset: 0;
   background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.02' fill-rule='evenodd'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E");
   pointer-events: none;
 }
-.closing h2 { font-size: clamp(2.2rem, 4.5vw, 3.4rem); margin-bottom: 1rem; }
+.closing h2 { font-size: clamp(2.2rem, 4.5vw, 3.4rem); margin: 0 auto 1rem; max-width: 22ch; }
 .closing p { color: #CBD5E1; margin: 0 auto 2.4rem; font-size: 1.15rem; }
 .closing-btns { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+.closing .wrap { padding-left: 0; padding-right: 0; }
 
 /* ===== Footer ===== */
-footer { background: var(--ink); color: #8F9CA8; padding: clamp(3.5rem, 6vw, 5rem) 0 calc(2rem + env(safe-area-inset-bottom, 0px)); font-size: 0.92rem; }
+footer { background: var(--ink); color: #8F9CA8; padding: clamp(3.5rem, 6vw, 5rem) 0 calc(2rem + env(safe-area-inset-bottom, 0px)); font-size: 0.92rem; position: relative; z-index: 1; }
 .footer-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr) minmax(0, 1fr);
@@ -1065,26 +951,19 @@ footer .logo { color: #fff; margin-bottom: 0.9rem; }
 .footer-brand p { max-width: 36ch; font-size: 0.92rem; color: #8F9CA8; }
 .footer-h { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.88rem; color: #fff; font-weight: 700; margin-bottom: 1rem; letter-spacing: 0.05em; text-transform: uppercase; }
 .footer-col ul { display: grid; gap: 0.6rem; }
-.footer-col a { transition: color 0.2s, transform 0.2s; display: inline-block; }
+.footer-col a { transition: color 0.2s, transform 0.2s; display: inline-block; padding: 0.15rem 0; }
 .footer-col a:hover { color: #fff; transform: translateX(3px); }
-.footer-bottom {
-  padding-top: 1.8rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.8rem 1.5rem;
-  justify-content: space-between;
-  font-size: 0.85rem;
-  align-items: center;
-}
+.footer-bottom { padding-top: 1.8rem; display: flex; flex-wrap: wrap; gap: 0.8rem 1.5rem; justify-content: space-between; font-size: 0.85rem; align-items: center; }
 
-/* Chrome Scroll Indicators */
+/* Scroll indicators */
 .scroll-progress {
   position: fixed;
   top: 0; left: 0;
-  height: 3px; width: 0;
+  height: 3px; width: 100%;
+  transform: scaleX(0);
+  transform-origin: left;
   background: linear-gradient(90deg, var(--copper), var(--copper-glow));
   z-index: 1000;
-  transition: width 0.1s linear;
 }
 .to-top {
   position: fixed;
@@ -1100,20 +979,23 @@ footer .logo { color: #fff; margin-bottom: 0.9rem; }
   opacity: 0;
   visibility: hidden;
   transform: translateY(12px) scale(0.9);
-  transition: all 0.3s var(--ease-spring);
+  transition: opacity 0.3s, visibility 0.3s, transform 0.3s var(--ease-spring), background-color 0.2s, color 0.2s;
   box-shadow: 0 8px 24px rgba(16,23,32,0.14);
   z-index: 800;
 }
 .to-top.visible { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
-.to-top:hover { background: var(--copper); color: #fff; transform: translateY(-4px); }
+.to-top:hover, .to-top:active { background: var(--copper); color: #fff; }
 
-/* Scroll Reveal */
-.reveal {
+/* Scroll reveal: only hidden when JS is running, so content never gets stuck invisible */
+.js .reveal {
   opacity: 0;
-  transform: translateY(22px);
+  transform: translate3d(0, 22px, 0);
   transition: opacity 0.7s var(--ease-smooth), transform 0.7s var(--ease-smooth);
 }
-.reveal.in { opacity: 1; transform: translateY(0); }
+.js .reveal.in { opacity: 1; transform: translate3d(0, 0, 0); }
+
+/* ===== Responsive ===== */
+@media (min-width: 941px) { .mobile-menu { display: none; } }
 
 @media (max-width: 1040px) {
   .steps-grid { grid-template-columns: repeat(2, 1fr); }
@@ -1126,37 +1008,43 @@ footer .logo { color: #fff; margin-bottom: 0.9rem; }
   .hamburger { display: inline-flex; }
   .hero { grid-template-columns: 1fr; padding-top: 2rem; }
   .hero-visual { max-width: 400px; margin: 1.5rem auto 0; }
-  .sheet { --cv-s: 0.48; }
   .showcase { grid-template-columns: 1fr; }
-  .pricing-card-wrap { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
+  .ambient-glow { filter: blur(70px); width: 420px; height: 420px; }
 }
 
 @media (max-width: 640px) {
   .steps-grid { grid-template-columns: 1fr; }
   .feat-grid { grid-template-columns: 1fr; }
   .hero-stats { gap: 1rem; justify-content: space-between; }
+  .hero-btns .btn { flex: 1 1 100%; }
   .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
-  .sheet { --cv-s: 0.38; }
+  .pricing-card { padding: 2.2rem 1.5rem; }
+  .sheet-tag { font-size: 0.74rem; padding: 0.4rem 0.75rem; }
   .sheet-tag.live { left: 4px; top: -12px; }
   .sheet-tag.pdf { right: 4px; bottom: -12px; }
   .sheet-tag.currency-tag { left: 4px; bottom: 20%; }
+  .to-top { width: 44px; height: 44px; }
 }
 
+/* Reduce Motion: many phones turn this on automatically (battery saver, "remove animations").
+   Previously it switched off EVERY animation, which is why mobile looked static.
+   Now it only calms the largest movement and keeps the gentle reveals/ticker/badges. */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    scroll-behavior: auto !important;
-    transition-duration: 0.01ms !important;
-  }
+  .ambient-glow, .hero h1 em, .hero-visual { animation: none; }
+  .js .reveal { transform: none; transition-duration: 0.5s; }
+  .js .interactive-mockup-frame.in .lay-paper { animation: none; }
 }
 </style>
-  <!-- GoatCounter: privacy-friendly visit counter -->
+<script data-goatcounter="https://instant-resume.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+<!-- GoatCounter: privacy-friendly visit counter -->
 <script data-goatcounter="https://instant-resume.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
 </head>
+  
 <body>
+
+<a class="skip-link" href="#main">Skip to content</a>
 
 <div class="bg-ambient" aria-hidden="true">
   <div class="ambient-glow glow-1"></div>
@@ -1170,34 +1058,34 @@ footer .logo { color: #fff; margin-bottom: 0.9rem; }
 <nav class="navbar" id="navbar" aria-label="Main navigation">
   <div class="nav-inner">
     <a class="logo" href="#top" aria-label="CVCraft Home">
-      <div class="logo-badge"><i class="fas fa-file-invoice"></i></div>
+      <span class="logo-badge"><i class="fas fa-file-invoice"></i></span>
       CVCraft<span class="dot">.</span>
     </a>
-    
+
     <div class="nav-links">
-      <a href="#how" class="">How it works</a>
-      <a href="#features" class="">Features</a>
-      <a href="#layout" class="">Interactive Layout</a>
-      <a href="#pricing" class="">Pricing</a>
-      <a href="#faq" class="">FAQ</a>
+      <a href="#how">How it works</a>
+      <a href="#features">Features</a>
+      <a href="#layout">Interactive Layout</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
       <span class="currency-badge"><i class="fas fa-coins"></i> GH₵ 0 · 100% Free</span>
       <a class="btn btn-solid btn-icon-bounce" href="user.html">
-        <span class="">Build my resume</span>
+        <span>Build my resume</span>
         <i class="fas fa-arrow-right"></i>
       </a>
     </div>
 
-    <button class="hamburger" id="hamburgerBtn" type="button" aria-label="Toggle navigation menu" aria-expanded="false">
+    <button class="hamburger" id="hamburgerBtn" type="button" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mobileMenu">
       <span></span><span></span><span></span>
     </button>
   </div>
 
   <div class="mobile-menu" id="mobileMenu">
-    <a href="#how" class="">How it works</a>
-    <a href="#features" class="">Features</a>
-    <a href="#layout" class="">Interactive Layout</a>
-    <a href="#pricing" class="">Pricing</a>
-    <a href="#faq" class="">FAQ</a>
+    <a href="#how">How it works</a>
+    <a href="#features">Features</a>
+    <a href="#layout">Interactive Layout</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#faq">FAQ</a>
     <div style="margin-top: 1rem;">
       <span class="currency-badge"><i class="fas fa-coins"></i> 100% Free · GH₵ 0</span>
     </div>
@@ -1205,66 +1093,67 @@ footer .logo { color: #fff; margin-bottom: 0.9rem; }
   </div>
 </nav>
 
-<main id="top">
+<main id="main">
+<span id="top"></span>
 
-<!-- HERO SECTION -->
+<!-- HERO -->
 <header class="hero">
-  <div class="hero-copy reveal in">
-    <div class="hero-eyebrow"><span class="gh-flag">🇬🇭</span><span class="">100% Free for Everyone · No Paid Plans</span></div>
+  <div class="hero-copy reveal">
+    <div class="hero-eyebrow"><span aria-hidden="true">🇬🇭</span><span>100% Free for Everyone · No Paid Plans</span></div>
 
-    <h1 class="">Build a resume<br>that gets <em>read</em></h1>
+    <h1>Build a resume<br>that gets <em>read</em></h1>
 
     <div class="hero-role">
-      <span class=""><i class="fas fa-bolt"></i> Live A4 preview</span>
-      <span class=""><i class="fas fa-file-pdf"></i> One-click PDF</span>
-      <span class=""><i class="fas fa-print"></i> Print-ready output</span>
+      <span><i class="fas fa-bolt"></i> Live A4 preview</span>
+      <span><i class="fas fa-file-pdf"></i> One-click PDF</span>
+      <span><i class="fas fa-print"></i> Print-ready output</span>
     </div>
 
     <p class="hero-lede">
-      Fill in your experience and watch your document morph smoothly in real-time. Designed with high-impact typography and effortless formatting tailored for top opportunities.
+      Fill in your experience and watch your document update in real time. Designed with high-impact typography and effortless formatting tailored for top opportunities.
     </p>
 
     <div class="hero-btns">
       <a class="btn btn-solid btn-lg btn-icon-bounce" href="user.html">
-        <span class="">Start Building Free</span>
+        <span>Start Building Free</span>
         <i class="fas fa-arrow-right"></i>
       </a>
       <a class="btn btn-line btn-lg" href="#layout">
         <i class="fas fa-play-circle"></i>
-        <span class="">Explore Layout</span>
+        <span>Explore Layout</span>
       </a>
     </div>
 
     <div class="hero-stats">
       <div class="stat">
         <div class="num"><span class="currency-sym">GH₵</span>0</div>
-        <div class="lbl">Always Free Starter</div>
+        <div class="lbl">Always Free</div>
       </div>
       <div class="stat">
         <div class="num">A4</div>
-        <div class="lbl">Exact Print Dimensions</div>
+        <div class="lbl">Exact Print Size</div>
       </div>
       <div class="stat">
         <div class="num">1-Click</div>
-        <div class="lbl">Instant PDF Download</div>
+        <div class="lbl">Instant PDF</div>
       </div>
     </div>
   </div>
 
-  <!-- INTERACTIVE HERO RESUME PREVIEW -->
-  <div class="hero-visual reveal in">
+  <!-- HERO RESUME PREVIEW -->
+  <div class="hero-visual reveal" style="transition-delay: 150ms;">
     <div class="sheet-container" id="interactiveCard">
       <span class="sheet-tag live">
         <span class="live-dot"></span>
-        <span class="">Updating as you type</span>
+        <span>Updating as you type</span>
       </span>
 
       <span class="sheet-tag currency-tag">
         <i class="fas fa-tag" style="color:var(--cedi-green);"></i>
-        <span class="">GH₵ 0.00 Free Tier</span>
+        <span>GH₵ 0.00 Free</span>
       </span>
 
-      <div class="sheet" id="heroSheet" role="img" aria-label="Live interactive A4 resume mockup" style="--cv-s: 0.5718;">
+      <div class="sheet" id="heroSheet" role="img" aria-label="Live A4 resume preview mockup">
         <div class="cvm">
           <div class="cvm-header">
             <div class="cvm-name">Samuel Ofori</div>
@@ -1274,9 +1163,9 @@ footer .logo { color: #fff; margin-bottom: 0.9rem; }
             <div class="cvm-side">
               <div class="cvm-block">
                 <div class="cvm-title">Personal Details</div>
-                <div class="cvm-info"><b>Location</b><span class="">Accra, Ghana</span></div>
-                <div class="cvm-info"><b>Nationality</b><span class="">Ghanaian</span></div>
-                <div class="cvm-info"><b>Phone</b><span class="">+233 24 590 2756</span></div>
+                <div class="cvm-info"><b>Location</b><span>Accra, Ghana</span></div>
+                <div class="cvm-info"><b>Nationality</b><span>Ghanaian</span></div>
+                <div class="cvm-info"><b>Phone</b><span>+233 24 590 2756</span></div>
               </div>
               <div class="cvm-block">
                 <div class="cvm-title">Top Skills</div>
@@ -1287,22 +1176,20 @@ footer .logo { color: #fff; margin-bottom: 0.9rem; }
               </div>
               <div class="cvm-block">
                 <div class="cvm-title">Languages</div>
-                <div class="cvm-lang"><span class="">English</span><b>Fluent</b></div>
-                <div class="cvm-lang"><span class="">Twi</span><b>Native</b></div>
-                <div class="cvm-lang"><span class="">French</span><b>Working</b></div>
+                <div class="cvm-lang"><span>English</span><b>Fluent</b></div>
+                <div class="cvm-lang"><span>Twi</span><b>Native</b></div>
+                <div class="cvm-lang"><span>French</span><b>Working</b></div>
               </div>
               <div class="cvm-block">
                 <div class="cvm-title">Contact</div>
-                <div class="cvm-contact"><i class="fas fa-envelope"></i><span class="">sammyofori@cvcraft.gh</span></div>
-                <div class="cvm-contact"><i class="fas fa-globe"></i><span class="">takoradi-tech.gh</span></div>
+                <div class="cvm-contact"><i class="fas fa-envelope"></i><span>sammyofori@cvcraft.gh</span></div>
+                <div class="cvm-contact"><i class="fas fa-globe"></i><span>takoradi-tech.gh</span></div>
               </div>
             </div>
             <div class="cvm-main">
               <div class="cvm-block">
                 <div class="cvm-title">Executive Summary</div>
-                <div class="cvm-about">
-                  Motivated Analytics and Engineering Specialist with 6+ years delivering scalable enterprise solutions across West Africa. Focused on high-fidelity user workflows and measurable performance.<span class="cvm-caret"></span>
-                </div>
+                <div class="cvm-about"><span id="typedSummary">Motivated Analytics and Engineering Specialist with 6+ years delivering scalable enterprise solutions across West Africa. Focused on high-fidelity user workflows and measurable performance.</span><span class="cvm-caret"></span></div>
               </div>
               <div class="cvm-block">
                 <div class="cvm-title">Experience</div>
@@ -1313,8 +1200,8 @@ footer .logo { color: #fff; margin-bottom: 0.9rem; }
                   </div>
                   <div class="cvm-sub">Fauget Studios · Accra, Ghana</div>
                   <ul class="cvm-list">
-                    <li class="">Led analytics workflows saving 14+ hours of manual reporting per cycle.</li>
-                    <li class="">Designed responsive customer dashboards using modern UI tokens.</li>
+                    <li>Led analytics workflows saving 14+ hours of manual reporting per cycle.</li>
+                    <li>Designed responsive customer dashboards using modern UI tokens.</li>
                   </ul>
                 </div>
                 <div class="cvm-entry">
@@ -1324,7 +1211,7 @@ footer .logo { color: #fff; margin-bottom: 0.9rem; }
                   </div>
                   <div class="cvm-sub">Larana Tech · Takoradi</div>
                   <ul class="cvm-list">
-                    <li class="">Engineered multi-currency checkout systems supporting Mobile Money and GH₵.</li>
+                    <li>Engineered multi-currency checkout systems supporting Mobile Money and GH₵.</li>
                   </ul>
                 </div>
               </div>
@@ -1345,146 +1232,146 @@ footer .logo { color: #fff; margin-bottom: 0.9rem; }
 
       <span class="sheet-tag pdf">
         <i class="fas fa-file-pdf" style="color:#C4453B;"></i>
-        <span class="">Print-Ready A4</span>
+        <span>Print-Ready A4</span>
       </span>
     </div>
   </div>
 </header>
 
-<!-- ANIMATED TICKER STRIP -->
-<section class="facts-strip" aria-label="Platform Highlights">
+<!-- TICKER -->
+<section class="facts-strip" aria-label="Platform highlights">
   <div class="ticker-wrap">
     <div class="ticker-content">
       <div class="ticker-item"><i class="fas fa-money-bill-wave"></i> Priced in Ghanaian Cedis (GH₵)</div>
-      <div class="ticker-item"><i class="fas fa-eye"></i> Real-Time Kinetic A4 Preview</div>
-      <div class="ticker-item"><i class="fas fa-magic"></i> Instant ATS-Compliant Layout</div>
-      <div class="ticker-item"><i class="fas fa-mobile-screen"></i> Responsive On Mobile &amp; Desktop</div>
-      <div class="ticker-item"><i class="fas fa-lock"></i> Client-Side Privacy: No Data Leaks</div>
-      <div class="ticker-item"><i class="fas fa-file-arrow-down"></i> High-Resolution Vector PDF</div>
+      <div class="ticker-item"><i class="fas fa-eye"></i> Real-Time A4 Preview</div>
+      <div class="ticker-item"><i class="fas fa-magic"></i> ATS-Friendly Layout</div>
+      <div class="ticker-item"><i class="fas fa-mobile-screen"></i> Works on Mobile &amp; Desktop</div>
+      <div class="ticker-item"><i class="fas fa-lock"></i> Your Resume Stays in Your Browser</div>
+      <div class="ticker-item"><i class="fas fa-file-arrow-down"></i> High-Resolution PDF</div>
     </div>
     <div class="ticker-content" aria-hidden="true">
       <div class="ticker-item"><i class="fas fa-money-bill-wave"></i> Priced in Ghanaian Cedis (GH₵)</div>
-      <div class="ticker-item"><i class="fas fa-eye"></i> Real-Time Kinetic A4 Preview</div>
-      <div class="ticker-item"><i class="fas fa-magic"></i> Instant ATS-Compliant Layout</div>
-      <div class="ticker-item"><i class="fas fa-mobile-screen"></i> Responsive On Mobile &amp; Desktop</div>
-      <div class="ticker-item"><i class="fas fa-lock"></i> Client-Side Privacy: No Data Leaks</div>
-      <div class="ticker-item"><i class="fas fa-file-arrow-down"></i> High-Resolution Vector PDF</div>
+      <div class="ticker-item"><i class="fas fa-eye"></i> Real-Time A4 Preview</div>
+      <div class="ticker-item"><i class="fas fa-magic"></i> ATS-Friendly Layout</div>
+      <div class="ticker-item"><i class="fas fa-mobile-screen"></i> Works on Mobile &amp; Desktop</div>
+      <div class="ticker-item"><i class="fas fa-lock"></i> Your Resume Stays in Your Browser</div>
+      <div class="ticker-item"><i class="fas fa-file-arrow-down"></i> High-Resolution PDF</div>
     </div>
   </div>
 </section>
 
-<!-- STEP BY STEP PROCESS -->
+<!-- HOW IT WORKS -->
 <section class="section" id="how">
   <div class="wrap">
-    <div class="section-head reveal in">
-      <h2 class="">Crafted for speed. Built for interviews.</h2>
-      <p class="">Four effortless steps from a blank canvas to an interview-ready resume.</p>
+    <div class="section-head reveal">
+      <h2>Crafted for speed. Built for interviews.</h2>
+      <p>Four effortless steps from a blank canvas to an interview-ready resume.</p>
     </div>
 
     <div class="steps-grid">
-      <div class="step-card reveal in">
+      <div class="step-card reveal">
         <span class="step-num-badge">01</span>
         <div class="step-icon-wrap"><i class="fas fa-keyboard"></i></div>
-        <h3 class="">Fill In Your Details</h3>
-        <p class="">Type your professional history, skills, and accomplishments into an intuitive, guided form.</p>
+        <h3>Fill In Your Details</h3>
+        <p>Type your professional history, skills, and accomplishments into an intuitive, guided form.</p>
       </div>
 
-      <div class="step-card reveal in" style="transition-delay: 100ms;">
+      <div class="step-card reveal" style="transition-delay: 100ms;">
         <span class="step-num-badge">02</span>
         <div class="step-icon-wrap"><i class="fas fa-wand-magic-sparkles"></i></div>
-        <h3 class="">Watch It Morph Live</h3>
-        <p class="">Every keystroke animates and repaginates smoothly into a standardized single A4 page.</p>
+        <h3>Watch It Update Live</h3>
+        <p>Every keystroke updates the preview instantly, laid out on a standard A4 page.</p>
       </div>
 
-      <div class="step-card reveal in" style="transition-delay: 200ms;">
+      <div class="step-card reveal" style="transition-delay: 200ms;">
         <span class="step-num-badge">03</span>
         <div class="step-icon-wrap"><i class="fas fa-sliders"></i></div>
-        <h3 class="">Auto-Fit Geometry</h3>
-        <p class="">Dynamic compression algorithms ensure your content stays perfectly balanced on one sheet.</p>
+        <h3>Auto-Fit Geometry</h3>
+        <p>Spacing adjusts automatically so your content stays balanced on a single sheet.</p>
       </div>
 
-      <div class="step-card reveal in" style="transition-delay: 300ms;">
+      <div class="step-card reveal" style="transition-delay: 300ms;">
         <span class="step-num-badge">04</span>
         <div class="step-icon-wrap"><i class="fas fa-download"></i></div>
-        <h3 class="">Download in Cedis</h3>
-        <p class="">Export your crisp, high-resolution PDF or print right away with zero watermark.</p>
+        <h3>Download for Free</h3>
+        <p>Export a crisp, high-resolution PDF or print right away with zero watermark.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- FEATURES GRID -->
+<!-- FEATURES -->
 <section class="section features-section" id="features">
   <div class="wrap">
-    <div class="section-head reveal in">
-      <h2 class="">Everything recruiters look for. Nothing they don't.</h2>
-      <p class="">Purpose-built features designed to speed up your job search process.</p>
+    <div class="section-head reveal">
+      <h2>Everything recruiters look for. Nothing they don't.</h2>
+      <p>Purpose-built features designed to speed up your job search.</p>
     </div>
 
     <div class="feat-grid">
-      <div class="feat-item reveal in">
+      <div class="feat-item reveal">
         <div class="feat-icon"><i class="fas fa-eye"></i></div>
-        <h3 class="">Kinetic Live Preview</h3>
-        <p class="">Instant feedback loop with micro-animations that reflect formatting changes on the fly.</p>
+        <h3>Live Preview</h3>
+        <p>Instant feedback with smooth micro-animations that reflect formatting changes on the fly.</p>
       </div>
 
-      <div class="feat-item reveal in" style="transition-delay: 100ms;">
+      <div class="feat-item reveal" style="transition-delay: 100ms;">
         <div class="feat-icon"><i class="fas fa-file-pdf"></i></div>
-        <h3 class="">Direct PDF Export</h3>
-        <p class="">True vector PDF rendering guarantees crisp typography on both digital screens and physical print.</p>
+        <h3>Direct PDF Export</h3>
+        <p>Crisp typography on both digital screens and physical print.</p>
       </div>
 
-      <div class="feat-item reveal in" style="transition-delay: 200ms;">
+      <div class="feat-item reveal" style="transition-delay: 200ms;">
         <div class="feat-icon"><i class="fas fa-compress-arrows-alt"></i></div>
-        <h3 class="">Smart Single-Page Fit</h3>
-        <p class="">Automatic spacing adjustments to eliminate awkward page breaks and trailing sentences.</p>
+        <h3>Smart Single-Page Fit</h3>
+        <p>Automatic spacing adjustments to avoid awkward page breaks and trailing sentences.</p>
       </div>
 
-      <div class="feat-item reveal in" style="transition-delay: 300ms;">
+      <div class="feat-item reveal" style="transition-delay: 300ms;">
         <div class="feat-icon"><i class="fas fa-mobile-alt"></i></div>
-        <h3 class="">Fluid Mobile Editor</h3>
-        <p class="">Edit effortlessly on your smartphone with synchronized tab switching and gesture support.</p>
+        <h3>Fluid Mobile Editor</h3>
+        <p>Edit comfortably on your smartphone with synchronized tab switching.</p>
       </div>
 
-      <div class="feat-item reveal in" style="transition-delay: 400ms;">
+      <div class="feat-item reveal" style="transition-delay: 400ms;">
         <div class="feat-icon"><i class="fas fa-shield-halved"></i></div>
-        <h3 class="">Zero Data Tracking</h3>
-        <p class="">Your resume data is stored locally in your browser memory — total privacy with zero data sales.</p>
+        <h3>Private by Design</h3>
+        <p>Your resume data is stored locally in your browser. We never sell it.</p>
       </div>
 
-      <div class="feat-item reveal in" style="transition-delay: 500ms;">
+      <div class="feat-item reveal" style="transition-delay: 500ms;">
         <div class="feat-icon"><i class="fas fa-coins"></i></div>
-        <h3 class="">Cedis Native (GH₵)</h3>
-        <p class="">Accessible pricing in Ghanaian Cedis with zero exchange fee penalties.</p>
+        <h3>Cedis Native (GH₵)</h3>
+        <p>Everything is free, and any future pricing will be shown in Ghanaian Cedis.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- INTERACTIVE LAYOUT SECTION -->
+<!-- LAYOUT SHOWCASE -->
 <section class="section templates" id="layout">
   <div class="wrap">
     <div class="showcase">
-      <div class="reveal in">
+      <div class="reveal">
         <div class="section-head">
-          <h2 class="">One pristine layout, engineered to pass ATS</h2>
-          <p class="">Carefully balanced proportions featuring a prominent header and a dual-column modular architecture.</p>
+          <h2>One pristine layout, engineered to pass ATS</h2>
+          <p>Carefully balanced proportions featuring a prominent header and a dual-column modular architecture.</p>
         </div>
 
         <ul class="layout-list">
-          <li class=""><i class="fas fa-check-circle"></i> High-priority summary and chronological work history</li>
-          <li class=""><i class="fas fa-check-circle"></i> Modular side-rail for contact tags, languages, and proficiencies</li>
-          <li class=""><i class="fas fa-check-circle"></i> Optimal typography scaling to maximize readability</li>
+          <li><i class="fas fa-check-circle"></i> High-priority summary and chronological work history</li>
+          <li><i class="fas fa-check-circle"></i> Modular side-rail for contact tags, languages, and proficiencies</li>
+          <li><i class="fas fa-check-circle"></i> Optimal typography scaling to maximize readability</li>
         </ul>
 
         <a class="btn btn-paper btn-lg btn-icon-bounce" href="user.html">
-          <span class="">Start With This Template</span>
+          <span>Start With This Template</span>
           <i class="fas fa-arrow-right"></i>
         </a>
       </div>
 
-      <div class="interactive-mockup-frame reveal in">
-        <div class="lay-paper" role="img" aria-label="Interactive Blueprint Layout">
+      <div class="interactive-mockup-frame reveal" id="layoutFrame">
+        <div class="lay-paper" role="img" aria-label="Resume layout blueprint">
           <div class="lay-head">
             <div class="lay-bar name"></div>
             <div class="lay-bar role"></div>
@@ -1523,61 +1410,74 @@ footer .logo { color: #fff; margin-bottom: 0.9rem; }
   </div>
 </section>
 
-<!-- PRICING IN CEDIS (GH₵) -->
+<!-- PRICING -->
 <section class="section pricing-section" id="pricing">
   <div class="wrap">
-    <div class="section-head center reveal in"><h2 class="">Free for Everyone</h2><p class="">Everything in the builder is open to you at no cost. No card, no subscription, no watermark.</p></div>
+    <div class="section-head center reveal">
+      <h2>Free for Everyone</h2>
+      <p>Everything in the builder is open to you at no cost. No card, no subscription, no watermark.</p>
+    </div>
 
-    <div class="pricing-card-wrap"><div class="pricing-card featured reveal" style="max-width: 520px; width: 100%; margin: 0px auto;"><span class="featured-badge">All Features Unlocked</span><div class="plan-top"><span class="plan-name">Full Builder Access</span><span class="plan-tag">Free Forever</span></div><div class="pricing-amount-group"><span class="currency-symbol">GH₵</span><span class="amount">0</span></div><div class="pricing-period">No card required · Instant access · Zero fees</div><ul><li class=""><i class="fas fa-check"></i> Live A4 real-time preview</li><li class=""><i class="fas fa-check"></i> Vector PDF download &amp; direct print</li><li class=""><i class="fas fa-check"></i> Smart single-page auto compaction</li><li class=""><i class="fas fa-check"></i> ATS-compliant layout &amp; scoring</li><li class=""><i class="fas fa-check"></i> Fluid mobile &amp; desktop editor</li><li class=""><i class="fas fa-check"></i> 100% client-side privacy (no data tracking)</li></ul><a class="btn btn-solid btn-icon-bounce" href="user.html"><span class="">Start Building For Free</span><i class="fas fa-arrow-right"></i></a></div></div>
+    <div class="pricing-card-wrap">
+      <div class="pricing-card featured reveal">
+        <span class="featured-badge">All Features Unlocked</span>
+        <div class="plan-top"><span class="plan-name">Full Builder Access</span><span class="plan-tag">Free Forever</span></div>
+        <div class="pricing-amount-group"><span class="currency-symbol">GH₵</span><span class="amount">0</span></div>
+        <div class="pricing-period">No card required · Instant access · Zero fees</div>
+        <ul>
+          <li><i class="fas fa-check"></i> Live A4 real-time preview</li>
+          <li><i class="fas fa-check"></i> PDF download &amp; direct print</li>
+          <li><i class="fas fa-check"></i> Smart single-page auto compaction</li>
+          <li><i class="fas fa-check"></i> ATS-friendly layout</li>
+          <li><i class="fas fa-check"></i> Fluid mobile &amp; desktop editor</li>
+          <li><i class="fas fa-check"></i> Resume data stays in your browser</li>
+        </ul>
+        <a class="btn btn-solid btn-icon-bounce" href="user.html"><span>Start Building For Free</span><i class="fas fa-arrow-right"></i></a>
+      </div>
+    </div>
   </div>
 </section>
 
-<!-- FREQUENTLY ASKED QUESTIONS -->
+<!-- FAQ -->
 <section class="section" id="faq">
   <div class="wrap">
-    <div class="section-head center reveal in">
-      <h2 class="">Frequently Asked Questions</h2>
-      <p class="">Have questions about formats, privacy, or Cedis payments? We've got answers.</p>
+    <div class="section-head center reveal">
+      <h2>Frequently Asked Questions</h2>
+      <p>Have questions about formats, privacy, or Cedis payments? We've got answers.</p>
     </div>
 
     <div class="faq-list">
-      <details class="faq-card reveal in">
-        <summary>
-          <span class="">Can I use CVCraft completely free in Ghana?</span>
-          <div class="faq-icon-toggle"><i class="fas fa-plus"></i></div>
-        </summary>
-        <p class="">Yes! Our Starter tier is GH₵ 0.00 with full access to the live preview, single-page fit algorithms, and instant PDF download with zero watermarks.</p>
+      <details class="faq-card reveal">
+        <summary><span>Can I use CVCraft completely free in Ghana?</span><span class="faq-icon-toggle"><i class="fas fa-plus"></i></span></summary>
+        <p>Yes! It's GH₵ 0.00 with full access to the live preview, single-page fit, and instant PDF download with zero watermarks.</p>
       </details>
 
-      <details class="faq-card reveal in" style="transition-delay: 80ms;"><summary><span class="">Are there any hidden fees or paid upgrades?</span><div class="faq-icon-toggle"><i class="fas fa-plus"></i></div></summary><p class="">None at all. All features, exports, formatting tools, and ATS templates are 100% free to use with zero cost (GH₵ 0.00). No credit cards or mobile money payments are required.</p></details>
-
-      <details class="faq-card reveal in" style="transition-delay: 160ms;">
-        <summary>
-          <span class="">Will applicant tracking systems (ATS) parse this resume?</span>
-          <div class="faq-icon-toggle"><i class="fas fa-plus"></i></div>
-        </summary>
-        <p class="">Yes. The structure uses standard semantic headers, selectable fonts, and clean hierarchies designed specifically to pass automated applicant tracking systems without garbled formatting.</p>
+      <details class="faq-card reveal" style="transition-delay: 80ms;">
+        <summary><span>Are there any hidden fees or paid upgrades?</span><span class="faq-icon-toggle"><i class="fas fa-plus"></i></span></summary>
+        <p>None at all. All features, exports and formatting tools are free to use (GH₵ 0.00). No credit cards or mobile money payments are required.</p>
       </details>
 
-      <details class="faq-card reveal in" style="transition-delay: 240ms;">
-        <summary>
-          <span class="">What happens if my content is too long for one page?</span>
-          <div class="faq-icon-toggle"><i class="fas fa-plus"></i></div>
-        </summary>
-        <p class="">Our smart scaling engine automatically tightens line-height and margins dynamically to maintain optimal vertical balance on a standard A4 sheet.</p>
+      <details class="faq-card reveal" style="transition-delay: 160ms;">
+        <summary><span>Will applicant tracking systems (ATS) parse this resume?</span><span class="faq-icon-toggle"><i class="fas fa-plus"></i></span></summary>
+        <p>The structure uses standard headings, selectable fonts, and a clean hierarchy designed to parse well in automated applicant tracking systems.</p>
+      </details>
+
+      <details class="faq-card reveal" style="transition-delay: 240ms;">
+        <summary><span>What happens if my content is too long for one page?</span><span class="faq-icon-toggle"><i class="fas fa-plus"></i></span></summary>
+        <p>The smart scaling engine tightens line-height and margins to keep your content balanced on a standard A4 sheet.</p>
       </details>
     </div>
   </div>
 </section>
 
-<!-- CALL TO ACTION BANNER -->
+<!-- CLOSING CTA -->
 <section class="closing">
-  <div class="wrap reveal in">
-    <h2 class="">Your next career chapter begins with one standout page</h2>
-    <p class="">Join thousands of professionals landing interviews faster with zero formatting friction.</p>
+  <div class="wrap reveal">
+    <h2>Your next career chapter begins with one standout page</h2>
+    <p>Start today and land interviews faster, with zero formatting friction.</p>
     <div class="closing-btns">
       <a class="btn btn-paper btn-lg btn-icon-bounce" href="user.html">
-        <span class="">Build Your Resume (GH₵ 0)</span>
+        <span>Build Your Resume (GH₵ 0)</span>
         <i class="fas fa-arrow-right"></i>
       </a>
     </div>
@@ -1586,42 +1486,41 @@ footer .logo { color: #fff; margin-bottom: 0.9rem; }
 
 </main>
 
-<!-- FOOTER -->
 <footer>
   <div class="wrap">
     <div class="footer-grid">
       <div class="footer-brand">
         <div class="logo">
-          <div class="logo-badge" style="background:#263442; color:#fff;"><i class="fas fa-file-invoice"></i></div>
+          <span class="logo-badge" style="background:#263442; color:#fff;"><i class="fas fa-file-invoice"></i></span>
           CVCraft<span class="dot">.</span>
         </div>
-        <p class="">A precision resume builder crafted for professionals who want to spend their time landing roles, not fighting word processors.</p>
+        <p>A precision resume builder crafted for professionals who want to spend their time landing roles, not fighting word processors.</p>
       </div>
 
       <div class="footer-col">
         <h3 class="footer-h">Platform</h3>
         <ul>
-          <li class=""><a href="#how" class="">How It Works</a></li>
-          <li class=""><a href="#features" class="">Core Features</a></li>
-          <li class=""><a href="#layout" class="">Layout Specifications</a></li>
-          <li class=""><a href="#pricing" class="">Free Access</a></li>
+          <li><a href="#how">How It Works</a></li>
+          <li><a href="#features">Core Features</a></li>
+          <li><a href="#layout">Layout Specifications</a></li>
+          <li><a href="#pricing">Free Access</a></li>
         </ul>
       </div>
 
       <div class="footer-col">
         <h3 class="footer-h">Accra Tech Hub</h3>
         <ul>
-          <li class=""><a href="#" class="">Careers in Ghana</a></li>
-          <li class=""><a href="#" class="">ATS Guidelines</a></li>
-          <li class=""><a href="#" class="">Privacy Policy</a></li>
-          <li class=""><a href="#" class="">Terms of Service</a></li>
+          <li><a href="#top">Careers in Ghana</a></li>
+          <li><a href="#layout">ATS Guidelines</a></li>
+          <li><a href="#top">Privacy Policy</a></li>
+          <li><a href="#top">Terms of Service</a></li>
         </ul>
       </div>
     </div>
 
     <div class="footer-bottom">
-      <span class="">© 2026 CVCraft Tech. Built with pride in Accra, Ghana.</span>
-      <span class="">Currency: Ghanaian Cedis (GH₵)</span>
+      <span>© 2026 CVCraft Tech. Built with pride in Accra, Ghana.</span>
+      <span>Currency: Ghanaian Cedis (GH₵)</span>
     </div>
   </div>
 </footer>
@@ -1631,93 +1530,159 @@ footer .logo { color: #fff; margin-bottom: 0.9rem; }
 </button>
 
 <script>
-(function() {
+(function () {
   'use strict';
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Responsive A4 Preview Scaler
-  const heroSheet = document.getElementById('heroSheet');
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var isTouch = window.matchMedia && window.matchMedia('(hover: none)').matches;
+
+  /* ---------- Responsive A4 preview scaler ---------- */
+  var heroSheet = document.getElementById('heroSheet');
   function fitHeroSheet() {
     if (!heroSheet) return;
-    const w = heroSheet.clientWidth;
-    if (w > 0) {
-      heroSheet.style.setProperty('--cv-s', (w / 794).toFixed(4));
-    }
+    var w = heroSheet.clientWidth;
+    if (w > 0) heroSheet.style.setProperty('--cv-s', (w / 794).toFixed(4));
   }
   if (heroSheet) {
     fitHeroSheet();
     window.addEventListener('resize', fitHeroSheet);
+    window.addEventListener('load', fitHeroSheet);
+    if ('ResizeObserver' in window) new ResizeObserver(fitHeroSheet).observe(heroSheet);
   }
 
-  // 3D Card Hover Tilt Interaction
-  const card = document.getElementById('interactiveCard');
-  if (card && !reduceMotion) {
-    card.addEventListener('mousemove', (e) => {
-      const rect = card.getBoundingClientRect();
-      const x = e.clientX - rect.left - rect.width / 2;
-      const y = e.clientY - rect.top - rect.height / 2;
-      card.style.transform = `perspective(1000px) rotateY(${x / 24}deg) rotateX(${-y / 24}deg) translateY(-4px)`;
+  /* ---------- Tilt: mouse AND touch/pen via pointer events ---------- */
+  function addTilt(el, strength, lift) {
+    if (!el || reduceMotion) return;
+    function move(e) {
+      var r = el.getBoundingClientRect();
+      var x = e.clientX - r.left - r.width / 2;
+      var y = e.clientY - r.top - r.height / 2;
+      el.style.transform = 'perspective(1000px) rotateY(' + (x / strength) + 'deg) rotateX(' + (-y / strength) + 'deg) translateY(' + lift + 'px)';
+      el.classList.add('touching');
+    }
+    function reset() {
+      el.style.transform = '';
+      el.classList.remove('touching');
+    }
+    el.addEventListener('pointermove', function (e) {
+      if (e.pointerType === 'mouse' || e.buttons || e.pressure > 0) move(e);
     });
-    card.addEventListener('mouseleave', () => {
-      card.style.transform = 'perspective(1000px) rotateY(0deg) rotateX(0deg) translateY(0)';
-    });
+    el.addEventListener('pointerdown', move);
+    ['pointerleave', 'pointerup', 'pointercancel'].forEach(function (t) { el.addEventListener(t, reset); });
   }
+  addTilt(document.getElementById('interactiveCard'), 24, -4);
 
-  // Mobile Menu Toggle
-  const burger = document.getElementById('hamburgerBtn');
-  const menu = document.getElementById('mobileMenu');
+  /* ---------- Mobile menu ---------- */
+  var burger = document.getElementById('hamburgerBtn');
+  var menu = document.getElementById('mobileMenu');
+  function closeMenu() {
+    if (!menu || !burger) return;
+    menu.classList.remove('open');
+    burger.classList.remove('is-open');
+    burger.setAttribute('aria-expanded', 'false');
+  }
   if (burger && menu) {
-    burger.addEventListener('click', () => {
-      const isOpen = menu.classList.toggle('open');
-      burger.classList.toggle('is-open', isOpen);
-      burger.setAttribute('aria-expanded', String(isOpen));
+    burger.addEventListener('click', function () {
+      var open = menu.classList.toggle('open');
+      burger.classList.toggle('is-open', open);
+      burger.setAttribute('aria-expanded', String(open));
     });
-    menu.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', () => {
-        menu.classList.remove('open');
-        burger.classList.remove('is-open');
-        burger.setAttribute('aria-expanded', 'false');
-      });
+    menu.querySelectorAll('a').forEach(function (l) { l.addEventListener('click', closeMenu); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeMenu(); });
+    document.addEventListener('click', function (e) {
+      if (!menu.contains(e.target) && !burger.contains(e.target)) closeMenu();
     });
+    window.addEventListener('resize', function () { if (window.innerWidth > 940) closeMenu(); });
   }
 
-  // Scroll Progress & To-Top Button
-  const bar = document.getElementById('scrollProgress');
-  const toTop = document.getElementById('toTop');
-  const nav = document.getElementById('navbar');
-
-  window.addEventListener('scroll', () => {
-    const y = window.pageYOffset || document.documentElement.scrollTop;
-    const total = document.documentElement.scrollHeight - window.innerHeight;
-    if (bar && total > 0) bar.style.width = `${(y / total) * 100}%`;
+  /* ---------- Scroll progress, nav state, back-to-top (rAF throttled) ---------- */
+  var bar = document.getElementById('scrollProgress');
+  var toTop = document.getElementById('toTop');
+  var nav = document.getElementById('navbar');
+  var ticking = false;
+  function onScroll() {
+    var y = window.pageYOffset || document.documentElement.scrollTop;
+    var total = document.documentElement.scrollHeight - window.innerHeight;
+    if (bar && total > 0) bar.style.transform = 'scaleX(' + Math.min(1, y / total) + ')';
     if (nav) nav.classList.toggle('scrolled', y > 30);
     if (toTop) toTop.classList.toggle('visible', y > 450);
+    ticking = false;
+  }
+  window.addEventListener('scroll', function () {
+    if (!ticking) { ticking = true; requestAnimationFrame(onScroll); }
   }, { passive: true });
+  onScroll();
+  if (toTop) toTop.addEventListener('click', function () {
+    window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+  });
 
-  if (toTop) {
-    toTop.addEventListener('click', () => {
-      window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+  /* ---------- Scroll reveal ---------- */
+  var reveals = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    var revealObs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) { en.target.classList.add('in'); revealObs.unobserve(en.target); }
+      });
+    }, { threshold: 0, rootMargin: '0px 0px -8% 0px' });
+    reveals.forEach(function (el) { revealObs.observe(el); });
+    // Safety net: never leave hero content hidden if the observer is slow
+    setTimeout(function () {
+      document.querySelectorAll('.hero .reveal').forEach(function (el) { el.classList.add('in'); });
+    }, 1200);
+  } else {
+    reveals.forEach(function (el) { el.classList.add('in'); });
+  }
+
+  /* ---------- Touch "spotlight": no hover on phones, so highlight whatever is centred on screen ---------- */
+  if (isTouch && 'IntersectionObserver' in window) {
+    var litObs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { en.target.classList.toggle('lit', en.isIntersecting); });
+    }, { threshold: 0, rootMargin: '-38% 0px -38% 0px' });
+    document.querySelectorAll('.step-card, .feat-item, .layout-list li, .btn-icon-bounce').forEach(function (el) { litObs.observe(el); });
+  }
+
+  /* ---------- Scroll-spy for nav links ---------- */
+  var links = document.querySelectorAll('.nav-links > a[href^="#"]');
+  if ('IntersectionObserver' in window && links.length) {
+    var spy = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        links.forEach(function (a) { a.classList.toggle('active', a.getAttribute('href') === '#' + en.target.id); });
+      });
+    }, { rootMargin: '-45% 0px -50% 0px' });
+    ['how', 'features', 'layout', 'pricing', 'faq'].forEach(function (id) {
+      var s = document.getElementById(id); if (s) spy.observe(s);
     });
   }
 
-  // Scroll Reveal Animations
-  const reveals = document.querySelectorAll('.reveal');
-  if ('IntersectionObserver' in window && !reduceMotion) {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('in');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-    reveals.forEach(el => observer.observe(el));
-  } else {
-    reveals.forEach(el => el.classList.add('in'));
+  /* ---------- Typing animation in the live preview ---------- */
+  var typed = document.getElementById('typedSummary');
+  if (typed && !reduceMotion) {
+    var full = typed.textContent.trim();
+    var i = 0, deleting = false, visible = true, timer;
+    function tick() {
+      if (!visible) { timer = setTimeout(tick, 400); return; }
+      if (!deleting) {
+        i++;
+        typed.textContent = full.slice(0, i);
+        if (i >= full.length) { deleting = true; timer = setTimeout(tick, 3200); return; }
+        timer = setTimeout(tick, 32);
+      } else {
+        i -= 4;
+        if (i <= 0) { i = 0; deleting = false; typed.textContent = ''; timer = setTimeout(tick, 600); return; }
+        typed.textContent = full.slice(0, i);
+        timer = setTimeout(tick, 14);
+      }
+    }
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (e) { visible = e[0].isIntersecting; }).observe(heroSheet);
+    }
+    document.addEventListener('visibilitychange', function () { visible = !document.hidden; });
+    typed.textContent = '';
+    timer = setTimeout(tick, 900);
   }
 })();
 </script>
 
-
-
-</body></html>
+</body>
+</html>
