@@ -1141,6 +1141,16 @@ footer .logo { color: #fff; margin-bottom: 0.9rem; }
   .sheet-tag.pdf { right: 4px; bottom: -12px; }
   .sheet-tag.currency-tag { left: 4px; bottom: 20%; }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
 </style>
 </head>
 <body>
